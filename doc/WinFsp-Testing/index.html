@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>WinFsp Testing &middot; WinFsp</title>
+
+    <link rel="stylesheet" href="/css/primer.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+  </head>
+  <body class="bg-white text-gray-dark">
+    <div id="container" class="container-lg clearfix">
+
+      <div id="side" class="col-3 float-left">
+        <div class="p-3" style="min-height:100vh">
+          <img src="/logo.png" class="mb-3 width-fit auto-invert" />
+          <h1 class="f1-light text-uppercase text-center mb-3">WinFsp</h1>
+          <nav class="SideNav border"><a class="SideNav-item" href="/" >Main</a>
+              <a class="SideNav-item" href="/rel" >Download</a>
+              <a class="SideNav-item" href="/doc" aria-current="page">Documentation</a>
+              <nav class="SideNav py-2 pl-3">
+                  <a class="SideNav-subItem" href="/doc/Frequently-Asked-Questions/" >Frequently Asked Questions</a><a class="SideNav-subItem" href="/doc/Known-File-Systems/" >Known File Systems</a><a class="SideNav-subItem" href="/doc/Native-API-vs-FUSE/" >Native API vs FUSE</a><a class="SideNav-subItem" href="/doc/NTFS-Compatibility/" >NTFS Compatibility</a><a class="SideNav-subItem" href="/doc/Queued-Events/" >Queued Events</a><a class="SideNav-subItem" href="/doc/SSHFS-Port-Case-Study/" >SSHFS Port Case Study</a><a class="SideNav-subItem" href="/doc/WinFsp-API-launch.h/" >WinFsp API launch.h</a><a class="SideNav-subItem" href="/doc/WinFsp-API-winfsp.h/" >WinFsp API winfsp.h</a><a class="SideNav-subItem" href="/doc/WinFsp-as-an-IPC-Mechanism/" >WinFsp as an IPC Mechanism</a><a class="SideNav-subItem" href="/doc/WinFsp-Design/" >WinFsp Design</a><a class="SideNav-subItem" href="/doc/WinFsp-Kernel-Mode-File-Systems/" >WinFsp Kernel Mode File Systems</a><a class="SideNav-subItem" href="/doc/WinFsp-Performance-Testing/" >WinFsp Performance Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Service-Architecture/" >WinFsp Service Architecture</a><a class="SideNav-subItem" href="/doc/WinFsp-Testing/" aria-current="page">WinFsp Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Tutorial/" >WinFsp Tutorial</a>
+                </nav><a class="SideNav-item" href="/src" >Source</a>
+              <a class="SideNav-item" href="/blog" >Blog</a>
+              
+          </nav>
+        </div>
+      </div>
+
+      <div id="main" class="col-9 float-left">
+        <div class="p-3 markdown-body" style="min-height:100vh">
+<h1>WinFsp Testing</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>WinFsp maintains quality through rigorous testing under a variety of scenarios. This document discusses its testing strategy.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_importance_of_testing">Importance of Testing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A file system is a fundamental block of an OS. It provides the primary means for storing persistent information and capturing system state. A file system must not only be reliable and stable when the computer is running, it must also store data in a manner as to eliminate data loss or data corruption. Furthermore a file system must provide semantics that closely adhere to existing standards and conventions for its OS to avoid confusion or even accidental corruption from programs that use it. For these reasons rigorous and extensive testing of a file system is of paramount importance.</p>
+</div>
+<div class="paragraph">
+<p>WinFsp enables the creation of user mode file systems that fully integrate with the Windows OS. WinFsp is a system component and the user mode file systems that integrate with it also become system components. The need for thorough testing of WinFsp becomes apparent.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_test_suites">Test Suites</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>WinFsp currently has the following test suites:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Winfsp-tests</strong>: This test suite provides comprehensive testing of WinFsp&#8217;s capabilities under various scenarios. This includes general Win32 (and NTDLL) file API testing, but also includes WinFsp specific tests, such as incorrectly functioning user mode file systems. The non-WinFsp specific tests are verified against NTFS.</p>
+<div class="paragraph">
+<p>This test suite is developed together with WinFsp. It is written in C/C++ and provides a form of gray box testing.</p>
+</div>
+</li>
+<li>
+<p><strong>Winfstest</strong>: This is another test suite that verifies general file system functionality. It is not WinFsp specific and all its tests pass on NTFS.</p>
+<div class="paragraph">
+<p>This test suite is written in Python and C and was originally developed for the secfs.test collection of file system test programs by the WinFsp author. It provides a form of black box testing.</p>
+</div>
+</li>
+<li>
+<p><strong>IfsTest</strong>: This is Microsoft&#8217;s Installable File System Test Suite. It is used to verify that WinFsp behavior closely resembles that of NTFS.</p>
+<div class="paragraph">
+<p>This test suite is part of the Windows Hardware Lab Kit (HLK). It provides a form of black box testing.</p>
+</div>
+</li>
+<li>
+<p><strong>FSX</strong>: This is Apple&#8217;s FSX ported to Windows by the WinFsp author. FSX is very good at finding problems with read/write and memory-mapped I/O.</p>
+</li>
+<li>
+<p><strong>Fscrash</strong>: This is a tool that simulates a faulty or crashing user mode file system. It is used to test the fault tolerance of WinFsp.</p>
+<div class="paragraph">
+<p>This test is developed together with WinFsp. It is written in C/C++.</p>
+</div>
+</li>
+<li>
+<p><strong>Fsbench</strong>: This is a tool that can be used to test the performance of Windows file systems under different scenarios. It can work with any Windows file system and is not specific to WinFsp.</p>
+<div class="paragraph">
+<p>This tool is currently developed together with WinFsp. It is written in C.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These test suites and a few smaller tests are run through Continuous Integration testing every time a push is made into the WinFsp repository.</p>
+</div>
+<div class="sect2">
+<h3 id="_test_file_system">Test File System</h3>
+<div class="paragraph">
+<p>WinFsp includes a test user mode file system called <strong>MEMFS</strong>. This is a simple in memory file system written in C/C++. MEMFS implements all file system features that WinFsp supports. MEMFS also performs various user mode file system checks during testing, for example, it checks that the buffer received during WRITE calls is read-only.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_tested_scenarios">Tested Scenarios</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The combined test suites exercise the majority of Win32 file API&#8217;s and a few NTDLL ones. The tested API&#8217;s include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>API&#8217;s to create, open, close files/streams.</p>
+</li>
+<li>
+<p>API&#8217;s to perform file/stream I/O in cached, non-cached, write-through, overlapped, etc. modes.</p>
+</li>
+<li>
+<p>API&#8217;s to perform memory mapped I/O.</p>
+</li>
+<li>
+<p>API&#8217;s to get or set file/stream metadata and security.</p>
+</li>
+<li>
+<p>API&#8217;s to rename or delete files/streams.</p>
+</li>
+<li>
+<p>API&#8217;s to enumerate directories and streams.</p>
+</li>
+<li>
+<p>API&#8217;s that act on reparse points and symbolic links.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These tests are run under a variety of conditions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>When the file system is a "disk" file system (FILE_DEVICE_DISK_FILE_SYSTEM).</p>
+</li>
+<li>
+<p>When the file system is a "network" file system (FILE_DEVICE_NETWORK_FILE_SYSTEM).</p>
+</li>
+<li>
+<p>When the file system is a "disk" file system exposed as a network share (NetShareAdd).</p>
+</li>
+<li>
+<p>When the file system is mapped as a drive (DefineDosDeviceW).</p>
+</li>
+<li>
+<p>When the file system is mounted on a directory (using junctions).</p>
+</li>
+<li>
+<p>When the file system is case-sensitive or case-insensitive.</p>
+</li>
+<li>
+<p>When the process making the API calls lacks the traverse privilege (SE_CHANGE_NOTIFY_NAME).</p>
+</li>
+<li>
+<p>When the process making the API calls has the backup or restore privilege (SE_BACKUP_NAME, SE_RESTORE_NAME).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Not all tests apply to all conditions. The test suites will disable/skip tests that do not apply to a particular scenario.</p>
+</div>
+<div class="paragraph">
+<p>In addition the tests are run both on Debug and Release builds. Debug builds includes numerous ASSERT() statements that test various conditions within the WinFsp code.</p>
+</div>
+<div class="sect2">
+<h3 id="_coverage">Coverage</h3>
+<div class="paragraph">
+<p>Windows File System Drivers (FSD) run in a variety of conditions that are not always easy to replicate during testing. For example, an FSD may not be able to get locks to perform an operation, in which case it may retry the operation later. Or it may be unable to allocate memory for a MustSucceed task, in which case it may wait a bit and retry.</p>
+</div>
+<div class="paragraph">
+<p>Such situations may not arise during normal testing. For this reason, WinFsp uses the DEBUGTEST() macro, which takes a single Percent argument. In Release builds this macro always evaluates to TRUE. In Debug builds this macro may evaluate to TRUE or FALSE depending on the value of the Percent argument, which specifies the percentage of times that DEBUGTEST() should evaluate to TRUE. For example, a DEBUGTEST(90) means that 90% of the time the macro should evaluate to TRUE and 10% of the time it should evaluate to FALSE.</p>
+</div>
+<div class="paragraph">
+<p>The WinFsp FSD uses the DEBUGTEST() macro in various places where an operation may have to be retried. For example, here is how it handles deferred writes:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>/* should we defer the write? */
+Success = DEBUGTEST(90) &amp;&amp; CcCanIWrite(FileObject, WriteLength, CanWait, Retrying);
+if (!Success)
+{
+    Result = FspWqCreateIrpWorkItem(Irp, FspFsvolWriteCached, 0);
+    if (NT_SUCCESS(Result))
+    {
+        IoMarkIrpPending(Irp);
+        CcDeferWrite(FileObject, FspFsvolWriteCachedDeferred, Irp, 0, WriteLength, Retrying);
+
+        return STATUS_PENDING;
+    }
+
+    /* if we are unable to defer we will go ahead and (try to) service the IRP now! */
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In Release builds the DEBUGTEST(90) macro will evaluate to TRUE and the Cache Manager will be asked directly via CcCanIWrite whether a WRITE should be deferred. In Debug builds the DEBUGTEST(90) macro will evaluate to FALSE sometimes (10% of the time) and the WRITE will be deferred, thus allowing us to test the retry code path.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_ntfs_compatibility_testing">NTFS Compatibility Testing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>WinFsp allows the creation of user mode file systems that exhibit behavior similar to NTFS. This means that Windows applications that use such a file system should not be able to tell the difference between NTFS and the WinFsp-based file system. OTOH specialized applications (such as Defrag) will not work properly on WinFsp file systems.</p>
+</div>
+<div class="paragraph">
+<p>WinFsp uses the winfsp-tests, winfstest and ifstest test suites for compatibility testing. These test suites verify that WinFsp and NTFS have very similar behavior. There is a separate document that examines the differences between WinFsp and NTFS in more detail.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_fault_tolerance_testing">Fault Tolerance Testing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>User mode file systems are normal user mode processes and as such they may fail in a variety of conditions. For example, a user mode file system may trigger an access violation while servicing a file operation. As another example, the developer of a user mode file system may terminate the file system process forcefully from within a debugger.</p>
+</div>
+<div class="paragraph">
+<p>In such cases WinFsp is able to recover gracefully and clean up its resources and data structures. This is a fundamental capability of WinFsp and one that must be tested thoroughly.</p>
+</div>
+<div class="paragraph">
+<p>For this purpose WinFsp is tested using the fscrash tool. Fscrash includes a special version of MEMFS, where file operations can potentially cause a crash. Fscrash also includes a simple test that is run in a loop until the included file system crashes. When the OS kills the process, the WinFsp FSD steps in and cleans up all resources used by the faulty file system. The intent of the test is to verify that WinFsp handles the crash properly, without leaving any leaks and without crashing the OS.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_verifier">Verifier</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>All development and testing of WinFsp is done under the Driver Verifier with standard settings enabled. The Driver Verifier is an invaluable tool for Windows Driver development. It has caught numerous issues within WinFsp, in most cases immediately after the faulty code was written and run for the first time.</p>
+</div>
+<div class="sect2">
+<h3 id="_leak_testing">Leak Testing</h3>
+<div class="paragraph">
+<p>One of the most important aspects of the Driver Verifier is that it can track the pool (memory) usage of WinFsp. The WinFsp master test driver uses this to confirm that the WinFsp FSD does not leak memory. At the end of the tests the master test driver unmounts any remaining WinFsp file systems and then verifies that there are zero pool allocations for the WinFsp FSD.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_performance_testing">Performance Testing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The goal of performance testing is to evaluate and understand how software behaves under certain workloads. Performance testing can help identify cases where the software requires too much time or resources. It is also useful to establish a performance baseline to ensure that software performance does not degrade over time.</p>
+</div>
+<div class="paragraph">
+<p>WinFsp uses a tool called fsbench for this purpose. Fsbench is able to test specific scenarios, for example: "how long does it take to delete 1000 files?" Fsbench has been very useful for WinFsp and has helped improve its performance: in one situation it helped identify quadratic behavior with the MEMFS ReadDirectory operation, in another situation it helped fine tune the performance of the WinFsp I/O Queue.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_backwards_compatibility_testing">Backwards Compatibility testing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>As the WinFsp API&#8217;s mature it is important to verify that they remain backwards compatible with existing file system binaries. For this purpose binaries that have been compiled against earlier versions of WinFsp are used to verify that they run correctly against the latest version.</p>
+</div>
+<div class="paragraph">
+<p>For example, in version v1.2B3 of WinFsp an FSP_FUSE_CAP_STAT_EX FUSE extension was introduced. This can change the layout of struct fuse_stat and is therefore a potentially dangerous change. To test against inadvertent breakage a FUSE file system binary that was compiled against v1.2B2 is regularly used to verify backwards compatibility.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_code_analysis">Code Analysis</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>WinFsp is regularly run under the Visual Studio&#8217;s Code Analyzer. Any issues found are examined and if necessary acted upon.</p>
+</div>
+<div class="paragraph">
+<p>WinFsp compiles cleanly without any warnings.</p>
+</div>
+</div>
+</div>
+
+</div>
+      </div>
+
+    </div>
+  </body>
+</html>

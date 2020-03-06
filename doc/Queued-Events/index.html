@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Queued Events &middot; WinFsp</title>
+
+    <link rel="stylesheet" href="/css/primer.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+  </head>
+  <body class="bg-white text-gray-dark">
+    <div id="container" class="container-lg clearfix">
+
+      <div id="side" class="col-3 float-left">
+        <div class="p-3" style="min-height:100vh">
+          <img src="/logo.png" class="mb-3 width-fit auto-invert" />
+          <h1 class="f1-light text-uppercase text-center mb-3">WinFsp</h1>
+          <nav class="SideNav border"><a class="SideNav-item" href="/" >Main</a>
+              <a class="SideNav-item" href="/rel" >Download</a>
+              <a class="SideNav-item" href="/doc" aria-current="page">Documentation</a>
+              <nav class="SideNav py-2 pl-3">
+                  <a class="SideNav-subItem" href="/doc/Frequently-Asked-Questions/" >Frequently Asked Questions</a><a class="SideNav-subItem" href="/doc/Known-File-Systems/" >Known File Systems</a><a class="SideNav-subItem" href="/doc/Native-API-vs-FUSE/" >Native API vs FUSE</a><a class="SideNav-subItem" href="/doc/NTFS-Compatibility/" >NTFS Compatibility</a><a class="SideNav-subItem" href="/doc/Queued-Events/" aria-current="page">Queued Events</a><a class="SideNav-subItem" href="/doc/SSHFS-Port-Case-Study/" >SSHFS Port Case Study</a><a class="SideNav-subItem" href="/doc/WinFsp-API-launch.h/" >WinFsp API launch.h</a><a class="SideNav-subItem" href="/doc/WinFsp-API-winfsp.h/" >WinFsp API winfsp.h</a><a class="SideNav-subItem" href="/doc/WinFsp-as-an-IPC-Mechanism/" >WinFsp as an IPC Mechanism</a><a class="SideNav-subItem" href="/doc/WinFsp-Design/" >WinFsp Design</a><a class="SideNav-subItem" href="/doc/WinFsp-Kernel-Mode-File-Systems/" >WinFsp Kernel Mode File Systems</a><a class="SideNav-subItem" href="/doc/WinFsp-Performance-Testing/" >WinFsp Performance Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Service-Architecture/" >WinFsp Service Architecture</a><a class="SideNav-subItem" href="/doc/WinFsp-Testing/" >WinFsp Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Tutorial/" >WinFsp Tutorial</a>
+                </nav><a class="SideNav-item" href="/src" >Source</a>
+              <a class="SideNav-item" href="/blog" >Blog</a>
+              
+          </nav>
+        </div>
+      </div>
+
+      <div id="main" class="col-9 float-left">
+        <div class="p-3 markdown-body" style="min-height:100vh">
+<h1>Queued Events</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this article I am discussing <em>Queued Events</em>. <em>Queued Events</em> are a Windows kernel synchronization mechanism that I invented for <a href="https://github.com/billziss-gh/winfsp">WinFsp - FUSE for Windows</a>. <em>Queued Events</em> behave like kernel Synchronization Events (i.e. Win32 auto-reset events), but provide scheduling characteristics similar to those of I/O Completion Ports.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_problem">The Problem</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>During the later stages of WinFsp development I decided to do some performance testing to understand its behavior and find opportunities for optimization. I found out that WinFsp performed very well in most tested scenarios, but there was one test that seemed to have bad performance for no particular reason.</p>
+</div>
+<div class="paragraph">
+<p>I ended up profiling this issue using xperf (included in the <a href="https://docs.microsoft.com/en-us/windows-hardware/test/wpt/">Windows Performance Toolkit</a>), which allows for kernel-level profiling. I spent considerable time looking at the profiling results, but could identify no obvious issue with my code.</p>
+</div>
+<div class="paragraph">
+<p>After a day or two of doing this and being stumped I finally had a lightbulb moment: what if the issue is not with my code, but with how the OS schedules threads? Sure enough I had xperf trace context switches and found that on good runs the OS would context switch my file system threads relatively rarely; on bad runs the OS would context switch my threads excessively.</p>
+</div>
+<div class="paragraph">
+<p>After contemplating this issue I realized that this was happening because the OS was trying to schedule my threads in a "fair" manner. Windows in general tries to give every thread a chance to run. This can be counter-productive in server-like programs (such as file systems), where all server threads are equivalent and it is actually better to reuse the same thread (if possible) to avoid context switching and other negative effects.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_solution">The Solution</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>One way of looking at WinFsp is as an IPC (Inter-Process Communication) mechanism. The Windows kernel packages file system operations (open, close, read, write) as IRP&#8217;s (I/O Request Packets) which it sends to WinFsp. WinFsp places them in an <em>I/O Queue</em>; at a later time the threads in a user mode file system retrieve the IRP&#8217;s from the <em>I/O Queue</em> and service them.</p>
+</div>
+<div class="paragraph">
+<p>The <em>I/O Queue</em> had gone through multiple iterations, but at the time I was looking at this issue it was using Windows kernel Synchronization Event&#8217;s (Win32 auto-reset events) for managing threads. The problem was that a wait on a Synchronization Event would be satisfied in a "fair" manner, thus resulting to excessive context switching and bad performance in some circumstances. I needed to find a way to convince Windows to schedule my threads in an "unfair" manner, giving preference to the same thread as much as possible.</p>
+</div>
+<div class="paragraph">
+<p>I started considering different schemes where I would associate a different event per thread thus being able to wake up the "correct" thread myself and effectively writing my own mini-scheduler. Luckily I had another lightbulb moment: I/O completion ports already do this better than I would ever be able to!</p>
+</div>
+<div class="paragraph">
+<p>The kernel portion of an I/O Completion Port is called a <a href="https://msdn.microsoft.com/en-us/library/windows/hardware/ff549547(v=vs.85).aspx">KQUEUE</a>. KQUEUE&#8217;s are (unfortunately) not directly exposed to user mode, however they are at the core of the user mode I/O Completion Ports. KQUEUE&#8217;s are the main reason I/O Completion Ports are so fast as they provide the following scheduling characteristics:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>They have a Last-In First-Out (LIFO) wait discipline.</p>
+</li>
+<li>
+<p>They limit the number of threads that can be satisfied concurrently.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>I briefly considered the idea of building <em>I/O Queues</em> directly on top of KQUEUE&#8217;s, but soon dismissed this idea because <em>I/O Queues</em> are not simple queues but provide additional services, such as IRP cancelation, IRP expiration, etc.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_queued_events">Queued Events</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In an ideal scenario I wanted to continue using my implementation of <em>I/O Queues</em> which had undergone considerable testing and I knew it worked. But somehow I had to convince the Windows kernel to change the scheduling characteristics of Synchronization Events to mirror those of a KQUEUE.</p>
+</div>
+<div class="paragraph">
+<p>Then I had lightbulb no 3: <em>Queued Events</em> or how to make a queue behave like a Synchronization Event.</p>
+</div>
+<div class="paragraph">
+<p>Here is how <em>Queued Events</em> work. A <em>Queued Event</em> consists of a KQUEUE and a spin lock. There is also a single dummy item that can be placed in the KQUEUE.</p>
+</div>
+<div class="paragraph">
+<p>The KQUEUE is guaranteed to contain either 0 or 1 items. When the KQUEUE contains 0 items the <em>Queued Event</em> is considered non-signaled. When the KQUEUE contains 1 items the <em>Queued Event</em> is considered signaled.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="states.png" alt="states">
+</div>
+</div>
+<div class="paragraph">
+<p>To transition from the non-signaled to the signaled state, we acquire the spin lock and then insert the dummy item in the KQUEUE using <a href="https://msdn.microsoft.com/en-us/library/windows/hardware/ff549570(v=vs.85).aspx">KeInsertQueue</a>. To transition from the signaled to the non-signaled state, we simply (wait and) remove the dummy item from the KQUEUE using <a href="https://msdn.microsoft.com/en-us/library/windows/hardware/ff549605(v=vs.85).aspx">KeRemoveQueue</a> (without the use of the spin lock).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>EventSet:
+    AcquireSpinLock
+    if (0 == KeReadState())          // if KQUEUE is empty
+        KeInsertQueue(DUMMY);
+    ReleaseSpinLock
+
+EventWait:
+    KeRemoveQueue();                 // (wait and) remove item</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>First notice that EventSet is serialized by the use of the spin lock. This guarantees that the dummy item can be only inserted ONCE in the KQUEUE and that the only possible signaled state transitions for EventSet are 0&#8594;1 and 1&#8594;1. This is how <a href="https://msdn.microsoft.com/en-us/library/windows/hardware/ff553253(v=vs.85).aspx">KeSetEvent</a> works for a Synchronization Event.</p>
+</div>
+<div class="paragraph">
+<p>Second notice that EventWait is not protected by the spin lock, which means that it can happen at any time including concurrently with EventSet or another EventWait. Notice also that for EventWait the only possible transitions are 1&#8594;0 or 0&#8594;0 (0&#8594;block&#8594;0). This is how <a href="https://msdn.microsoft.com/en-us/library/windows/hardware/ff553350(v=vs.85).aspx">KeWaitForSingleObject</a> works for a Synchronization Event.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="transitions.png" alt="transitions">
+</div>
+</div>
+<div class="paragraph">
+<p>We now have to consider what happens when we have one EventSet concurrently with one or more EventWait&#8217;s:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The EventWait(s) happen before <a href="https://msdn.microsoft.com/en-us/library/windows/hardware/ff549591(v=vs.85).aspx">KeReadState</a>. If the KQUEUE has an item one EventWait gets satisfied, otherwise it blocks. In this case KeReadState will read the KQUEUE&#8217;s state as 0 and KeInsertQueue will insert the dummy item, which will unblock the EventWait.</p>
+</li>
+<li>
+<p>The EventWait(s) happen after KeReadState, but before KeInsertQueue. If the dummy item was already in the KQUEUE the KeReadState test will fail and KeInsertQueue will not be executed, but EventWait will be satisfied immediately. If the dummy item was not in the KQUEUE the KeReadState will succeed and EventWait will momentarily block until KeInsertQueue releases it.</p>
+</li>
+<li>
+<p>The EventWait(s) happen after KeInsertQueue. In this case the dummy item in is the KQUEUE already and one EventWait will be satisfied immediately.</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<em>Queued Events</em> cannot cleanly support an EventClear operation. The obvious choice of using KeRemoveQueue with a 0 timeout is insufficient because it would associate the current thread with the KQUEUE and that is not desirable. KeRundownQueue cannot be used either because it disassociates all threads from the KQUEUE.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The complete implementation of <em>Queued Events</em> within WinFsp can be found here: <a href="https://github.com/billziss-gh/winfsp/blob/v1.1/src/sys/driver.h#L655-L795" class="bare">https://github.com/billziss-gh/winfsp/blob/v1.1/src/sys/driver.h#L655-L795</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_queued_events_scheduling_characteristics">Queued Events Scheduling Characteristics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Queued Events encapsulate KQUEUE&#8217;s and therefore inherit their scheduling characteristics:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>They have a Last-In First-Out (LIFO) wait discipline.</p>
+</li>
+<li>
+<p>They limit the number of threads that can be satisfied concurrently.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These characteristics are desirable because they reduce the number of context switches thus speeding up the WinFsp IPC implementation. Performance testing immediately after the incorporation of <em>Queued Events</em> into WinFsp showed significant performance improvements; profiling with xperf showed that context switches among file system threads were now a relatively rare event!</p>
+</div>
+</div>
+</div>
+
+</div>
+      </div>
+
+    </div>
+  </body>
+</html>

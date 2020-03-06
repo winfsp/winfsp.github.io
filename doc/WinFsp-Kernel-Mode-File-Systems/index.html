@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>WinFsp Kernel Mode File Systems &middot; WinFsp</title>
+
+    <link rel="stylesheet" href="/css/primer.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+  </head>
+  <body class="bg-white text-gray-dark">
+    <div id="container" class="container-lg clearfix">
+
+      <div id="side" class="col-3 float-left">
+        <div class="p-3" style="min-height:100vh">
+          <img src="/logo.png" class="mb-3 width-fit auto-invert" />
+          <h1 class="f1-light text-uppercase text-center mb-3">WinFsp</h1>
+          <nav class="SideNav border"><a class="SideNav-item" href="/" >Main</a>
+              <a class="SideNav-item" href="/rel" >Download</a>
+              <a class="SideNav-item" href="/doc" aria-current="page">Documentation</a>
+              <nav class="SideNav py-2 pl-3">
+                  <a class="SideNav-subItem" href="/doc/Frequently-Asked-Questions/" >Frequently Asked Questions</a><a class="SideNav-subItem" href="/doc/Known-File-Systems/" >Known File Systems</a><a class="SideNav-subItem" href="/doc/Native-API-vs-FUSE/" >Native API vs FUSE</a><a class="SideNav-subItem" href="/doc/NTFS-Compatibility/" >NTFS Compatibility</a><a class="SideNav-subItem" href="/doc/Queued-Events/" >Queued Events</a><a class="SideNav-subItem" href="/doc/SSHFS-Port-Case-Study/" >SSHFS Port Case Study</a><a class="SideNav-subItem" href="/doc/WinFsp-API-launch.h/" >WinFsp API launch.h</a><a class="SideNav-subItem" href="/doc/WinFsp-API-winfsp.h/" >WinFsp API winfsp.h</a><a class="SideNav-subItem" href="/doc/WinFsp-as-an-IPC-Mechanism/" >WinFsp as an IPC Mechanism</a><a class="SideNav-subItem" href="/doc/WinFsp-Design/" >WinFsp Design</a><a class="SideNav-subItem" href="/doc/WinFsp-Kernel-Mode-File-Systems/" aria-current="page">WinFsp Kernel Mode File Systems</a><a class="SideNav-subItem" href="/doc/WinFsp-Performance-Testing/" >WinFsp Performance Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Service-Architecture/" >WinFsp Service Architecture</a><a class="SideNav-subItem" href="/doc/WinFsp-Testing/" >WinFsp Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Tutorial/" >WinFsp Tutorial</a>
+                </nav><a class="SideNav-item" href="/src" >Source</a>
+              <a class="SideNav-item" href="/blog" >Blog</a>
+              
+          </nav>
+        </div>
+      </div>
+
+      <div id="main" class="col-9 float-left">
+        <div class="p-3 markdown-body" style="min-height:100vh">
+<h1>WinFsp Kernel Mode File Systems</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Since release 2019.3 WinFsp supports development of file systems in kernel mode. Such file systems are implemented as kernel drivers that use WinFsp as the primary FSD (File System Driver) as well as the software library that they interface with to retrieve and service file system requests. This document discusses how to write such file systems.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_motivation">Motivation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The primary goal of WinFsp is to enable the easy creation of <strong>user mode</strong> file systems using an easy to use API. There are however legitimate reasons for wanting to develop a file system as a <strong>kernel mode</strong> driver, but the difficulty of doing so often deters people because Windows kernel file system development is notoriously difficult and has many pitfalls.</p>
+</div>
+<div class="paragraph">
+<p>Some of the reasons that a kernel mode file system may be preferrable to a user mode one:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A kernel driver may be able to achieve better performance than user mode processes.</p>
+</li>
+<li>
+<p>A kernel driver may be able to access advanced OS features that are not easily available to user mode processes.</p>
+</li>
+<li>
+<p>A kernel driver may be able to present an alternative interface than the one presented by WinFsp to user mode processes.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Since release 2019.3 WinFsp supports development of file systems as kernel mode drivers. The primary motivation for this work was to support the <a href="https://github.com/billziss-gh/winfuse">WinFuse</a> project, which exposes the FUSE protocol from the Windows kernel in a way that allows FUSE file systems to interface with it, either directly or via <a href="https://github.com/libfuse/libfuse">libfuse</a>. The support was added in such a way that it is generic enough to be used by other kernel mode file systems.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_overview">Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A WinFsp "volume" (file system) is typically created using the <code>FspFsctlCreateVolume</code> API. This is simply a wrapper around a <code>CreateFileW</code> call on one of the WinFsp control devices, either <code>WinFsp.Disk</code> or <code>WinFsp.Net</code>. The <code>CreateFileW</code> call returns a <code>HANDLE</code> to the newly created volume, which acts either as a "disk" or a "network" file system, depending on which control device was used to create it.</p>
+</div>
+<div class="paragraph">
+<p>User mode file systems interact with the WinFsp FSD via <code>DeviceIoControl/FSP_FSCTL_TRANSACT</code> messages on the volume <code>HANDLE</code>. (This is usually done indirectly via the WinFsp DLL, which hides this detail behind an easy to use API.)</p>
+</div>
+<div class="paragraph">
+<p>Since release 2019.3 (v1.5) WinFsp supports the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Registration and on-demand loading of a third party driver when a volume that is destined to be handled by the third party driver is created.</p>
+</li>
+<li>
+<p>Forwarding of custom <code>DeviceIoControl</code> messages to a third party driver. This allows the third party driver to handle custom <code>FSCTL</code> requests directed to a WinFsp volume <code>HANDLE</code>.</p>
+</li>
+<li>
+<p>Kernel-mode API&#8217;s (called DDI&#8217;s) that allow a third party driver to register itself with the FSD and interact with its I/O queues.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Such drivers are called within the WinFsp sources and header/library files by the name of "Fsext Providers" (File System Extension Providers). In the text below we will usually refer to them as simply "Providers".</p>
+</div>
+<div class="paragraph">
+<p>A Provider is a kernel mode driver that uses the FSD as a frontend file system driver to interface with Windows and implement all the complex details that this entails. The Provider fetches I/O requests from the WinFsp I/O queues and may filter them, transform them into a different protocol (as is the case with WinFuse) or use them to fully implement a file system in kernel mode.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_provider_development">Provider Development</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The WinFsp installer includes a "Kernel Developer" feature. When installed this feature adds header and library files in the <code>opt\fsext</code> installation subdirectory.</p>
+</div>
+<div class="paragraph">
+<p>The primary header file used for Provider development is <code>&lt;winfsp/fsext.h&gt;</code> and can be found in <code>opt\fsext\inc</code>. Additionally the file <code>&lt;winfsp/fsctl.h&gt;</code> found in the <code>inc</code> installation subdirectory must be in the compiler&#8217;s include path.</p>
+</div>
+<div class="paragraph">
+<p>Providers must also be linked with one of the import libraries that can be found in <code>opt\fsext\lib</code>. Use the <code>winfsp-x64.lib</code> import library when linking the 64-bit version of a Provider and the <code>winfsp-x86.lib</code> import library when linking the 32-bit version of a Provider.</p>
+</div>
+<div class="sect2">
+<h3 id="_provider_ddis">Provider DDI&#8217;s</h3>
+<div class="paragraph">
+<p>The <code>&lt;winfsp/fsext.h&gt;</code> header file includes definitions for the following important DDI&#8217;s:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>FspFsextProviderRegister</code>: This DDI is used by a Provider to register itself with the FSD. Typically the Provider prepares an <code>FSP_FSEXT_PROVIDER</code> structure and calls <code>FspFsextProviderRegister</code> in its <code>DriverEntry</code> routine. The structure&#8217;s fields are as follows:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Version</code>: Set to <code>sizeof(FSP_FSEXT_PROVIDER)</code>.</p>
+</li>
+<li>
+<p><code>DeviceTransactCode</code>: The <code>DeviceIoControl</code> code that should be forwarded to the Provider.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The code must be defined as follows: <code>CTL_CODE(FILE_DEVICE_FILE_SYSTEM, 0xC00 + ProviderSpecific, METHOD_BUFFERED, FILE_ANY_ACCESS)</code>.</p>
+</li>
+<li>
+<p>Please note that this scheme allows for up to 1024 codes. If you want to define a new Provider code I will appreciate it if you email me at <code>&lt;billziss at navimatics.com&gt;</code> so that we can keep track of Provider codes, avoid conflicts and see when we need to extend this scheme.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>DeviceExtensionSize</code>: The size of private data that the Provider wants for itself in the <code>DeviceExtension</code> of the FSD volume&#8217;s device object.</p>
+</li>
+<li>
+<p><code>DeviceInit</code>: Called when a new volume is created. The <code>DeviceObject</code> parameter is the volume&#8217;s device object. The <code>VolumeParams</code> are the initial parameters passed to <code>FspFsctlCreateVolume</code> and can be modified by the Provider.</p>
+</li>
+<li>
+<p><code>DeviceFini</code>: Called when a volume is going away. This usually happens when the volume <code>HANDLE</code> is closed.</p>
+</li>
+<li>
+<p><code>DeviceExpirationRoutine</code>: Called once a second as part of the FSD&#8217;s expiration timer. The FSD uses this timer to expire caches, long-pending IRP&#8217;s, etc. A Provider can use this call for a similar purpose. The <code>ExpirationTime</code> parameter contains the current interrupt time as determined by the FSD.</p>
+</li>
+<li>
+<p><code>DeviceTransact</code>: Called whenever the FSD receives a <code>DeviceIoControl</code> request with the <code>DeviceTransactCode</code>. The <code>Irp</code> parameter contains the relevant <code>IRP_MJ_FILE_SYSTEM_CONTROL</code>.</p>
+</li>
+<li>
+<p><code>DeviceExtensionOffset</code>: Set to <code>0</code> on input. On successful return from <code>FspFsextProviderRegister</code> it will contain the offset to use for accessing the Provider&#8217;s private data in the <code>DeviceExtension</code> of the FSD volume&#8217;s device object. Given a <code>DeviceObject</code>, the data can be accessed as <code>(PVOID)((PUINT8)DeviceObject&#8594;DeviceExtension + Provider.DeviceExtensionOffset)</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>FspFsextProviderTransact</code>: This DDI is used by a Provider to interact with the FSD I/O queues. The <code>DeviceObject</code> is the FSD volume&#8217;s device object. The <code>FileObject</code> is the <code>FILE_OBJECT</code> that corresponds to the volume <code>HANDLE</code> (created by <code>FspFsctlCreateVolume</code>). The <code>Response</code> is the response to send and can be <code>NULL</code>. The <code>Request</code> is a pointer that receives a pointer to a new request from the WinFsp I/O queue and can be <code>NULL</code>; if the received pointer is not <code>NULL</code> it must be freed with <code>ExFreePool</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_provider_io">Provider I/O</h3>
+<div class="paragraph">
+<p>When the FSD receives a file system IRP it is often able to handle and complete it without help from an external user mode or kernel mode file system. However in most cases the IRP has to be seen and acted upon by an external file system. For this reason the FSD preprocesses the IRP and places it in an I/O queue in the form of a "request". At a later time the external file system retrieves the request, processes it and sends back a "response". The FSD uses the response to locate the original IRP, perform any necessary postprocessing and finally complete the IRP.</p>
+</div>
+<div class="paragraph">
+<p>Providers typically use the <code>FspFsextProviderTransact</code> DDI to receive requests and send back responses. Requests are of type <code>FSP_FSCTL_TRANSACT_REQ</code> and responses are of type <code>FSP_FSCTL_TRANSACT_RSP</code>. Requests have a <code>Kind</code> field which describes what kind of file system operation is being requested. The following request kinds are currently defined in <code>&lt;winfsp/fsctl.h&gt;</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>    FspFsctlTransactCreateKind,
+    FspFsctlTransactOverwriteKind,
+    FspFsctlTransactCleanupKind,
+    FspFsctlTransactCloseKind,
+    FspFsctlTransactReadKind,
+    FspFsctlTransactWriteKind,
+    FspFsctlTransactQueryInformationKind,
+    FspFsctlTransactSetInformationKind,
+    FspFsctlTransactQueryEaKind,
+    FspFsctlTransactSetEaKind,
+    FspFsctlTransactFlushBuffersKind,
+    FspFsctlTransactQueryVolumeInformationKind,
+    FspFsctlTransactSetVolumeInformationKind,
+    FspFsctlTransactQueryDirectoryKind,
+    FspFsctlTransactFileSystemControlKind,
+    FspFsctlTransactDeviceControlKind,
+    FspFsctlTransactShutdownKind,
+    FspFsctlTransactLockControlKind,
+    FspFsctlTransactQuerySecurityKind,
+    FspFsctlTransactSetSecurityKind,
+    FspFsctlTransactQueryStreamInformationKind,</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When request processing is complete the Provider must prepare a response and send it to the FSD using <code>FspFsextProviderTransact</code> as mentioned above. It is particularly important that the Provider initializes the <code>Kind</code> and <code>Hint</code> fields by copying the values from the corresponding request.</p>
+</div>
+<div class="paragraph">
+<p>This document does not describe in detail how each request kind is supposed to be handled. For the full details refer to the implementation for the WinFsp DLL in the WinFsp sources: <code>src/dll/fsop.c</code>. Although this implementation is for user mode file systems, similar logic and techniques should be used for Providers.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_provider_registration">Provider Registration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Providers are loaded on demand and must be properly registered:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A provider must be registered as a kernel driver. This can be achieved by using the command <code>sc create PROVIDER type=kernel binPath=X:\PATH\TO\PROVIDER.SYS</code> or by using the Service Control Manager API&#8217;s (<code>OpenServiceW</code>, <code>CreateServiceW</code>, etc.). You do not need an INF file or to use the Setup API in order to register a Provider driver.</p>
+</li>
+<li>
+<p>A provider must be registered under the registry key <code>HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\WinFsp\Fsext</code>. Create a string value with name the textual representation of the Provider&#8217;s transact code (see <code>DeviceTransactCode</code>) in <code>"%08lx"</code> format and value the Provider&#8217;s driver name.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For example the WinFuse Provider registers its driver under the name <code>WinFuse</code> and adds a registry value of <code>00093118</code> &#8594; <code>WinFuse</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_provider_lifetime">Provider Lifetime</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Providers are loaded on demand by the FSD during volume creation. This process works as follows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>During volume creation (e.g. by using <code>FspFsctlCreateVolume</code>) a non-zero <code>FsextControlCode</code> must be specified in <code>VolumeParams</code>.</p>
+</li>
+<li>
+<p>If the FSD sees the <code>FsextControlCode</code> as non-zero it attempts to find a corresponding Provider driver.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>It first checks an internal mapping of codes to Provider drivers. If the code is found, the FSD proceeds to the <code>DeviceInit</code> step below.</p>
+</li>
+<li>
+<p>If the code is not found in the internal mapping, the FSD checks the registry under the registry key <code>HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\WinFsp\Fsext</code>. If the code is not found the volume creation fails.</p>
+</li>
+<li>
+<p>If the code is found the FSD loads the Provider driver using <code>ZwLoadDriver</code>. The Provider is supposed to register itself with the FSD during <code>DriverEntry</code> by calling <code>FspFsextProviderRegister</code>.</p>
+</li>
+<li>
+<p>Finally the internal mapping of codes to Providers is rechecked. Assuming that everything worked as intended, the corresponding Provider driver is now loaded and we can proceed to the <code>DeviceInit</code> step.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The FSD proceeds to call the <code>DeviceInit</code> callback of the Provider. The Provider can use this call to initialize itself in relation to the new volume device object.</p>
+</li>
+<li>
+<p>Assuming that the volume device object is created successfully, the FSD will do the following:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Forward any <code>FsextControlCode==DeviceTransactCode</code> requests that it gets in its <code>IRP_MJ_FILE_SYSTEM_CONTROL</code> to the Provider via <code>DeviceTransact</code>.</p>
+</li>
+<li>
+<p>Call the Provider&#8217;s <code>DeviceExpirationRoutine</code> once a second as part of the FSD&#8217;s expiration process.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Eventually the volume device object will be torn down (e.g. because the corresponding <code>HANDLE</code> is closed). In this case the FSD will call the Provider&#8217;s <code>DeviceFini</code> callback.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Finally note that once loaded a Provider driver cannot be unloaded (without a reboot).</p>
+</div>
+</div>
+</div>
+
+</div>
+      </div>
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,2861 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>WinFsp API winfsp.h &middot; WinFsp</title>
+
+    <link rel="stylesheet" href="/css/primer.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+  </head>
+  <body class="bg-white text-gray-dark">
+    <div id="container" class="container-lg clearfix">
+
+      <div id="side" class="col-3 float-left">
+        <div class="p-3" style="min-height:100vh">
+          <img src="/logo.png" class="mb-3 width-fit auto-invert" />
+          <h1 class="f1-light text-uppercase text-center mb-3">WinFsp</h1>
+          <nav class="SideNav border"><a class="SideNav-item" href="/" >Main</a>
+              <a class="SideNav-item" href="/rel" >Download</a>
+              <a class="SideNav-item" href="/doc" aria-current="page">Documentation</a>
+              <nav class="SideNav py-2 pl-3">
+                  <a class="SideNav-subItem" href="/doc/Frequently-Asked-Questions/" >Frequently Asked Questions</a><a class="SideNav-subItem" href="/doc/Known-File-Systems/" >Known File Systems</a><a class="SideNav-subItem" href="/doc/Native-API-vs-FUSE/" >Native API vs FUSE</a><a class="SideNav-subItem" href="/doc/NTFS-Compatibility/" >NTFS Compatibility</a><a class="SideNav-subItem" href="/doc/Queued-Events/" >Queued Events</a><a class="SideNav-subItem" href="/doc/SSHFS-Port-Case-Study/" >SSHFS Port Case Study</a><a class="SideNav-subItem" href="/doc/WinFsp-API-launch.h/" >WinFsp API launch.h</a><a class="SideNav-subItem" href="/doc/WinFsp-API-winfsp.h/" aria-current="page">WinFsp API winfsp.h</a><a class="SideNav-subItem" href="/doc/WinFsp-as-an-IPC-Mechanism/" >WinFsp as an IPC Mechanism</a><a class="SideNav-subItem" href="/doc/WinFsp-Design/" >WinFsp Design</a><a class="SideNav-subItem" href="/doc/WinFsp-Kernel-Mode-File-Systems/" >WinFsp Kernel Mode File Systems</a><a class="SideNav-subItem" href="/doc/WinFsp-Performance-Testing/" >WinFsp Performance Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Service-Architecture/" >WinFsp Service Architecture</a><a class="SideNav-subItem" href="/doc/WinFsp-Testing/" >WinFsp Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Tutorial/" >WinFsp Tutorial</a>
+                </nav><a class="SideNav-item" href="/src" >Source</a>
+              <a class="SideNav-item" href="/blog" >Blog</a>
+              
+          </nav>
+        </div>
+      </div>
+
+      <div id="main" class="col-9 float-left">
+        <div class="p-3 markdown-body" style="min-height:100vh">
+<h1>WinFsp API winfsp.h</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>WinFsp User Mode API.</p>
+</div>
+<div class="paragraph">
+<p>In order to use the WinFsp API the user mode file system must include &lt;winfsp/winfsp.h&gt;
+and link with the winfsp_x64.dll (or winfsp_x86.dll) library.</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#_file_system">File System</a>
+<ul class="sectlevel2">
+<li><a href="#_classes">Classes</a></li>
+<li><a href="#_functions">Functions</a></li>
+<li><a href="#_typedefs">Typedefs</a></li>
+</ul>
+</li>
+<li><a href="#_service_framework">Service Framework</a>
+<ul class="sectlevel2">
+<li><a href="#_functions_2">Functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_file_system">File System</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A user mode file system is a program that uses the WinFsp API to expose a file system to
+Windows. The user mode file system must implement the operations in FSP_FILE_SYSTEM_INTERFACE,
+create a file system object using FspFileSystemCreate and start its dispatcher using
+FspFileSystemStartDispatcher. At that point it will start receiving file system requests on the
+FSP_FILE_SYSTEM_INTERFACE operations.</p>
+</div>
+<div class="sect2">
+<h3 id="_classes">Classes</h3>
+<div class="paragraph">
+<p><strong>FSP_FILE_SYSTEM_INTERFACE</strong> - File system interface.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>The operations in this interface must be implemented by the user mode
+file system. Not all operations need be implemented. For example,
+a user mode file system that does not wish to support reparse points,
+need not implement the reparse point operations.</p>
+</div>
+<div class="paragraph">
+<p>Most of the operations accept a FileContext parameter. This parameter
+has different meanings depending on the value of the FSP_FSCTL_VOLUME_PARAMS
+flags UmFileContextIsUserContext2 and UmFileContextIsFullContext.</p>
+</div>
+<div class="paragraph">
+<p>There are three cases to consider:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>When both of these flags are unset (default), the FileContext parameter
+represents the file node. The file node is a void pointer (or an integer
+that can fit in a pointer) that is used to uniquely identify an open file.
+Opening the same file name should always yield the same file node value
+for as long as the file with that name remains open anywhere in the system.</p>
+</li>
+<li>
+<p>When the UmFileContextIsUserContext2 is set, the FileContext parameter
+represents the file descriptor. The file descriptor is a void pointer (or
+an integer that can fit in a pointer) that is used to identify an open
+instance of a file. Opening the same file name may yield a different file
+descriptor.</p>
+</li>
+<li>
+<p>When the UmFileContextIsFullContext is set, the FileContext parameter
+is a pointer to a FSP_FSCTL_TRANSACT_FULL_CONTEXT. This allows a user mode
+file system to access the low-level UserContext and UserContext2 values.
+The UserContext is used to store the file node and the UserContext2 is
+used to store the file descriptor for an open file.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_member_functions">Member Functions</h4>
+<div class="paragraph">
+<p><strong>CanDelete</strong> - Determine whether a file or directory can be deleted.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *CanDelete)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    PWSTR FileName);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the file or directory to test for deletion.</p>
+</li>
+<li>
+<p><em>FileName</em> - The name of the file or directory to test for deletion.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This function tests whether a file or directory can be safely deleted. This function does
+not need to perform access checks, but may performs tasks such as check for empty
+directories, etc.</p>
+</div>
+<div class="paragraph">
+<p>This function should <strong>NEVER</strong> delete the file or directory in question. Deletion should
+happen during Cleanup with the FspCleanupDelete flag set.</p>
+</div>
+<div class="paragraph">
+<p>This function gets called when Win32 API&#8217;s such as DeleteFile or RemoveDirectory are used.
+It does not get called when a file or directory is opened with FILE_DELETE_ON_CLOSE.</p>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Cleanup</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Cleanup</strong> - Cleanup a file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">VOID ( *Cleanup)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    PWSTR FileName,
+    ULONG Flags);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the file or directory to cleanup.</p>
+</li>
+<li>
+<p><em>FileName</em> - The name of the file or directory to cleanup. Sent only when a Delete is requested.</p>
+</li>
+<li>
+<p><em>Flags</em> - These flags determine whether the file was modified and whether to delete the file.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>When CreateFile is used to open or create a file the kernel creates a kernel mode file
+object (type FILE_OBJECT) and a handle for it, which it returns to user-mode. The handle may
+be duplicated (using DuplicateHandle), but all duplicate handles always refer to the same
+file object. When all handles for a particular file object get closed (using CloseHandle)
+the system sends a Cleanup request to the file system.</p>
+</div>
+<div class="paragraph">
+<p>There will be a Cleanup operation for every Create or Open operation posted to the user mode
+file system. However the Cleanup operation is <strong>not</strong> the final close operation on a file.
+The file system must be ready to receive additional operations until close time. This is true
+even when the file is being deleted!</p>
+</div>
+<div class="paragraph">
+<p>The Flags parameter contains information about the cleanup operation:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>FspCleanupDelete -
+An important function of the Cleanup operation is to complete a delete operation. Deleting
+a file or directory in Windows is a three-stage process where the file is first opened, then
+tested to see if the delete can proceed and if the answer is positive the file is then
+deleted during Cleanup.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When this flag is set, this is the last outstanding cleanup for this particular file node.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>FspCleanupSetAllocationSize -
+The NTFS and FAT file systems reset a file&#8217;s allocation size when they receive the last
+outstanding cleanup for a particular file node. User mode file systems that implement
+allocation size and wish to duplicate the NTFS and FAT behavior can use this flag.</p>
+</li>
+<li>
+<p>FspCleanupSetArchiveBit -
+File systems that support the archive bit should set the file node&#8217;s archive bit when this
+flag is set.</p>
+</li>
+<li>
+<p>FspCleanupSetLastAccessTime, FspCleanupSetLastWriteTime, FspCleanupSetChangeTime - File
+systems should set the corresponding file time when each one of these flags is set. Note that
+updating the last access time is expensive and a file system may choose to not implement it.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>There is no way to report failure of this operation. This is a Windows limitation.</p>
+</div>
+<div class="paragraph">
+<p>As an optimization a file system may specify the FSP_FSCTL_VOLUME_PARAMS ::
+PostCleanupWhenModifiedOnly flag. In this case the FSD will only post Cleanup requests when
+the file was modified/deleted.</p>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Close</p>
+</li>
+<li>
+<p>CanDelete</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Close</strong> - Close a file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">VOID ( *Close)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the file or directory to be closed.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Control</strong> - Process control code.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *Control)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    UINT32 ControlCode,
+    PVOID InputBuffer,
+    ULONG InputBufferLength,
+    PVOID OutputBuffer,
+    ULONG OutputBufferLength,
+    PULONG PBytesTransferred);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the file or directory to be controled.</p>
+</li>
+<li>
+<p><em>ControlCode</em> - The control code for the operation. This code must have a DeviceType with bit
+0x8000 set and must have a TransferType of METHOD_BUFFERED.</p>
+</li>
+<li>
+<p><em>InputBuffer</em> - Pointer to a buffer that contains the input data.</p>
+</li>
+<li>
+<p><em>InputBufferLength</em> - Input data length.</p>
+</li>
+<li>
+<p><em>OutputBuffer</em> - Pointer to a buffer that will receive the output data.</p>
+</li>
+<li>
+<p><em>OutputBufferLength</em> - Output data length.</p>
+</li>
+<li>
+<p><em>PBytesTransferred</em> - [out]
+Pointer to a memory location that will receive the actual number of bytes transferred.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This function is called when a program uses the DeviceIoControl API.</p>
+</div>
+<div class="paragraph">
+<p><strong>Create</strong> - Create new file or directory.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *Create)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PWSTR FileName,
+    UINT32 CreateOptions,
+    UINT32 GrantedAccess,
+    UINT32 FileAttributes,
+    PSECURITY_DESCRIPTOR SecurityDescriptor,
+    UINT64 AllocationSize,
+    PVOID *PFileContext,
+    FSP_FSCTL_FILE_INFO *FileInfo);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileName</em> - The name of the file or directory to be created.</p>
+</li>
+<li>
+<p><em>CreateOptions</em> - Create options for this request. This parameter has the same meaning as the
+CreateOptions parameter of the NtCreateFile API. User mode file systems should typically
+only be concerned with the flag FILE_DIRECTORY_FILE, which is an instruction to create a
+directory rather than a file. Some file systems may also want to pay attention to the
+FILE_NO_INTERMEDIATE_BUFFERING and FILE_WRITE_THROUGH flags, although these are
+typically handled by the FSD component.</p>
+</li>
+<li>
+<p><em>GrantedAccess</em> - Determines the specific access rights that have been granted for this request. Upon
+receiving this call all access checks have been performed and the user mode file system
+need not perform any additional checks. However this parameter may be useful to a user
+mode file system; for example the WinFsp-FUSE layer uses this parameter to determine
+which flags to use in its POSIX open() call.</p>
+</li>
+<li>
+<p><em>FileAttributes</em> - File attributes to apply to the newly created file or directory.</p>
+</li>
+<li>
+<p><em>SecurityDescriptor</em> - Security descriptor to apply to the newly created file or directory. This security
+descriptor will always be in self-relative format. Its length can be retrieved using the
+Windows GetSecurityDescriptorLength API. Will be NULL for named streams.</p>
+</li>
+<li>
+<p><em>AllocationSize</em> - Allocation size for the newly created file.</p>
+</li>
+<li>
+<p><em>PFileContext</em> - [out]
+Pointer that will receive the file context on successful return from this call.</p>
+</li>
+<li>
+<p><em>FileInfo</em> - [out]
+Pointer to a structure that will receive the file information on successful return
+from this call. This information includes file attributes, file times, etc.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>DeleteReparsePoint</strong> - Delete reparse point.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *DeleteReparsePoint)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    PWSTR FileName,
+    PVOID Buffer,
+    SIZE_T Size);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the reparse point.</p>
+</li>
+<li>
+<p><em>FileName</em> - The file name of the reparse point.</p>
+</li>
+<li>
+<p><em>Buffer</em> - Pointer to a buffer that contains the data for this operation.</p>
+</li>
+<li>
+<p><em>Size</em> - Size of data to write.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Flush</strong> - Flush a file or volume.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *Flush)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    FSP_FSCTL_FILE_INFO *FileInfo);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the file to be flushed. When NULL the whole volume is being flushed.</p>
+</li>
+<li>
+<p><em>FileInfo</em> - [out]
+Pointer to a structure that will receive the file information on successful return
+from this call. This information includes file attributes, file times, etc. Used when
+flushing file (not volume).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>Note that the FSD will also flush all file/volume caches prior to invoking this operation.</p>
+</div>
+<div class="paragraph">
+<p><strong>GetDirInfoByName</strong> - Get directory information for a single file or directory within a parent directory.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *GetDirInfoByName)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    PWSTR FileName,
+    FSP_FSCTL_DIR_INFO *DirInfo);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the parent directory.</p>
+</li>
+<li>
+<p><em>FileName</em> - The name of the file or directory to get information for. This name is relative
+to the parent directory and is a single path component.</p>
+</li>
+<li>
+<p><em>DirInfo</em> - [out]
+Pointer to a structure that will receive the directory information on successful
+return from this call. This information includes the file name, but also file
+attributes, file times, etc.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>GetFileInfo</strong> - Get file or directory information.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *GetFileInfo)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    FSP_FSCTL_FILE_INFO *FileInfo);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the file or directory to get information for.</p>
+</li>
+<li>
+<p><em>FileInfo</em> - [out]
+Pointer to a structure that will receive the file information on successful return
+from this call. This information includes file attributes, file times, etc.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>GetReparsePoint</strong> - Get reparse point.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *GetReparsePoint)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    PWSTR FileName,
+    PVOID Buffer,
+    PSIZE_T PSize);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the reparse point.</p>
+</li>
+<li>
+<p><em>FileName</em> - The file name of the reparse point.</p>
+</li>
+<li>
+<p><em>Buffer</em> - Pointer to a buffer that will receive the results of this operation. If
+the function returns a symbolic link path, it should not be NULL terminated.</p>
+</li>
+<li>
+<p><em>PSize</em> - [in,out]
+Pointer to the buffer size. On input it contains the size of the buffer.
+On output it will contain the actual size of data copied.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>SetReparsePoint</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>GetSecurity</strong> - Get file or directory security descriptor.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *GetSecurity)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    PSECURITY_DESCRIPTOR SecurityDescriptor,
+    SIZE_T *PSecurityDescriptorSize);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the file or directory to get the security descriptor for.</p>
+</li>
+<li>
+<p><em>SecurityDescriptor</em> - Pointer to a buffer that will receive the file security descriptor on successful return
+from this call. May be NULL.</p>
+</li>
+<li>
+<p><em>PSecurityDescriptorSize</em> - [in,out]
+Pointer to the security descriptor buffer size. On input it contains the size of the
+security descriptor buffer. On output it will contain the actual size of the security
+descriptor copied into the security descriptor buffer. Cannot be NULL.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>GetSecurityByName</strong> - Get file or directory attributes and security descriptor given a file name.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *GetSecurityByName)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PWSTR FileName,
+    PUINT32 PFileAttributes/* or ReparsePointIndex */,
+    PSECURITY_DESCRIPTOR SecurityDescriptor,
+    SIZE_T *PSecurityDescriptorSize);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileName</em> - The name of the file or directory to get the attributes and security descriptor for.</p>
+</li>
+<li>
+<p><em>PFileAttributes</em> - Pointer to a memory location that will receive the file attributes on successful return
+from this call. May be NULL.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If this call returns STATUS_REPARSE, the file system MAY place here the index of the
+first reparse point within FileName. The file system MAY also leave this at its default
+value of 0.
+- <em>SecurityDescriptor</em> - Pointer to a buffer that will receive the file security descriptor on successful return
+from this call. May be NULL.
+- <em>PSecurityDescriptorSize</em> - [in,out]
+Pointer to the security descriptor buffer size. On input it contains the size of the
+security descriptor buffer. On output it will contain the actual size of the security
+descriptor copied into the security descriptor buffer. May be NULL.</p>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS, STATUS_REPARSE or error code.</p>
+</div>
+<div class="paragraph">
+<p>STATUS_REPARSE should be returned by file systems that support reparse points when
+they encounter a FileName that contains reparse points anywhere but the final path
+component.</p>
+</div>
+<div class="paragraph">
+<p><strong>GetStreamInfo</strong> - Get named streams information.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *GetStreamInfo)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    PVOID Buffer,
+    ULONG Length,
+    PULONG PBytesTransferred);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the file or directory to get stream information for.</p>
+</li>
+<li>
+<p><em>Buffer</em> - Pointer to a buffer that will receive the stream information.</p>
+</li>
+<li>
+<p><em>Length</em> - Length of buffer.</p>
+</li>
+<li>
+<p><em>PBytesTransferred</em> - [out]
+Pointer to a memory location that will receive the actual number of bytes stored.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>FspFileSystemAddStreamInfo</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>GetVolumeInfo</strong> - Get volume information.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *GetVolumeInfo)(
+    FSP_FILE_SYSTEM *FileSystem,
+    FSP_FSCTL_VOLUME_INFO *VolumeInfo);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>VolumeInfo</em> - [out]
+Pointer to a structure that will receive the volume information on successful return
+from this call.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Open</strong> - Open a file or directory.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *Open)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PWSTR FileName,
+    UINT32 CreateOptions,
+    UINT32 GrantedAccess,
+    PVOID *PFileContext,
+    FSP_FSCTL_FILE_INFO *FileInfo);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileName</em> - The name of the file or directory to be opened.</p>
+</li>
+<li>
+<p><em>CreateOptions</em> - Create options for this request. This parameter has the same meaning as the
+CreateOptions parameter of the NtCreateFile API. User mode file systems typically
+do not need to do anything special with respect to this parameter. Some file systems may
+also want to pay attention to the FILE_NO_INTERMEDIATE_BUFFERING and FILE_WRITE_THROUGH
+flags, although these are typically handled by the FSD component.</p>
+</li>
+<li>
+<p><em>GrantedAccess</em> - Determines the specific access rights that have been granted for this request. Upon
+receiving this call all access checks have been performed and the user mode file system
+need not perform any additional checks. However this parameter may be useful to a user
+mode file system; for example the WinFsp-FUSE layer uses this parameter to determine
+which flags to use in its POSIX open() call.</p>
+</li>
+<li>
+<p><em>PFileContext</em> - [out]
+Pointer that will receive the file context on successful return from this call.</p>
+</li>
+<li>
+<p><em>FileInfo</em> - [out]
+Pointer to a structure that will receive the file information on successful return
+from this call. This information includes file attributes, file times, etc.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Overwrite</strong> - Overwrite a file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *Overwrite)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    UINT32 FileAttributes,
+    BOOLEAN ReplaceFileAttributes,
+    UINT64 AllocationSize,
+    FSP_FSCTL_FILE_INFO *FileInfo);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the file to overwrite.</p>
+</li>
+<li>
+<p><em>FileAttributes</em> - File attributes to apply to the overwritten file.</p>
+</li>
+<li>
+<p><em>ReplaceFileAttributes</em> - When TRUE the existing file attributes should be replaced with the new ones.
+When FALSE the existing file attributes should be merged (or&#8217;ed) with the new ones.</p>
+</li>
+<li>
+<p><em>AllocationSize</em> - Allocation size for the overwritten file.</p>
+</li>
+<li>
+<p><em>FileInfo</em> - [out]
+Pointer to a structure that will receive the file information on successful return
+from this call. This information includes file attributes, file times, etc.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Read</strong> - Read a file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *Read)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    PVOID Buffer,
+    UINT64 Offset,
+    ULONG Length,
+    PULONG PBytesTransferred);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the file to be read.</p>
+</li>
+<li>
+<p><em>Buffer</em> - Pointer to a buffer that will receive the results of the read operation.</p>
+</li>
+<li>
+<p><em>Offset</em> - Offset within the file to read from.</p>
+</li>
+<li>
+<p><em>Length</em> - Length of data to read.</p>
+</li>
+<li>
+<p><em>PBytesTransferred</em> - [out]
+Pointer to a memory location that will receive the actual number of bytes read.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code. STATUS_PENDING is supported allowing for asynchronous
+operation.</p>
+</div>
+<div class="paragraph">
+<p><strong>ReadDirectory</strong> - Read a directory.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *ReadDirectory)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    PWSTR Pattern,
+    PWSTR Marker,
+    PVOID Buffer,
+    ULONG Length,
+    PULONG PBytesTransferred);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the directory to be read.</p>
+</li>
+<li>
+<p><em>Pattern</em> - The pattern to match against files in this directory. Can be NULL. The file system
+can choose to ignore this parameter as the FSD will always perform its own pattern
+matching on the returned results.</p>
+</li>
+<li>
+<p><em>Marker</em> - A file name that marks where in the directory to start reading. Files with names
+that are greater than (not equal to) this marker (in the directory order determined
+by the file system) should be returned. Can be NULL.</p>
+</li>
+<li>
+<p><em>Buffer</em> - Pointer to a buffer that will receive the results of the read operation.</p>
+</li>
+<li>
+<p><em>Length</em> - Length of data to read.</p>
+</li>
+<li>
+<p><em>PBytesTransferred</em> - [out]
+Pointer to a memory location that will receive the actual number of bytes read.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code. STATUS_PENDING is supported allowing for asynchronous
+operation.</p>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>FspFileSystemAddDirInfo</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Rename</strong> - Renames a file or directory.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *Rename)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    PWSTR FileName,
+    PWSTR NewFileName,
+    BOOLEAN ReplaceIfExists);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the file or directory to be renamed.</p>
+</li>
+<li>
+<p><em>FileName</em> - The current name of the file or directory to rename.</p>
+</li>
+<li>
+<p><em>NewFileName</em> - The new name for the file or directory.</p>
+</li>
+<li>
+<p><em>ReplaceIfExists</em> - Whether to replace a file that already exists at NewFileName.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>The kernel mode FSD provides certain guarantees prior to posting a rename operation:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A file cannot be renamed if a file with the same name exists and has open handles.</p>
+</li>
+<li>
+<p>A directory cannot be renamed if it or any of its subdirectories contains a file that
+has open handles.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>ResolveReparsePoints</strong> - Resolve reparse points.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *ResolveReparsePoints)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PWSTR FileName,
+    UINT32 ReparsePointIndex,
+    BOOLEAN ResolveLastPathComponent,
+    PIO_STATUS_BLOCK PIoStatus,
+    PVOID Buffer,
+    PSIZE_T PSize);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileName</em> - The name of the file or directory to have its reparse points resolved.</p>
+</li>
+<li>
+<p><em>ReparsePointIndex</em> - The index of the first reparse point within FileName.</p>
+</li>
+<li>
+<p><em>ResolveLastPathComponent</em> - If FALSE, the last path component of FileName should not be resolved, even
+if it is a reparse point that can be resolved. If TRUE, all path components
+should be resolved if possible.</p>
+</li>
+<li>
+<p><em>PIoStatus</em> - Pointer to storage that will receive the status to return to the FSD. When
+this function succeeds it must set PIoStatus&#8594;Status to STATUS_REPARSE and
+PIoStatus&#8594;Information to either IO_REPARSE or the reparse tag.</p>
+</li>
+<li>
+<p><em>Buffer</em> - Pointer to a buffer that will receive the resolved file name (IO_REPARSE) or
+reparse data (reparse tag). If the function returns a file name, it should
+not be NULL terminated.</p>
+</li>
+<li>
+<p><em>PSize</em> - [in,out]
+Pointer to the buffer size. On input it contains the size of the buffer.
+On output it will contain the actual size of data copied.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_REPARSE or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>Reparse points are a general mechanism for attaching special behavior to files.
+A file or directory can contain a reparse point. A reparse point is data that has
+special meaning to the file system, Windows or user applications. For example, NTFS
+and Windows use reparse points to implement symbolic links. As another example,
+a particular file system may use reparse points to emulate UNIX FIFO&#8217;s.</p>
+</div>
+<div class="paragraph">
+<p>This function is expected to resolve as many reparse points as possible. If a reparse
+point is encountered that is not understood by the file system further reparse point
+resolution should stop; the reparse point data should be returned to the FSD with status
+STATUS_REPARSE/reparse-tag. If a reparse point (symbolic link) is encountered that is
+understood by the file system but points outside it, the reparse point should be
+resolved, but further reparse point resolution should stop; the resolved file name
+should be returned to the FSD with status STATUS_REPARSE/IO_REPARSE.</p>
+</div>
+<div class="paragraph">
+<p><strong>SetBasicInfo</strong> - Set file or directory basic information.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *SetBasicInfo)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    UINT32 FileAttributes,
+    UINT64 CreationTime,
+    UINT64 LastAccessTime,
+    UINT64 LastWriteTime,
+    UINT64 ChangeTime,
+    FSP_FSCTL_FILE_INFO *FileInfo);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the file or directory to set information for.</p>
+</li>
+<li>
+<p><em>FileAttributes</em> - File attributes to apply to the file or directory. If the value INVALID_FILE_ATTRIBUTES
+is sent, the file attributes should not be changed.</p>
+</li>
+<li>
+<p><em>CreationTime</em> - Creation time to apply to the file or directory. If the value 0 is sent, the creation
+time should not be changed.</p>
+</li>
+<li>
+<p><em>LastAccessTime</em> - Last access time to apply to the file or directory. If the value 0 is sent, the last
+access time should not be changed.</p>
+</li>
+<li>
+<p><em>LastWriteTime</em> - Last write time to apply to the file or directory. If the value 0 is sent, the last
+write time should not be changed.</p>
+</li>
+<li>
+<p><em>ChangeTime</em> - Change time to apply to the file or directory. If the value 0 is sent, the change time
+should not be changed.</p>
+</li>
+<li>
+<p><em>FileInfo</em> - [out]
+Pointer to a structure that will receive the file information on successful return
+from this call. This information includes file attributes, file times, etc.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>SetFileSize</strong> - Set file/allocation size.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *SetFileSize)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    UINT64 NewSize,
+    BOOLEAN SetAllocationSize,
+    FSP_FSCTL_FILE_INFO *FileInfo);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the file to set the file/allocation size for.</p>
+</li>
+<li>
+<p><em>NewSize</em> - New file/allocation size to apply to the file.</p>
+</li>
+<li>
+<p><em>SetAllocationSize</em> - If TRUE, then the allocation size is being set. if FALSE, then the file size is being set.</p>
+</li>
+<li>
+<p><em>FileInfo</em> - [out]
+Pointer to a structure that will receive the file information on successful return
+from this call. This information includes file attributes, file times, etc.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This function is used to change a file&#8217;s sizes. Windows file systems maintain two kinds
+of sizes: the file size is where the End Of File (EOF) is, and the allocation size is the
+actual size that a file takes up on the "disk".</p>
+</div>
+<div class="paragraph">
+<p>The rules regarding file/allocation size are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Allocation size must always be aligned to the allocation unit boundary. The allocation
+unit is the product <code>(UINT64)SectorSize * (UINT64)SectorsPerAllocationUnit</code> from
+the FSP_FSCTL_VOLUME_PARAMS structure. The FSD will always send properly aligned allocation
+sizes when setting the allocation size.</p>
+</li>
+<li>
+<p>Allocation size is always greater or equal to the file size.</p>
+</li>
+<li>
+<p>A file size of more than the current allocation size will also extend the allocation
+size to the next allocation unit boundary.</p>
+</li>
+<li>
+<p>An allocation size of less than the current file size should also truncate the current
+file size.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>SetReparsePoint</strong> - Set reparse point.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *SetReparsePoint)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    PWSTR FileName,
+    PVOID Buffer,
+    SIZE_T Size);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the reparse point.</p>
+</li>
+<li>
+<p><em>FileName</em> - The file name of the reparse point.</p>
+</li>
+<li>
+<p><em>Buffer</em> - Pointer to a buffer that contains the data for this operation. If this buffer
+contains a symbolic link path, it should not be assumed to be NULL terminated.</p>
+</li>
+<li>
+<p><em>Size</em> - Size of data to write.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>GetReparsePoint</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>SetSecurity</strong> - Set file or directory security descriptor.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *SetSecurity)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    SECURITY_INFORMATION SecurityInformation,
+    PSECURITY_DESCRIPTOR ModificationDescriptor);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the file or directory to set the security descriptor for.</p>
+</li>
+<li>
+<p><em>SecurityInformation</em> - Describes what parts of the file or directory security descriptor should
+be modified.</p>
+</li>
+<li>
+<p><em>ModificationDescriptor</em> - Describes the modifications to apply to the file or directory security descriptor.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>FspSetSecurityDescriptor</p>
+</li>
+<li>
+<p>FspDeleteSecurityDescriptor</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>SetVolumeLabel</strong> - Set volume label.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *SetVolumeLabel)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PWSTR VolumeLabel,
+    FSP_FSCTL_VOLUME_INFO *VolumeInfo);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>VolumeLabel</em> - The new label for the volume.</p>
+</li>
+<li>
+<p><em>VolumeInfo</em> - [out]
+Pointer to a structure that will receive the volume information on successful return
+from this call.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Write</strong> - Write a file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *Write)(
+    FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    PVOID Buffer,
+    UINT64 Offset,
+    ULONG Length,
+    BOOLEAN WriteToEndOfFile,
+    BOOLEAN ConstrainedIo,
+    PULONG PBytesTransferred,
+    FSP_FSCTL_FILE_INFO *FileInfo);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system on which this request is posted.</p>
+</li>
+<li>
+<p><em>FileContext</em> - The file context of the file to be written.</p>
+</li>
+<li>
+<p><em>Buffer</em> - Pointer to a buffer that contains the data to write.</p>
+</li>
+<li>
+<p><em>Offset</em> - Offset within the file to write to.</p>
+</li>
+<li>
+<p><em>Length</em> - Length of data to write.</p>
+</li>
+<li>
+<p><em>WriteToEndOfFile</em> - When TRUE the file system must write to the current end of file. In this case the Offset
+parameter will contain the value -1.</p>
+</li>
+<li>
+<p><em>ConstrainedIo</em> - When TRUE the file system must not extend the file (i.e. change the file size).</p>
+</li>
+<li>
+<p><em>PBytesTransferred</em> - [out]
+Pointer to a memory location that will receive the actual number of bytes written.</p>
+</li>
+<li>
+<p><em>FileInfo</em> - [out]
+Pointer to a structure that will receive the file information on successful return
+from this call. This information includes file attributes, file times, etc.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code. STATUS_PENDING is supported allowing for asynchronous
+operation.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_functions">Functions</h3>
+<div class="paragraph">
+<p><strong>FspDeleteSecurityDescriptor</strong> - Delete security descriptor.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspDeleteSecurityDescriptor(
+    PSECURITY_DESCRIPTOR SecurityDescriptor,
+    NTSTATUS (*CreateFunc)());</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>SecurityDescriptor</em> - The security descriptor to be deleted.</p>
+</li>
+<li>
+<p><em>CreateFunc</em> - Function used to create the security descriptor. This parameter should be
+set to FspSetSecurityDescriptor for the public API.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This is a helper for implementing the SetSecurity operation.</p>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>SetSecurity</p>
+</li>
+<li>
+<p>FspSetSecurityDescriptor</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>FspFileSystemAddDirInfo</strong> - Add directory information to a buffer.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API BOOLEAN FspFileSystemAddDirInfo(
+    FSP_FSCTL_DIR_INFO *DirInfo,
+    PVOID Buffer,
+    ULONG Length,
+    PULONG PBytesTransferred);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>DirInfo</em> - The directory information to add. A value of NULL acts as an EOF marker for a ReadDirectory
+operation.</p>
+</li>
+<li>
+<p><em>Buffer</em> - Pointer to a buffer that will receive the results of the read operation. This should contain
+the same value passed to the ReadDirectory Buffer parameter.</p>
+</li>
+<li>
+<p><em>Length</em> - Length of data to read. This should contain the same value passed to the ReadDirectory
+Length parameter.</p>
+</li>
+<li>
+<p><em>PBytesTransferred</em> - [out]
+Pointer to a memory location that will receive the actual number of bytes read. This should
+contain the same value passed to the ReadDirectory PBytesTransferred parameter.
+FspFileSystemAddDirInfo uses the value pointed by this parameter to track how much of the
+buffer has been used so far.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>TRUE if the directory information was added, FALSE if there was not enough space to add it.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This is a helper for implementing the ReadDirectory operation.</p>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ReadDirectory</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>FspFileSystemAddStreamInfo</strong> - Add named stream information to a buffer.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API BOOLEAN FspFileSystemAddStreamInfo(
+    FSP_FSCTL_STREAM_INFO *StreamInfo,
+    PVOID Buffer,
+    ULONG Length,
+    PULONG PBytesTransferred);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>StreamInfo</em> - The stream information to add. A value of NULL acts as an EOF marker for a GetStreamInfo
+operation.</p>
+</li>
+<li>
+<p><em>Buffer</em> - Pointer to a buffer that will receive the stream information. This should contain
+the same value passed to the GetStreamInfo Buffer parameter.</p>
+</li>
+<li>
+<p><em>Length</em> - Length of buffer. This should contain the same value passed to the GetStreamInfo
+Length parameter.</p>
+</li>
+<li>
+<p><em>PBytesTransferred</em> - [out]
+Pointer to a memory location that will receive the actual number of bytes stored. This should
+contain the same value passed to the GetStreamInfo PBytesTransferred parameter.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>TRUE if the stream information was added, FALSE if there was not enough space to add it.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This is a helper for implementing the GetStreamInfo operation.</p>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>GetStreamInfo</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>FspFileSystemCanReplaceReparsePoint</strong> - Test whether reparse data can be replaced.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspFileSystemCanReplaceReparsePoint(
+    PVOID CurrentReparseData,
+    SIZE_T CurrentReparseDataSize,
+    PVOID ReplaceReparseData,
+    SIZE_T ReplaceReparseDataSize);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>CurrentReparseData</em> - Pointer to the current reparse data.</p>
+</li>
+<li>
+<p><em>CurrentReparseDataSize</em> - Pointer to the current reparse data size.</p>
+</li>
+<li>
+<p><em>ReplaceReparseData</em> - Pointer to the replacement reparse data.</p>
+</li>
+<li>
+<p><em>ReplaceReparseDataSize</em> - Pointer to the replacement reparse data size.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This is a helper for implementing the SetReparsePoint/DeleteReparsePoint operation
+in file systems that support reparse points.</p>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>SetReparsePoint</p>
+</li>
+<li>
+<p>DeleteReparsePoint</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>FspFileSystemCreate</strong> - Create a file system object.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspFileSystemCreate(
+    PWSTR DevicePath,
+    const FSP_FSCTL_VOLUME_PARAMS *VolumeParams,
+    const FSP_FILE_SYSTEM_INTERFACE *Interface,
+    FSP_FILE_SYSTEM **PFileSystem);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>DevicePath</em> - The name of the control device for this file system. This must be either
+FSP_FSCTL_DISK_DEVICE_NAME or FSP_FSCTL_NET_DEVICE_NAME.</p>
+</li>
+<li>
+<p><em>VolumeParams</em> - Volume parameters for the newly created file system.</p>
+</li>
+<li>
+<p><em>Interface</em> - A pointer to the actual operations that actually implement this user mode file system.</p>
+</li>
+<li>
+<p><em>PFileSystem</em> - [out]
+Pointer that will receive the file system object created on successful return from this
+call.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspFileSystemDelete</strong> - Delete a file system object.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspFileSystemDelete(
+    FSP_FILE_SYSTEM *FileSystem);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system object.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>FspFileSystemFindReparsePoint</strong> - Find reparse point in file name.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API BOOLEAN FspFileSystemFindReparsePoint(
+    FSP_FILE_SYSTEM *FileSystem,
+    NTSTATUS (*GetReparsePointByName)(
+        FSP_FILE_SYSTEM *FileSystem,
+        PVOID Context,
+        PWSTR FileName,
+        BOOLEAN IsDirectory,
+        PVOID Buffer,
+        PSIZE_T PSize),
+    PVOID Context,
+    PWSTR FileName,
+    PUINT32 PReparsePointIndex);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system object.</p>
+</li>
+<li>
+<p><em>GetReparsePointByName</em> - Pointer to function that can retrieve reparse point information by name. The
+FspFileSystemFindReparsePoint will call this function with the Buffer and PSize
+arguments set to NULL. The function should return STATUS_SUCCESS if the passed
+FileName is a reparse point or STATUS_NOT_A_REPARSE_POINT (or other error code)
+otherwise.</p>
+</li>
+<li>
+<p><em>Context</em> - User context to supply to GetReparsePointByName.</p>
+</li>
+<li>
+<p><em>FileName</em> - The name of the file or directory.</p>
+</li>
+<li>
+<p><em>PReparsePointIndex</em> - Pointer to a memory location that will receive the index of the first reparse point
+within FileName. A value is only placed in this memory location if the function returns
+TRUE. May be NULL.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>TRUE if a reparse point was found, FALSE otherwise.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>Given a file name this function returns an index to the first path component that is a reparse
+point. The function will call the supplied GetReparsePointByName function for every path
+component until it finds a reparse point or the whole path is processed.</p>
+</div>
+<div class="paragraph">
+<p>This is a helper for implementing the GetSecurityByName operation in file systems
+that support reparse points.</p>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>GetSecurityByName</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>FspFileSystemGetOpenFileInfo</strong> - Get open information buffer.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static inline FSP_FSCTL_OPEN_FILE_INFO *FspFileSystemGetOpenFileInfo(
+    FSP_FSCTL_FILE_INFO *FileInfo)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileInfo</em> - The FileInfo parameter as passed to Create or Open operation.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>A pointer to the open information buffer for this Create or Open operation.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This is a helper for implementing the Create and Open operations. It cannot be used with
+any other operations.</p>
+</div>
+<div class="paragraph">
+<p>The FileInfo parameter to Create and Open is typed as pointer to FSP_FSCTL_FILE_INFO. The
+true type of this parameter is pointer to FSP_FSCTL_OPEN_FILE_INFO. This simple function
+converts from one type to the other.</p>
+</div>
+<div class="paragraph">
+<p>The FSP_FSCTL_OPEN_FILE_INFO type contains a FSP_FSCTL_FILE_INFO as well as the fields
+NormalizedName and NormalizedNameSize. These fields can be used for file name normalization.
+File name normalization is used to ensure that the FSD and the OS know the correct case
+of a newly opened file name.</p>
+</div>
+<div class="paragraph">
+<p>For case-sensitive file systems this functionality should be ignored. The FSD will always
+assume that the normalized file name is the same as the file name used to open the file.</p>
+</div>
+<div class="paragraph">
+<p>For case-insensitive file systems this functionality may be ignored. In this case the FSD
+will assume that the normalized file name is the upper case version of the file name used
+to open the file. The file system will work correctly and the only way an application will
+be able to tell that the file system does not preserve case in normalized file names is by
+issuing a GetFinalPathNameByHandle API call (or NtQueryInformationFile with
+FileNameInformation/FileNormalizedNameInformation).</p>
+</div>
+<div class="paragraph">
+<p>For case-insensitive file systems this functionality may also be used. In this case the
+user mode file system may use the NormalizedName and NormalizedNameSize parameters to
+report to the FSD the normalized file name. It should be noted that the normalized file
+name may only differ in case from the file name used to open the file. The NormalizedName
+field will point to a buffer that can receive the normalized file name. The
+NormalizedNameSize field will contain the size of the normalized file name buffer. On
+completion of the Create or Open operation it should contain the actual size of the
+normalized file name copied into the normalized file name buffer. The normalized file name
+should not contain a terminating zero.</p>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Create</p>
+</li>
+<li>
+<p>Open</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>FspFileSystemGetOperationContext</strong> - Get the current operation context.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API FSP_FILE_SYSTEM_OPERATION_CONTEXT *FspFileSystemGetOperationContext(
+    VOID);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>The current operation context.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This function may be used only when servicing one of the FSP_FILE_SYSTEM_INTERFACE operations.
+The current operation context is stored in thread local storage. It allows access to the
+Request and Response associated with this operation.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspFileSystemOperationProcessId</strong> - Gets the originating process ID.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static inline UINT32 FspFileSystemOperationProcessId(
+    VOID)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>Valid only during Create, Open and Rename requests when the target exists.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspFileSystemPreflight</strong> - Check whether creating a file system object is possible.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspFileSystemPreflight(
+    PWSTR DevicePath,
+    PWSTR MountPoint);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>DevicePath</em> - The name of the control device for this file system. This must be either
+FSP_FSCTL_DISK_DEVICE_NAME or FSP_FSCTL_NET_DEVICE_NAME.</p>
+</li>
+<li>
+<p><em>MountPoint</em> - The mount point for the new file system. A value of NULL means that the file system should
+use the next available drive letter counting downwards from Z: as its mount point.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspFileSystemRemoveMountPoint</strong> - Remove the mount point for a file system.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspFileSystemRemoveMountPoint(
+    FSP_FILE_SYSTEM *FileSystem);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system object.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>FspFileSystemResolveReparsePoints</strong> - Resolve reparse points.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspFileSystemResolveReparsePoints(
+    FSP_FILE_SYSTEM *FileSystem,
+    NTSTATUS (*GetReparsePointByName)(
+        FSP_FILE_SYSTEM *FileSystem,
+        PVOID Context,
+        PWSTR FileName,
+        BOOLEAN IsDirectory,
+        PVOID Buffer,
+        PSIZE_T PSize),
+    PVOID Context,
+    PWSTR FileName,
+    UINT32 ReparsePointIndex,
+    BOOLEAN ResolveLastPathComponent,
+    PIO_STATUS_BLOCK PIoStatus,
+    PVOID Buffer,
+    PSIZE_T PSize);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system object.</p>
+</li>
+<li>
+<p><em>GetReparsePointByName</em> - Pointer to function that can retrieve reparse point information by name. The function
+should return STATUS_SUCCESS if the passed FileName is a reparse point or
+STATUS_NOT_A_REPARSE_POINT (or other error code) otherwise.</p>
+</li>
+<li>
+<p><em>Context</em> - User context to supply to GetReparsePointByName.</p>
+</li>
+<li>
+<p><em>FileName</em> - The name of the file or directory to have its reparse points resolved.</p>
+</li>
+<li>
+<p><em>ReparsePointIndex</em> - The index of the first reparse point within FileName.</p>
+</li>
+<li>
+<p><em>ResolveLastPathComponent</em> - If FALSE, the last path component of FileName should not be resolved, even
+if it is a reparse point that can be resolved. If TRUE, all path components
+should be resolved if possible.</p>
+</li>
+<li>
+<p><em>PIoStatus</em> - Pointer to storage that will receive the status to return to the FSD. When
+this function succeeds it must set PIoStatus&#8594;Status to STATUS_REPARSE and
+PIoStatus&#8594;Information to either IO_REPARSE or the reparse tag.</p>
+</li>
+<li>
+<p><em>Buffer</em> - Pointer to a buffer that will receive the resolved file name (IO_REPARSE) or
+reparse data (reparse tag). If the function returns a file name, it should
+not be NULL terminated.</p>
+</li>
+<li>
+<p><em>PSize</em> - [in,out]
+Pointer to the buffer size. On input it contains the size of the buffer.
+On output it will contain the actual size of data copied.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_REPARSE or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>Given a file name (and an index where to start resolving) this function will attempt to
+resolve as many reparse points as possible. The function will call the supplied
+GetReparsePointByName function for every path component until it resolves the reparse points
+or the whole path is processed.</p>
+</div>
+<div class="paragraph">
+<p>This is a helper for implementing the ResolveReparsePoints operation in file systems
+that support reparse points.</p>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ResolveReparsePoints</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>FspFileSystemSendResponse</strong> - Send a response to the FSD.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspFileSystemSendResponse(
+    FSP_FILE_SYSTEM *FileSystem,
+    FSP_FSCTL_TRANSACT_RSP *Response);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system object.</p>
+</li>
+<li>
+<p><em>Response</em> - The response buffer.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This call is not required when the user mode file system performs synchronous processing of
+requests. It is possible however for the following FSP_FILE_SYSTEM_INTERFACE operations to be
+processed asynchronously:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Read</p>
+</li>
+<li>
+<p>Write</p>
+</li>
+<li>
+<p>ReadDirectory</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These operations are allowed to return STATUS_PENDING to postpone sending a response to the FSD.
+At a later time the file system can use FspFileSystemSendResponse to send the response.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspFileSystemSetMountPoint</strong> - Set the mount point for a file system.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspFileSystemSetMountPoint(
+    FSP_FILE_SYSTEM *FileSystem,
+    PWSTR MountPoint);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system object.</p>
+</li>
+<li>
+<p><em>MountPoint</em> - The mount point for the new file system. A value of NULL means that the file system should
+use the next available drive letter counting downwards from Z: as its mount point.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This function supports drive letters (X:) or directories as mount points:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Drive letters: Refer to the documentation of the DefineDosDevice Windows API
+to better understand how they are created.</p>
+</li>
+<li>
+<p>Directories: They can be used as mount points for disk based file systems. They cannot
+be used for network file systems. This is a limitation that Windows imposes on junctions.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>FspFileSystemSetOperationGuardStrategy</strong> - Set file system locking strategy.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static inline VOID FspFileSystemSetOperationGuardStrategy(
+    FSP_FILE_SYSTEM *FileSystem,
+    FSP_FILE_SYSTEM_OPERATION_GUARD_STRATEGY GuardStrategy)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system object.</p>
+</li>
+<li>
+<p><em>GuardStrategy</em> - The locking (guard) strategy.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>FSP_FILE_SYSTEM_OPERATION_GUARD_STRATEGY</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>FspFileSystemStartDispatcher</strong> - Start the file system dispatcher.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspFileSystemStartDispatcher(
+    FSP_FILE_SYSTEM *FileSystem,
+    ULONG ThreadCount);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system object.</p>
+</li>
+<li>
+<p><em>ThreadCount</em> - The number of threads for the file system dispatcher. A value of 0 will create a default
+number of threads and should be chosen in most cases.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>The file system dispatcher is used to dispatch operations posted by the FSD to the user mode
+file system. Once this call starts executing the user mode file system will start receiving
+file system requests from the kernel.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspFileSystemStopDispatcher</strong> - Stop the file system dispatcher.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspFileSystemStopDispatcher(
+    FSP_FILE_SYSTEM *FileSystem);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>FileSystem</em> - The file system object.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>FspSetSecurityDescriptor</strong> - Modify security descriptor.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspSetSecurityDescriptor(
+    PSECURITY_DESCRIPTOR InputDescriptor,
+    SECURITY_INFORMATION SecurityInformation,
+    PSECURITY_DESCRIPTOR ModificationDescriptor,
+    PSECURITY_DESCRIPTOR *PSecurityDescriptor);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>InputDescriptor</em> - The input security descriptor to be modified.</p>
+</li>
+<li>
+<p><em>SecurityInformation</em> - Describes what parts of the InputDescriptor should be modified. This should contain
+the same value passed to the SetSecurity SecurityInformation parameter.</p>
+</li>
+<li>
+<p><em>ModificationDescriptor</em> - Describes the modifications to apply to the InputDescriptor. This should contain
+the same value passed to the SetSecurity ModificationDescriptor parameter.</p>
+</li>
+<li>
+<p><em>PSecurityDescriptor</em> - [out]
+Pointer to a memory location that will receive the resulting security descriptor.
+This security descriptor can be later freed using FspDeleteSecurityDescriptor.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This is a helper for implementing the SetSecurity operation.</p>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>SetSecurity</p>
+</li>
+<li>
+<p>FspDeleteSecurityDescriptor</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_typedefs">Typedefs</h3>
+<div class="paragraph">
+<p><strong>FSP_FILE_SYSTEM_OPERATION_GUARD_STRATEGY</strong> - User mode file system locking strategy.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">typedef enum {
+    FSP_FILE_SYSTEM_OPERATION_GUARD_STRATEGY_FINE = 0,
+    FSP_FILE_SYSTEM_OPERATION_GUARD_STRATEGY_COARSE,
+} FSP_FILE_SYSTEM_OPERATION_GUARD_STRATEGY;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>Two concurrency models are provided:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>A fine-grained concurrency model where file system NAMESPACE accesses
+are guarded using an exclusive-shared (read-write) lock. File I/O is not
+guarded and concurrent reads/writes/etc. are possible. [Note that the FSD
+will still apply an exclusive-shared lock PER INDIVIDUAL FILE, but it will
+not limit I/O operations for different files.]
+The fine-grained concurrency model applies the exclusive-shared lock as
+follows:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>EXCL: SetVolumeLabel, Flush(Volume),
+Create, Cleanup(Delete), SetInformation(Rename)</p>
+</li>
+<li>
+<p>SHRD: GetVolumeInfo, Open, SetInformation(Disposition), ReadDirectory</p>
+</li>
+<li>
+<p>NONE: all other operations</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>A coarse-grained concurrency model where all file system accesses are
+guarded by a mutually exclusive lock.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>FspFileSystemSetOperationGuardStrategy</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_service_framework">Service Framework</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>User mode file systems typically are run as Windows services. WinFsp provides an API to make
+the creation of Windows services easier. This API is provided for convenience and is not
+necessary to expose a user mode file system to Windows.</p>
+</div>
+<div class="sect2">
+<h3 id="_functions_2">Functions</h3>
+<div class="paragraph">
+<p><strong>FspServiceAcceptControl</strong> - Configure the control codes that a service accepts.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspServiceAcceptControl(
+    FSP_SERVICE *Service,
+    ULONG Control);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Service</em> - The service object.</p>
+</li>
+<li>
+<p><em>Control</em> - The control codes to accept. Note that the SERVICE_ACCEPT_PAUSE_CONTINUE code is silently
+ignored.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This API should be used prior to Start operations.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspServiceAllowConsoleMode</strong> - Allow a service to run in console mode.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspServiceAllowConsoleMode(
+    FSP_SERVICE *Service);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Service</em> - The service object.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>A service that is run in console mode runs with a console attached and outside the control of
+the Service Control Manager. This is useful for debugging and testing a service during
+development.</p>
+</div>
+<div class="paragraph">
+<p>User mode file systems that wish to use the WinFsp Launcher functionality must also use this
+call. The WinFsp Launcher is a Windows service that can be configured to launch and manage
+multiple instances of a user mode file system.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspServiceContextCheck</strong> - Check if the supplied token is from the service context.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspServiceContextCheck(
+    HANDLE Token,
+    PBOOLEAN PIsLocalSystem);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Token</em> - Token to check. Pass NULL to check the current process token.</p>
+</li>
+<li>
+<p><em>PIsLocalSystem</em> - Pointer to a boolean that will receive a TRUE value if the token belongs to LocalSystem
+and FALSE otherwise. May be NULL.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS if the token is from the service context. STATUS_ACCESS_DENIED if it is not.
+Other error codes are possible.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspServiceCreate</strong> - Create a service object.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspServiceCreate(
+    PWSTR ServiceName,
+    FSP_SERVICE_START *OnStart,
+    FSP_SERVICE_STOP *OnStop,
+    FSP_SERVICE_CONTROL *OnControl,
+    FSP_SERVICE **PService);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>ServiceName</em> - The name of the service.</p>
+</li>
+<li>
+<p><em>OnStart</em> - Function to call when the service starts.</p>
+</li>
+<li>
+<p><em>OnStop</em> - Function to call when the service stops.</p>
+</li>
+<li>
+<p><em>OnControl</em> - Function to call when the service receives a service control code.</p>
+</li>
+<li>
+<p><em>PService</em> - [out]
+Pointer that will receive the service object created on successful return from this
+call.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspServiceDelete</strong> - Delete a service object.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspServiceDelete(
+    FSP_SERVICE *Service);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Service</em> - The service object.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>FspServiceGetExitCode</strong> - Get the service process exit code.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API ULONG FspServiceGetExitCode(
+    FSP_SERVICE *Service);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Service</em> - The service object.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>Service process exit code.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspServiceIsInteractive</strong> - Determine if the current process is running in user interactive mode.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API BOOLEAN FspServiceIsInteractive(
+    VOID);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>TRUE if the process is running in running user interactive mode.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspServiceLog</strong> - Log a service message.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspServiceLog(
+    ULONG Type,
+    PWSTR Format,
+    ...);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Type</em> - One of EVENTLOG_INFORMATION_TYPE, EVENTLOG_WARNING_TYPE, EVENTLOG_ERROR_TYPE.</p>
+</li>
+<li>
+<p><em>Format</em> - Format specification. This function uses the Windows wsprintf API for formatting. Refer to
+that API&#8217;s documentation for details on the format specification.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This function can be used to log an arbitrary message to the Windows Event Log or to the current
+console if running in user interactive mode.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspServiceLoop</strong> - Run a service main loop.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspServiceLoop(
+    FSP_SERVICE *Service);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Service</em> - The service object.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This function starts and runs a service. It executes the Windows StartServiceCtrlDispatcher API
+to connect the service process to the Service Control Manager. If the Service Control Manager is
+not available (and console mode is allowed) it will enter console mode.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspServiceRequestTime</strong> - Request additional time from the Service Control Manager.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspServiceRequestTime(
+    FSP_SERVICE *Service,
+    ULONG Time);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Service</em> - The service object.</p>
+</li>
+<li>
+<p><em>Time</em> - Additional time (in milliseconds).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This API should be used during Start and Stop operations only.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspServiceRunEx</strong> - Run a service.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API ULONG FspServiceRunEx(
+    PWSTR ServiceName,
+    FSP_SERVICE_START *OnStart,
+    FSP_SERVICE_STOP *OnStop,
+    FSP_SERVICE_CONTROL *OnControl,
+    PVOID UserContext);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>ServiceName</em> - The name of the service.</p>
+</li>
+<li>
+<p><em>OnStart</em> - Function to call when the service starts.</p>
+</li>
+<li>
+<p><em>OnStop</em> - Function to call when the service stops.</p>
+</li>
+<li>
+<p><em>OnControl</em> - Function to call when the service receives a service control code.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>Service process exit code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This function wraps calls to FspServiceCreate, FspServiceLoop and FspServiceDelete to create,
+run and delete a service. It is intended to be used from a service&#8217;s main/wmain function.</p>
+</div>
+<div class="paragraph">
+<p>This function runs a service with console mode allowed.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspServiceSetExitCode</strong> - Set the service process exit code.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspServiceSetExitCode(
+    FSP_SERVICE *Service,
+    ULONG ExitCode);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Service</em> - The service object.</p>
+</li>
+<li>
+<p><em>ExitCode</em> - Service process exit code.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>FspServiceStop</strong> - Stops a running service.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspServiceStop(
+    FSP_SERVICE *Service);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Service</em> - The service object.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>Stopping a service usually happens when the Service Control Manager instructs the service to
+stop. In some situations (e.g. fatal errors) the service may wish to stop itself. It can do so
+in a clean manner by calling this function.</p>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+      </div>
+
+    </div>
+  </body>
+</html>

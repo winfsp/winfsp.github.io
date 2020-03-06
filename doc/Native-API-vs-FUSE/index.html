@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Native API vs FUSE &middot; WinFsp</title>
+
+    <link rel="stylesheet" href="/css/primer.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+  </head>
+  <body class="bg-white text-gray-dark">
+    <div id="container" class="container-lg clearfix">
+
+      <div id="side" class="col-3 float-left">
+        <div class="p-3" style="min-height:100vh">
+          <img src="/logo.png" class="mb-3 width-fit auto-invert" />
+          <h1 class="f1-light text-uppercase text-center mb-3">WinFsp</h1>
+          <nav class="SideNav border"><a class="SideNav-item" href="/" >Main</a>
+              <a class="SideNav-item" href="/rel" >Download</a>
+              <a class="SideNav-item" href="/doc" aria-current="page">Documentation</a>
+              <nav class="SideNav py-2 pl-3">
+                  <a class="SideNav-subItem" href="/doc/Frequently-Asked-Questions/" >Frequently Asked Questions</a><a class="SideNav-subItem" href="/doc/Known-File-Systems/" >Known File Systems</a><a class="SideNav-subItem" href="/doc/Native-API-vs-FUSE/" aria-current="page">Native API vs FUSE</a><a class="SideNav-subItem" href="/doc/NTFS-Compatibility/" >NTFS Compatibility</a><a class="SideNav-subItem" href="/doc/Queued-Events/" >Queued Events</a><a class="SideNav-subItem" href="/doc/SSHFS-Port-Case-Study/" >SSHFS Port Case Study</a><a class="SideNav-subItem" href="/doc/WinFsp-API-launch.h/" >WinFsp API launch.h</a><a class="SideNav-subItem" href="/doc/WinFsp-API-winfsp.h/" >WinFsp API winfsp.h</a><a class="SideNav-subItem" href="/doc/WinFsp-as-an-IPC-Mechanism/" >WinFsp as an IPC Mechanism</a><a class="SideNav-subItem" href="/doc/WinFsp-Design/" >WinFsp Design</a><a class="SideNav-subItem" href="/doc/WinFsp-Kernel-Mode-File-Systems/" >WinFsp Kernel Mode File Systems</a><a class="SideNav-subItem" href="/doc/WinFsp-Performance-Testing/" >WinFsp Performance Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Service-Architecture/" >WinFsp Service Architecture</a><a class="SideNav-subItem" href="/doc/WinFsp-Testing/" >WinFsp Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Tutorial/" >WinFsp Tutorial</a>
+                </nav><a class="SideNav-item" href="/src" >Source</a>
+              <a class="SideNav-item" href="/blog" >Blog</a>
+              
+          </nav>
+        </div>
+      </div>
+
+      <div id="main" class="col-9 float-left">
+        <div class="p-3 markdown-body" style="min-height:100vh">
+<h1>Native API vs FUSE</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>This document compares the "native" WinFsp API to the FUSE API and provides a rationale for the existence of both within WinFsp.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_overview">Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>WinFsp provides two different but conceptually similar API&#8217;s for the same purpose of implementing a user mode file system:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The WinFsp API, which is documented in the include file <code>inc/winfsp/winfsp.h</code> (and online at <a href="http://www.secfs.net/winfsp/apiref/" class="bare">http://www.secfs.net/winfsp/apiref/</a>). This API consists of the <code>FSP_FILE_SYSTEM_INTERFACE</code> "class" and the <code>FspFileSystem*</code> functions.</p>
+</li>
+<li>
+<p>The FUSE (high-level) API, which is the well understood API from the FUSE project originally by Miklos Szeredi.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Given the similarities between the two API&#8217;s some questions naturally arise:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>What are the differences between the two API&#8217;s?</p>
+</li>
+<li>
+<p>Why are both needed?</p>
+</li>
+<li>
+<p>What is the target audience for each API?</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_comparison">Comparison</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The primary difference between the two API&#8217;s is that the WinFsp API is being designed to use all features available to a Windows file system, whereas the FUSE API is being designed (by the FUSE project) to better fit a POSIX file system. For example, a Windows file system can do the following, that cannot be (easily) made available to FUSE:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Create and manage alternate data streams.</p>
+</li>
+<li>
+<p>Manage arbitrary security descriptors (SID&#8217;s and ACL&#8217;s vs POSIX permissions).</p>
+</li>
+<li>
+<p>Create and manage special files beyond what is supported through FUSE <code>mknod</code> (using reparse points).</p>
+</li>
+<li>
+<p>Support volume labels.</p>
+</li>
+<li>
+<p>Allow the file system to fulfill Read/Write requests using asynchronous I/O.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Furthermore there are other smaller, but still important differences:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The file deletion model on Windows is different from the FUSE/POSIX model.</p>
+</li>
+<li>
+<p>The reparse mechanism (which supports symbolic links) on Windows is quite more powerful (and more complicated) than FUSE/POSIX symbolic links.</p>
+</li>
+<li>
+<p>Windows uses UTF-16 for file names, whereas FUSE uses UTF-8, requiring constant conversions between the two.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These and other differences make the creation of the WinFsp FUSE compatibility layer non-trivial and suggest that a native API that more closely resembles the Windows file system model is desirable. At the same time there are hundreds of FUSE (high-level) file systems and having a FUSE compatible API is also very desirable.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_target_audiences">Target Audiences</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>As mentioned WinFsp provides two different API&#8217;s; to further complicate matters the FUSE API can be used from both a native Windows application and a Cygwin (POSIX) application. There are then 3 different audiences that the API&#8217;s cater for:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The WinFsp API audience. This consists of Windows-only file systems or cross-platform file systems that wish to provide maximum features and/or performance on Windows.</p>
+</li>
+<li>
+<p>The FUSE API for native Windows audience. This consists of FUSE file-systems that have had their core file system code ported to Windows, but have not yet been integrated into the operating system. It also includes cross-platform file systems that do not wish to include advanced (non-POSIX) Windows file system features.</p>
+</li>
+<li>
+<p>The FUSE API for Cygwin audience. This consists of FUSE file-systems that are ported to Windows/Cygwin with minimal work. For example, the author of this document has ported SSHFS to Cygwin using this API and a minimal SSHFS patch.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For the developer of a new or Windows exclusive file system the recommendation is to use the WinFsp API as it provides support for all features of the Windows file system.</p>
+</div>
+<div class="paragraph">
+<p>For the developer of a FUSE file system that wishes to port their file system to Windows a natural process may be the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Use the FUSE API for Cygwin to port the file system to Cygwin. In many cases little or no changes to the file system code are required.</p>
+</li>
+<li>
+<p>Use the FUSE API for native Windows to port the file system to native Windows. This would require porting the core file system code (i.e. those parts of the file system code that actually manage and organize files). Little to no changes should be required for the file system FUSE layer glue.</p>
+</li>
+<li>
+<p>Use the WinFsp API only if the file system requires maximum features and/or performance under Windows.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+      </div>
+
+    </div>
+  </body>
+</html>

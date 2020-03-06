@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>WinFsp Tutorial &middot; WinFsp</title>
+
+    <link rel="stylesheet" href="/css/primer.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+  </head>
+  <body class="bg-white text-gray-dark">
+    <div id="container" class="container-lg clearfix">
+
+      <div id="side" class="col-3 float-left">
+        <div class="p-3" style="min-height:100vh">
+          <img src="/logo.png" class="mb-3 width-fit auto-invert" />
+          <h1 class="f1-light text-uppercase text-center mb-3">WinFsp</h1>
+          <nav class="SideNav border"><a class="SideNav-item" href="/" >Main</a>
+              <a class="SideNav-item" href="/rel" >Download</a>
+              <a class="SideNav-item" href="/doc" aria-current="page">Documentation</a>
+              <nav class="SideNav py-2 pl-3">
+                  <a class="SideNav-subItem" href="/doc/Frequently-Asked-Questions/" >Frequently Asked Questions</a><a class="SideNav-subItem" href="/doc/Known-File-Systems/" >Known File Systems</a><a class="SideNav-subItem" href="/doc/Native-API-vs-FUSE/" >Native API vs FUSE</a><a class="SideNav-subItem" href="/doc/NTFS-Compatibility/" >NTFS Compatibility</a><a class="SideNav-subItem" href="/doc/Queued-Events/" >Queued Events</a><a class="SideNav-subItem" href="/doc/SSHFS-Port-Case-Study/" >SSHFS Port Case Study</a><a class="SideNav-subItem" href="/doc/WinFsp-API-launch.h/" >WinFsp API launch.h</a><a class="SideNav-subItem" href="/doc/WinFsp-API-winfsp.h/" >WinFsp API winfsp.h</a><a class="SideNav-subItem" href="/doc/WinFsp-as-an-IPC-Mechanism/" >WinFsp as an IPC Mechanism</a><a class="SideNav-subItem" href="/doc/WinFsp-Design/" >WinFsp Design</a><a class="SideNav-subItem" href="/doc/WinFsp-Kernel-Mode-File-Systems/" >WinFsp Kernel Mode File Systems</a><a class="SideNav-subItem" href="/doc/WinFsp-Performance-Testing/" >WinFsp Performance Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Service-Architecture/" >WinFsp Service Architecture</a><a class="SideNav-subItem" href="/doc/WinFsp-Testing/" >WinFsp Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Tutorial/" aria-current="page">WinFsp Tutorial</a>
+                </nav><a class="SideNav-item" href="/src" >Source</a>
+              <a class="SideNav-item" href="/blog" >Blog</a>
+              
+          </nav>
+        </div>
+      </div>
+
+      <div id="main" class="col-9 float-left">
+        <div class="p-3 markdown-body" style="min-height:100vh">
+<h1>WinFsp Tutorial</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this tutorial we describe the process of creating a simple user mode file system using WinFsp. The file system we will create is called "passthrough", because it simply passes through the file system operations requested by the kernel to an underlying file system (usually NTFS).</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#_prerequisites">Prerequisites</a></li>
+<li><a href="#_create_the_project_skeleton">Create the project skeleton</a></li>
+<li><a href="#_file_system_entryexit_points">File system entry/exit points</a>
+<ul class="sectlevel2">
+<li><a href="#_entry_point">Entry point</a></li>
+<li><a href="#_exit_point">Exit point</a></li>
+<li><a href="#_test_run">Test run</a></li>
+</ul>
+</li>
+<li><a href="#_file_system_operations">File system operations</a>
+<ul class="sectlevel2">
+<li><a href="#_getsecuritybyname_open_close">GetSecurityByName / Open / Close</a></li>
+<li><a href="#_readdirectory">ReadDirectory</a></li>
+<li><a href="#_getvolumeinfo">GetVolumeInfo</a></li>
+<li><a href="#_getfileinfo_getsecurity">GetFileInfo / GetSecurity</a></li>
+<li><a href="#_read_write">Read / Write</a></li>
+<li><a href="#_setbasicinfo_setfilesize_setsecurity">SetBasicInfo / SetFileSize / SetSecurity</a></li>
+<li><a href="#_flush">Flush</a></li>
+<li><a href="#_create">Create</a></li>
+<li><a href="#_overwrite">Overwrite</a></li>
+<li><a href="#_cleanup">Cleanup</a></li>
+<li><a href="#_candelete">CanDelete</a></li>
+<li><a href="#_rename">Rename</a></li>
+</ul>
+</li>
+<li><a href="#_testing_the_file_system">Testing the file system</a></li>
+<li><a href="#_running_the_file_system_as_a_service">Running the file system as a service</a></li>
+<li><a href="#_conclusion">Conclusion</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_prerequisites">Prerequisites</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This tutorial assumes that you have WinFsp and Visual Studio 2015 installed. The WinFsp installer can be downloaded from the WinFsp GitHub repository: <a href="https://github.com/billziss-gh/winfsp" class="bare">https://github.com/billziss-gh/winfsp</a>. The Microsoft Visual Studio Community 2015 can be downloaded for free from Microsoft&#8217;s web site.</p>
+</div>
+<div class="paragraph">
+<p>When installing WinFsp make sure to choose "Developer" to ensure that all necessary header and library files are included in the installation.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="Installer.png" alt="WinFsp Installer">
+</div>
+</div>
+<div class="paragraph">
+<p>With those prerequisites out of the way we are now ready to start creating our first file system.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+The file system that we will create is included as a sample with the WinFsp installer. Look in the <code>samples\passthrough</code> directory.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_create_the_project_skeleton">Create the project skeleton</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We first start by creating the Visual Studio project. Choose "Win32 Console Application" and then select our preferred settings. For this project we will select empty project, because we will add all files ourselves.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="NewProject.png" alt="Visual Studio New Project">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+A user mode file system services requests from the operating system. Therefore it becomes an important system component and must service requests timely. In general it should be a console mode application, not block for user input after it has been initialized, and not expose a GUI. This also allows the user mode file system to be converted into a Windows service easily or to be controlled by the WinFsp.Launcher service (see the WinFsp Service Architecture document).
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now create and add a file passthrough.c with the following contents:</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>passthrough.c</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">#include &lt;winfsp/winfsp.h&gt;                                              // <b class="conum">(1)</b>
+
+#define PROGNAME                        "passthrough"
+
+static
+NTSTATUS SvcStart(FSP_SERVICE *Service, ULONG argc, PWSTR *argv)        // <b class="conum">(2)</b>
+{
+    return STATUS_NOT_IMPLEMENTED;
+}
+
+static
+NTSTATUS SvcStop(FSP_SERVICE *Service)                                  // <b class="conum">(3)</b>
+{
+    return STATUS_NOT_IMPLEMENTED;
+}
+
+int wmain(int argc, wchar_t **argv)
+{
+    return FspServiceRun(L"" PROGNAME, SvcStart, SvcStop, 0);           // <b class="conum">(4)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Include WinFsp header file.</p>
+</li>
+<li>
+<p>Service entry point.</p>
+</li>
+<li>
+<p>Service exit point.</p>
+</li>
+<li>
+<p>Run file system as a service.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>This simple template allows a user mode file system to be run as a console application, as a Windows service, or as a "sub-service" controlled by the WinFsp launcher.</p>
+</div>
+<div class="paragraph">
+<p>If we try to build the program, it will fail. We must set up the locations where Visual Studio can find the WinFsp headers and libraries. The following settings must be made:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>C/C++ &gt; General &gt; Additional Include Directories: <code>$(MSBuildProgramFiles32)\WinFsp\inc</code></p>
+</li>
+<li>
+<p>Linker &gt; Input &gt; Additional Dependencies: <code>$(MSBuildProgramFiles32)\WinFsp\lib\winfsp-$(PlatformTarget).lib</code></p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+These settings assume that WinFsp has been installed in the default location under "Program Files".
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We are now able to build this program. But if we try to run it:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="MissingDll.png" alt="Missing WinFsp DLL">
+</div>
+</div>
+<div class="paragraph">
+<p>We must make the WinFsp DLL available. There are multiple ways of doing this, but my preferred way is to delay load the DLL and then load the correct version of the DLL at run-time. This is explained below.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+WinFsp made a conscious decision not to install the WinFsp DLL in one of the Windows system directories. Applications that do not ship with the operating system should not be installing components in the system directories in this author&#8217;s opinion.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>First add the WinFsp DLL as a delay loaded DLL. Open the project properties and change the following setting:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Linker &gt; Input &gt; Delay Loaded Dll&#8217;s: <code>winfsp-$(PlatformTarget).dll</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Then add the following lines in the beginning of <code>wmain</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>wmain excerpt</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">    if (!NT_SUCCESS(FspLoad(0)))
+        return ERROR_DELAY_LOAD_FAILED;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Running this now results in a console window:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="FirstRun.png" alt="First Run">
+</div>
+</div>
+<div class="paragraph">
+<p>The message is <code>The service passthrough has failed to start (Status=c0000002).</code> The status <code>c0000002</code> is <code>STATUS_NOT_IMPLEMENTED</code>, which is what we return from <code>SvcStart</code>. This means that our program has actually run and we are ready to start building our passthrough file system!</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_file_system_entryexit_points">File system entry/exit points</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We now turn our attention to the file system entry/exit points. Recall that passthrough is written as a service and its entry and exit points are <code>SvcStart</code> and <code>SvcStop</code> respectively.</p>
+</div>
+<div class="sect2">
+<h3 id="_entry_point">Entry point</h3>
+<div class="paragraph">
+<p>We start with the entry point <code>SvcStart</code> and first consider command line handling. We want the passthrough file system to be used as follows:</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>usage</strong></code></div>
+<div class="content">
+<pre>usage: passthrough OPTIONS
+
+options:
+    -d DebugFlags       [-1: enable all debug logs]
+    -D DebugLogFile     [file path; use - for stderr]
+    -u \Server\Share    [UNC prefix (single backslash)]
+    -p Directory        [directory to expose as pass through file system]
+    -m MountPoint       [X:|*|directory]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The full code to handle these command line parameters is straight forward and is omitted for brevity. It can be found in the passthrough.c sample file that ships with the WinFsp installer. The code sets a number of variables that are used to configure each run of the passthrough file system.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>SvcStart excerpt</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">    PWSTR DebugLogFile = 0;
+    ULONG DebugFlags = 0;
+    PWSTR VolumePrefix = 0;
+    PWSTR PassThrough = 0;
+    PWSTR MountPoint = 0;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The variable <code>DebugLogFile</code> is used to control the WinFsp debug logging mechanism. This mechanism can send messages to the debugger for display or log them into a file. The behavior is controlled by a call to <code>FspDebugLogSetHandle</code>: if this call is not made any debug log messages will be sent to the debugger; if this call is made debug log messages will be logged into the specified file handle.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>SvcStart excerpt</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">    if (0 != DebugLogFile)
+    {
+        if (0 == wcscmp(L"-", DebugLogFile))
+            DebugLogHandle = GetStdHandle(STD_ERROR_HANDLE);
+        else
+            DebugLogHandle = CreateFileW(
+                DebugLogFile,
+                FILE_APPEND_DATA,
+                FILE_SHARE_READ | FILE_SHARE_WRITE,
+                0,
+                OPEN_ALWAYS,
+                FILE_ATTRIBUTE_NORMAL,
+                0);
+        if (INVALID_HANDLE_VALUE == DebugLogHandle)
+        {
+            fail(L"cannot open debug log file");
+            goto usage;
+        }
+
+        FspDebugLogSetHandle(DebugLogHandle);
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The remaining variables are used to create and start an instance of the passthrough file system.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>SvcStart excerpt</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">    Result = PtfsCreate(PassThrough, VolumePrefix, MountPoint, DebugFlags,
+        &amp;Ptfs);                                                         // <b class="conum">(1)</b>
+    if (!NT_SUCCESS(Result))
+    {
+        fail(L"cannot create file system");
+        goto exit;
+    }
+
+    Result = FspFileSystemStartDispatcher(Ptfs-&gt;FileSystem, 0);         // <b class="conum">(2)</b>
+    if (!NT_SUCCESS(Result))
+    {
+        fail(L"cannot start file system");
+        goto exit;
+    }
+
+    ...
+
+    Service-&gt;UserContext = Ptfs;                                        // <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Create the passthrough file system.</p>
+</li>
+<li>
+<p>Start the file system dispatcher.</p>
+</li>
+<li>
+<p>Associate the passthrough file system with the service instance.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>We now consider the code for <code>PtfsCreate</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>PtfsCreate</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">typedef struct
+{
+    FSP_FILE_SYSTEM *FileSystem;
+    PWSTR Path;
+} PTFS;
+
+...
+
+static NTSTATUS PtfsCreate(PWSTR Path, PWSTR VolumePrefix, PWSTR MountPoint, UINT32 DebugFlags,
+    PTFS **PPtfs)
+{
+    WCHAR FullPath[MAX_PATH];
+    ULONG Length;
+    HANDLE Handle;
+    FILETIME CreationTime;
+    DWORD LastError;
+    FSP_FSCTL_VOLUME_PARAMS VolumeParams;
+    PTFS *Ptfs = 0;
+    NTSTATUS Result;
+
+    *PPtfs = 0;
+
+    Handle = CreateFileW(
+        Path, FILE_READ_ATTRIBUTES, 0, 0,
+        OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
+    if (INVALID_HANDLE_VALUE == Handle)
+        return FspNtStatusFromWin32(GetLastError());
+
+    Length = GetFinalPathNameByHandleW(Handle,
+        FullPath, FULLPATH_SIZE - 1, 0);                                // <b class="conum">(1)</b>
+    if (0 == Length)
+    {
+        LastError = GetLastError();
+        CloseHandle(Handle);
+        return FspNtStatusFromWin32(LastError);
+    }
+    if (L'\\' == FullPath[Length - 1])
+        FullPath[--Length] = L'\0';
+
+    if (!GetFileTime(Handle, &amp;CreationTime, 0, 0))                      // <b class="conum">(2)</b>
+    {
+        LastError = GetLastError();
+        CloseHandle(Handle);
+        return FspNtStatusFromWin32(LastError);
+    }
+
+    CloseHandle(Handle);
+
+    /* from now on we must goto exit on failure */
+
+    Ptfs = malloc(sizeof *Ptfs);                                        // <b class="conum">(3)</b>
+    if (0 == Ptfs)
+    {
+        Result = STATUS_INSUFFICIENT_RESOURCES;
+        goto exit;
+    }
+    memset(Ptfs, 0, sizeof *Ptfs);
+
+    Length = (Length + 1) * sizeof(WCHAR);
+    Ptfs-&gt;Path = malloc(Length);                                        // <b class="conum">(3)</b>
+    if (0 == Ptfs-&gt;Path)
+    {
+        Result = STATUS_INSUFFICIENT_RESOURCES;
+        goto exit;
+    }
+    memcpy(Ptfs-&gt;Path, FullPath, Length);
+
+    memset(&amp;VolumeParams, 0, sizeof VolumeParams);                      // <b class="conum">(4)</b>
+    VolumeParams.SectorSize = ALLOCATION_UNIT;
+    VolumeParams.SectorsPerAllocationUnit = 1;
+    VolumeParams.VolumeCreationTime = ((PLARGE_INTEGER)&amp;CreationTime)-&gt;QuadPart;
+    VolumeParams.VolumeSerialNumber = 0;
+    VolumeParams.FileInfoTimeout = 1000;
+    VolumeParams.CaseSensitiveSearch = 0;
+    VolumeParams.CasePreservedNames = 1;
+    VolumeParams.UnicodeOnDisk = 1;
+    VolumeParams.PersistentAcls = 1;
+    VolumeParams.PostCleanupWhenModifiedOnly = 1;                       // <b class="conum">(4)</b>
+    VolumeParams.UmFileContextIsUserContext2 = 1;                       // <b class="conum">(4)</b>
+    if (0 != VolumePrefix)
+        wcscpy_s(VolumeParams.Prefix, sizeof VolumeParams.Prefix / sizeof(WCHAR), VolumePrefix);
+    wcscpy_s(VolumeParams.FileSystemName, sizeof VolumeParams.FileSystemName / sizeof(WCHAR),
+        L"" PROGNAME);
+
+    Result = FspFileSystemCreate(
+        VolumeParams.Prefix[0] ? L"" FSP_FSCTL_NET_DEVICE_NAME : L"" FSP_FSCTL_DISK_DEVICE_NAME,
+        &amp;VolumeParams,
+        &amp;PtfsInterface,
+        &amp;Ptfs-&gt;FileSystem);                                             // <b class="conum">(5)</b>
+    if (!NT_SUCCESS(Result))
+        goto exit;
+    Ptfs-&gt;FileSystem-&gt;UserContext = Ptfs;                               // <b class="conum">(5)</b>
+
+    Result = FspFileSystemSetMountPoint(Ptfs-&gt;FileSystem, MountPoint);  // <b class="conum">(6)</b>
+    if (!NT_SUCCESS(Result))
+        goto exit;
+
+    FspFileSystemSetDebugLog(Ptfs-&gt;FileSystem, DebugFlags);             // <b class="conum">(7)</b>
+
+    Result = STATUS_SUCCESS;
+
+exit:
+    if (NT_SUCCESS(Result))
+        *PPtfs = Ptfs;
+    else if (0 != Ptfs)
+        PtfsDelete(Ptfs);
+
+    return Result;
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Get the full path name of the passthrough directory. This allows the file system to change directories safely (if it so chooses).</p>
+</li>
+<li>
+<p>Get the creation time of the passthrough directory. We will use this time as the volume creation time.</p>
+</li>
+<li>
+<p>Allocate memory for the passthrough file system main structure and for the passthrough directory path.</p>
+</li>
+<li>
+<p>Initialize the file system <code>VolumeParams</code>. We want the file system to post Cleanup requests only when a file is modified (this avoids unnecessary Cleanup requests thus improving performance). We also want to treat the <code>FileContext</code> parameter as a "file descriptor".</p>
+</li>
+<li>
+<p>Create the WinFsp <code>FileSystem</code> object.</p>
+</li>
+<li>
+<p>Set the mount point. It can be a drive or directory.</p>
+</li>
+<li>
+<p>Set debug log flags. Specify 0 to disable logging. Specify -1 to enable all logging.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_exit_point">Exit point</h3>
+<div class="paragraph">
+<p>We now consider the exit point <code>SvcStop</code>. The code for this is simple:</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>SvcStop excerpt</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">    PTFS *Ptfs = Service-&gt;UserContext;                                  // <b class="conum">(1)</b>
+
+    FspFileSystemStopDispatcher(Ptfs-&gt;FileSystem);                      // <b class="conum">(2)</b>
+    PtfsDelete(Ptfs);                                                   // <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Get the passthrough file system from the service instance.</p>
+</li>
+<li>
+<p>Stop the file system dispatcher.</p>
+</li>
+<li>
+<p>Delete the file system.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Finally the code for <code>PtfsDelete</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>PtfsDelete</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static VOID PtfsDelete(PTFS *Ptfs)
+{
+    if (0 != Ptfs-&gt;FileSystem)
+        FspFileSystemDelete(Ptfs-&gt;FileSystem);                          // <b class="conum">(1)</b>
+
+    if (0 != Ptfs-&gt;Path)
+        free(Ptfs-&gt;Path);                                               // <b class="conum">(2)</b>
+
+    free(Ptfs);                                                         // <b class="conum">(2)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Delete the WinFsp <code>FileSystem</code> object.</p>
+</li>
+<li>
+<p>Free any remaining memory.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_test_run">Test run</h3>
+<div class="paragraph">
+<p>We can now run the program from Visual Studio or the command line. The program starts and waits for file system requests from the operating system (although we do not yet service any). Press Ctrl-C to stop the file system.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="EntryExit.png" alt="Entry/exit test run">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>). It is however possible to forcibly stop a file system, e.g. by killing the process in the debugger. This is fine with WinFsp as <strong>all associated resources will be automatically cleaned up</strong>. This includes resources that WinFsp knows about such as kernel memory, volume devices, etc. It does not include resources that it has no knowledge about such as temporary files, network registrations, etc.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_file_system_operations">File system operations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We now start implementing the actual file system operations. These operations are the ones found in <code>FSP_FILE_SYSTEM_INTERFACE</code>. We first create stubs for all operations that our file system is going to support.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>File system operations stubs</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS GetVolumeInfo(FSP_FILE_SYSTEM *FileSystem,
+    FSP_FSCTL_VOLUME_INFO *VolumeInfo)
+{
+    return STATUS_INVALID_DEVICE_REQUEST;
+}
+
+static NTSTATUS SetVolumeLabel_(FSP_FILE_SYSTEM *FileSystem,
+    PWSTR VolumeLabel,
+    FSP_FSCTL_VOLUME_INFO *VolumeInfo)
+{
+    return STATUS_INVALID_DEVICE_REQUEST;
+}
+
+...
+
+static FSP_FILE_SYSTEM_INTERFACE PtfsInterface =
+{
+    GetVolumeInfo,
+    SetVolumeLabel_,
+    GetSecurityByName,
+    Create,
+    Open,
+    Overwrite,
+    Cleanup,
+    Close,
+    Read,
+    Write,
+    Flush,
+    GetFileInfo,
+    SetBasicInfo,
+    SetFileSize,
+    CanDelete,
+    Rename,
+    GetSecurity,
+    SetSecurity,
+    ReadDirectory,
+};</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_getsecuritybyname_open_close">GetSecurityByName / Open / Close</h3>
+<div class="paragraph">
+<p>At a minimum a file system needs to support <code>GetSecurityByName</code>, <code>Open</code> and <code>Close</code>. This allows one to use the command prompt to switch to the drive, but not much more. [Strictly speaking it is possible to not implement GetSecurityByName, but the file system will perform no access checks in that case.]</p>
+</div>
+<div class="paragraph">
+<p><code>GetSecurityByName</code> is used by WinFsp to retrieve essential metadata about a file to be opened, such as its attributes and security descriptor.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>GetSecurityByName</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS GetSecurityByName(FSP_FILE_SYSTEM *FileSystem,
+    PWSTR FileName, PUINT32 PFileAttributes,
+    PSECURITY_DESCRIPTOR SecurityDescriptor, SIZE_T *PSecurityDescriptorSize)
+{
+    PTFS *Ptfs = (PTFS *)FileSystem-&gt;UserContext;
+    WCHAR FullPath[FULLPATH_SIZE];
+    HANDLE Handle;
+    FILE_ATTRIBUTE_TAG_INFO AttributeTagInfo;
+    DWORD SecurityDescriptorSizeNeeded;
+    NTSTATUS Result;
+
+    if (!ConcatPath(Ptfs, FileName, FullPath))
+        return STATUS_OBJECT_NAME_INVALID;
+
+    Handle = CreateFileW(FullPath,
+        FILE_READ_ATTRIBUTES | READ_CONTROL, 0, 0,
+        OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
+    if (INVALID_HANDLE_VALUE == Handle)
+    {
+        Result = FspNtStatusFromWin32(GetLastError());
+        goto exit;
+    }
+
+    if (0 != PFileAttributes)
+    {
+        if (!GetFileInformationByHandleEx(Handle,
+            FileAttributeTagInfo, &amp;AttributeTagInfo, sizeof AttributeTagInfo))
+        {
+            Result = FspNtStatusFromWin32(GetLastError());
+            goto exit;
+        }
+
+        *PFileAttributes = AttributeTagInfo.FileAttributes;             // <b class="conum">(1)</b>
+    }
+
+    if (0 != PSecurityDescriptorSize)
+    {
+        if (!GetKernelObjectSecurity(Handle,
+            OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
+            SecurityDescriptor, (DWORD)*PSecurityDescriptorSize, &amp;SecurityDescriptorSizeNeeded))
+        {
+            *PSecurityDescriptorSize = SecurityDescriptorSizeNeeded;
+            Result = FspNtStatusFromWin32(GetLastError());
+            goto exit;
+        }
+
+        *PSecurityDescriptorSize = SecurityDescriptorSizeNeeded;        // <b class="conum">(2)</b>
+    }
+
+    Result = STATUS_SUCCESS;
+
+exit:
+    if (INVALID_HANDLE_VALUE != Handle)
+        CloseHandle(Handle);
+
+    return Result;
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Get file attributes.</p>
+</li>
+<li>
+<p>Get file security.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The next call to implement is <code>Open</code>. <code>Open</code> is used to open existing files and should never create or overwrite files.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>Open</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS Open(FSP_FILE_SYSTEM *FileSystem,
+    PWSTR FileName, UINT32 CreateOptions, UINT32 GrantedAccess,
+    PVOID *PFileContext, FSP_FSCTL_FILE_INFO *FileInfo)
+{
+    PTFS *Ptfs = (PTFS *)FileSystem-&gt;UserContext;
+    WCHAR FullPath[FULLPATH_SIZE];
+    ULONG CreateFlags;
+    PTFS_FILE_CONTEXT *FileContext;
+
+    if (!ConcatPath(Ptfs, FileName, FullPath))
+        return STATUS_OBJECT_NAME_INVALID;
+
+    FileContext = malloc(sizeof *FileContext);                          // <b class="conum">(1)</b>
+    if (0 == FileContext)
+        return STATUS_INSUFFICIENT_RESOURCES;
+    memset(FileContext, 0, sizeof *FileContext);
+
+    CreateFlags = FILE_FLAG_BACKUP_SEMANTICS;                           // <b class="conum">(2)</b>
+    if (CreateOptions &amp; FILE_DELETE_ON_CLOSE)
+        CreateFlags |= FILE_FLAG_DELETE_ON_CLOSE;                       // <b class="conum">(3)</b>
+
+    FileContext-&gt;Handle = CreateFileW(FullPath,
+        GrantedAccess, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0,
+        OPEN_EXISTING, CreateFlags, 0);                                 // <b class="conum">(4)</b>
+    if (INVALID_HANDLE_VALUE == FileContext-&gt;Handle)
+    {
+        free(FileContext);
+        return FspNtStatusFromWin32(GetLastError());
+    }
+
+    *PFileContext = FileContext;
+
+    return GetFileInfoInternal(FileContext-&gt;Handle, FileInfo);          // <b class="conum">(5)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Create the <code>FileContext</code> object. This is used to track an open file instance.</p>
+</li>
+<li>
+<p>Allow opening of directories (<code>FILE_FLAG_BACKUP_SEMANTICS</code>).</p>
+</li>
+<li>
+<p>Include the FILE_FLAG_DELETE_ON_CLOSE flag. File systems do not normally have to track this flag as WinFsp will track it and post the appropriate <code>Cleanup</code> request. Passing it to the underlying file system here allows us to simplify <code>Cleanup</code> for this simple file system.</p>
+</li>
+<li>
+<p>Use OPEN_EXISTING to open existing files only. Allow full sharing (<code>FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE</code>) as WinFsp performs its own sharing checks.</p>
+</li>
+<li>
+<p>Use <code>GetFileInfoInternal</code> to return information about the file (see below).</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>After the completion of many file system operations the kernel needs to have an accurate view of the file system metadata. [This is also the case with <code>Open</code>.] We create a helper function <code>GetFileInfoInternal</code> for this purpose.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>GetFileInfoInternal</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS GetFileInfoInternal(HANDLE Handle, FSP_FSCTL_FILE_INFO *FileInfo)
+{
+    BY_HANDLE_FILE_INFORMATION ByHandleFileInfo;
+
+    if (!GetFileInformationByHandle(Handle, &amp;ByHandleFileInfo))
+        return FspNtStatusFromWin32(GetLastError());
+
+    FileInfo-&gt;FileAttributes = ByHandleFileInfo.dwFileAttributes;
+    FileInfo-&gt;ReparseTag = 0;
+    FileInfo-&gt;FileSize =
+        ((UINT64)ByHandleFileInfo.nFileSizeHigh &lt;&lt; 32) | (UINT64)ByHandleFileInfo.nFileSizeLow;
+    FileInfo-&gt;AllocationSize = (FileInfo-&gt;FileSize + ALLOCATION_UNIT - 1)
+        / ALLOCATION_UNIT * ALLOCATION_UNIT;
+    FileInfo-&gt;CreationTime = ((PLARGE_INTEGER)&amp;ByHandleFileInfo.ftCreationTime)-&gt;QuadPart;
+    FileInfo-&gt;LastAccessTime = ((PLARGE_INTEGER)&amp;ByHandleFileInfo.ftLastAccessTime)-&gt;QuadPart;
+    FileInfo-&gt;LastWriteTime = ((PLARGE_INTEGER)&amp;ByHandleFileInfo.ftLastWriteTime)-&gt;QuadPart;
+    FileInfo-&gt;ChangeTime = FileInfo-&gt;LastWriteTime;
+    FileInfo-&gt;IndexNumber = 0;
+    FileInfo-&gt;HardLinks = 0;
+
+    return STATUS_SUCCESS;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Every <code>Open</code> (or <code>Create</code>) is always matched by <code>Close</code>. <code>Close</code> is the final call that will be received for an open file instance.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>Close</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static VOID Close(FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext0)
+{
+    PTFS_FILE_CONTEXT *FileContext = FileContext0;
+    HANDLE Handle = HandleFromContext(FileContext);
+
+    CloseHandle(Handle);                                                // <b class="conum">(1)</b>
+
+    FspFileSystemDeleteDirectoryBuffer(&amp;FileContext-&gt;DirBuffer);        // <b class="conum">(2)</b>
+    free(FileContext);                                                  // <b class="conum">(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Close the file handle.</p>
+</li>
+<li>
+<p>Delete the directory buffer (if there is one).</p>
+</li>
+<li>
+<p>Free the <code>FileContext</code> object.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>For completeness the definition of <code>PTFS_FILE_CONTEXT</code> is included here:</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>PTFS_FILE_CONTEXT</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">#define HandleFromContext(FC)           (((PTFS_FILE_CONTEXT *)(FC))-&gt;Handle)
+
+typedef struct
+{
+    HANDLE Handle;
+    PVOID DirBuffer;
+} PTFS_FILE_CONTEXT;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_readdirectory">ReadDirectory</h3>
+<div class="paragraph">
+<p>Our simple file system can only open and close existing files. Supporting the Windows explorer is somewhat more involved. It requires implementation of <code>ReadDirectory</code>.</p>
+</div>
+<div class="paragraph">
+<p><code>ReadDirectory</code> is conceptually simple: given a <code>Marker</code> file name within the directory fill the specified <code>Buffer</code> with directory contents. The idea here is that a directory can be viewed as a file with directory entries, the <code>Marker</code> is used to specify where in the file to start reading. Only files with names that are greater than (not equal to) the <code>Marker</code> (in the directory order determined by the file system) should be returned. If the <code>Marker</code> is <code>NULL</code> it means to start at the beginning of the directory file.</p>
+</div>
+<div class="paragraph">
+<p>This scheme is simple and flexible in that it allows arbitrarily large directories to be read in chunks. If implemented correctly it can also cope with concurrent modifications to the directory (like file creations, deletions).</p>
+</div>
+<div class="paragraph">
+<p>Not all file systems maintain a consistent directory order or are able to seek by file name within a directory. For these file systems a simple strategy is to buffer <strong>all</strong> directory contents when they receive a <code>NULL</code> <code>Marker</code>.</p>
+</div>
+<div class="paragraph">
+<p>This is how we implement <code>ReadDirectory</code> for our passthrough file system.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>ReadDirectory</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS ReadDirectory(FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext0, PWSTR Pattern, PWSTR Marker,
+    PVOID Buffer, ULONG BufferLength, PULONG PBytesTransferred)
+{
+    PTFS *Ptfs = (PTFS *)FileSystem-&gt;UserContext;
+    PTFS_FILE_CONTEXT *FileContext = FileContext0;
+    HANDLE Handle = HandleFromContext(FileContext);
+    WCHAR FullPath[FULLPATH_SIZE];
+    ULONG Length, PatternLength;
+    HANDLE FindHandle;
+    WIN32_FIND_DATAW FindData;
+    union
+    {
+        UINT8 B[FIELD_OFFSET(FSP_FSCTL_DIR_INFO, FileNameBuf) + MAX_PATH * sizeof(WCHAR)];
+        FSP_FSCTL_DIR_INFO D;
+    } DirInfoBuf;
+    FSP_FSCTL_DIR_INFO *DirInfo = &amp;DirInfoBuf.D;
+    NTSTATUS DirBufferResult;
+
+    DirBufferResult = STATUS_SUCCESS;
+    if (FspFileSystemAcquireDirectoryBuffer(&amp;FileContext-&gt;DirBuffer, 0 == Marker,
+        &amp;DirBufferResult))                                              // <b class="conum">(1)</b>
+    {
+        if (0 == Pattern)
+            Pattern = L"*";
+        PatternLength = (ULONG)wcslen(Pattern);
+
+        Length = GetFinalPathNameByHandleW(Handle, FullPath, FULLPATH_SIZE - 1, 0);
+        if (0 == Length)
+            DirBufferResult = FspNtStatusFromWin32(GetLastError());
+        else if (Length + 1 + PatternLength &gt;= FULLPATH_SIZE)
+            DirBufferResult = STATUS_OBJECT_NAME_INVALID;
+        if (!NT_SUCCESS(DirBufferResult))
+        {
+            FspFileSystemReleaseDirectoryBuffer(&amp;FileContext-&gt;DirBuffer);
+            return DirBufferResult;
+        }
+
+        if (L'\\' != FullPath[Length - 1])
+            FullPath[Length++] = L'\\';
+        memcpy(FullPath + Length, Pattern, PatternLength * sizeof(WCHAR));
+        FullPath[Length + PatternLength] = L'\0';
+
+        FindHandle = FindFirstFileW(FullPath, &amp;FindData);               // <b class="conum">(2)</b>
+        if (INVALID_HANDLE_VALUE != FindHandle)
+        {
+            do
+            {
+                memset(DirInfo, 0, sizeof *DirInfo);
+                Length = (ULONG)wcslen(FindData.cFileName);
+                DirInfo-&gt;Size = (UINT16)(FIELD_OFFSET(FSP_FSCTL_DIR_INFO, FileNameBuf) + Length * sizeof(WCHAR));
+                DirInfo-&gt;FileInfo.FileAttributes = FindData.dwFileAttributes;
+                DirInfo-&gt;FileInfo.ReparseTag = 0;
+                DirInfo-&gt;FileInfo.FileSize =
+                    ((UINT64)FindData.nFileSizeHigh &lt;&lt; 32) | (UINT64)FindData.nFileSizeLow;
+                DirInfo-&gt;FileInfo.AllocationSize = (DirInfo-&gt;FileInfo.FileSize + ALLOCATION_UNIT - 1)
+                    / ALLOCATION_UNIT * ALLOCATION_UNIT;
+                DirInfo-&gt;FileInfo.CreationTime = ((PLARGE_INTEGER)&amp;FindData.ftCreationTime)-&gt;QuadPart;
+                DirInfo-&gt;FileInfo.LastAccessTime = ((PLARGE_INTEGER)&amp;FindData.ftLastAccessTime)-&gt;QuadPart;
+                DirInfo-&gt;FileInfo.LastWriteTime = ((PLARGE_INTEGER)&amp;FindData.ftLastWriteTime)-&gt;QuadPart;
+                DirInfo-&gt;FileInfo.ChangeTime = DirInfo-&gt;FileInfo.LastWriteTime;
+                DirInfo-&gt;FileInfo.IndexNumber = 0;
+                DirInfo-&gt;FileInfo.HardLinks = 0;
+                memcpy(DirInfo-&gt;FileNameBuf, FindData.cFileName, Length * sizeof(WCHAR));
+
+                if (!FspFileSystemFillDirectoryBuffer(&amp;FileContext-&gt;DirBuffer, DirInfo,
+                    &amp;DirBufferResult))                                  // <b class="conum">(2)</b>
+                    break;
+            } while (FindNextFileW(FindHandle, &amp;FindData));             // <b class="conum">(2)</b>
+
+            FindClose(FindHandle);
+        }
+
+        FspFileSystemReleaseDirectoryBuffer(&amp;FileContext-&gt;DirBuffer);   // <b class="conum">(3)</b>
+    }
+
+    if (!NT_SUCCESS(DirBufferResult))
+        return DirBufferResult;
+
+    FspFileSystemReadDirectoryBuffer(&amp;FileContext-&gt;DirBuffer,
+        Marker, Buffer, BufferLength, PBytesTransferred);               // <b class="conum">(4)</b>
+
+    return STATUS_SUCCESS;
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Acquire a directory buffer if there is not one or if <code>Marker == 0</code>.</p>
+</li>
+<li>
+<p>Iterate over all directory entries and buffer them.</p>
+</li>
+<li>
+<p>Release the directory buffer.</p>
+</li>
+<li>
+<p>Copy the buffered directory contents into the specified <code>Buffer</code>.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_getvolumeinfo">GetVolumeInfo</h3>
+<div class="paragraph">
+<p>The Windows explorer will often query a volume (file system) for information about it. Implementation of <code>GetVolumeInfo</code> allows us to return information about the total and free space in the file system and its volume label.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>GetVolumeInfo</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS GetVolumeInfo(FSP_FILE_SYSTEM *FileSystem,
+    FSP_FSCTL_VOLUME_INFO *VolumeInfo)
+{
+    PTFS *Ptfs = (PTFS *)FileSystem-&gt;UserContext;
+    WCHAR Root[MAX_PATH];
+    ULARGE_INTEGER TotalSize, FreeSize;
+
+    if (!GetVolumePathName(Ptfs-&gt;Path, Root, MAX_PATH))
+        return FspNtStatusFromWin32(GetLastError());
+
+    if (!GetDiskFreeSpaceEx(Root, 0, &amp;TotalSize, &amp;FreeSize))
+        return FspNtStatusFromWin32(GetLastError());
+
+    VolumeInfo-&gt;TotalSize = TotalSize.QuadPart;                         // <b class="conum">(1)</b>
+    VolumeInfo-&gt;FreeSize = FreeSize.QuadPart;                           // <b class="conum">(2)</b>
+                                                                        // <b class="conum">(3)</b>
+    return STATUS_SUCCESS;
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Total size in bytes.</p>
+</li>
+<li>
+<p>Free size in bytes.</p>
+</li>
+<li>
+<p>We do not support volume labels so we simply return the default (blank) volume label.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_getfileinfo_getsecurity">GetFileInfo / GetSecurity</h3>
+<div class="paragraph">
+<p>If we right click on a file and choose "Properties" on the Windows explorer, it will interrogate the file system for the file metadata. This metadata includes file information such as file size, attributes, times, etc. and security information such as ACL&#8217;s.</p>
+</div>
+<div class="paragraph">
+<p>The <code>GetFileInfo</code> operation allows the kernel to query/refresh its view of the file metadata.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>GetFileInfo</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS GetFileInfo(FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    FSP_FSCTL_FILE_INFO *FileInfo)
+{
+    HANDLE Handle = HandleFromContext(FileContext);
+
+    return GetFileInfoInternal(Handle, FileInfo);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>GetSecurity</code> operation is used to return a file&#8217;s security descriptor. [Please note that file systems that do not support ACL&#8217;s need not implement this function.]</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>GetSecurity</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS GetSecurity(FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    PSECURITY_DESCRIPTOR SecurityDescriptor, SIZE_T *PSecurityDescriptorSize)
+{
+    HANDLE Handle = HandleFromContext(FileContext);
+    DWORD SecurityDescriptorSizeNeeded;
+
+    if (!GetKernelObjectSecurity(Handle,
+        OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
+        SecurityDescriptor, (DWORD)*PSecurityDescriptorSize, &amp;SecurityDescriptorSizeNeeded))
+    {
+        *PSecurityDescriptorSize = SecurityDescriptorSizeNeeded;
+        return FspNtStatusFromWin32(GetLastError());
+    }
+
+    *PSecurityDescriptorSize = SecurityDescriptorSizeNeeded;
+
+    return STATUS_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_read_write">Read / Write</h3>
+<div class="paragraph">
+<p>Files in our file system can now be listed (<code>ReadDirectory</code>) and queried for their metadata (<code>GetFileInfo</code>, <code>GetSecurity</code>). However files cannot be read or written yet!</p>
+</div>
+<div class="paragraph">
+<p>Implementing <code>Read</code> is simple for our file system. Here is the implementation.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>Read</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS Read(FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext, PVOID Buffer, UINT64 Offset, ULONG Length,
+    PULONG PBytesTransferred)
+{
+    HANDLE Handle = HandleFromContext(FileContext);
+    OVERLAPPED Overlapped = { 0 };
+
+    Overlapped.Offset = (DWORD)Offset;                                  // <b class="conum">(1)</b>
+    Overlapped.OffsetHigh = (DWORD)(Offset &gt;&gt; 32);
+
+    if (!ReadFile(Handle, Buffer, Length, PBytesTransferred, &amp;Overlapped))
+        return FspNtStatusFromWin32(GetLastError());
+
+    return STATUS_SUCCESS;
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Specify the <code>Offset</code> to read in an <code>OVERLAPPED</code> structure.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Implementing <code>Write</code> is also simple, although more involved. This is because <code>Write</code> has more complex semantics and supports a <code>ConstrainedIo</code> mode in which the file system is not allowed to extend the file size during a <code>Write</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>Write</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS Write(FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext, PVOID Buffer, UINT64 Offset, ULONG Length,
+    BOOLEAN WriteToEndOfFile, BOOLEAN ConstrainedIo,
+    PULONG PBytesTransferred, FSP_FSCTL_FILE_INFO *FileInfo)
+{
+    HANDLE Handle = HandleFromContext(FileContext);
+    LARGE_INTEGER FileSize;
+    OVERLAPPED Overlapped = { 0 };
+
+    if (ConstrainedIo)                                                  // <b class="conum">(1)</b>
+    {
+        if (!GetFileSizeEx(Handle, &amp;FileSize))
+            return FspNtStatusFromWin32(GetLastError());
+
+        if (Offset &gt;= (UINT64)FileSize.QuadPart)
+            return STATUS_SUCCESS;
+        if (Offset + Length &gt; (UINT64)FileSize.QuadPart)
+            Length = (ULONG)((UINT64)FileSize.QuadPart - Offset);
+    }
+
+    Overlapped.Offset = (DWORD)Offset;                                  // <b class="conum">(2)</b>
+    Overlapped.OffsetHigh = (DWORD)(Offset &gt;&gt; 32);
+
+    if (!WriteFile(Handle, Buffer, Length, PBytesTransferred, &amp;Overlapped))
+        return FspNtStatusFromWin32(GetLastError());
+
+    return GetFileInfoInternal(Handle, FileInfo);
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>If <code>ConstrainedIo</code> is set we must restrict <code>Write</code> to not extend file size.</p>
+</li>
+<li>
+<p>Specify the <code>Offset</code> to write in an <code>OVERLAPPED</code> structure. Note that the <code>Offset</code> will be <code>(UINT64)-1</code> when <code>WriteToEndOfFile</code> is set, which achieves the desired effect.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_setbasicinfo_setfilesize_setsecurity">SetBasicInfo / SetFileSize / SetSecurity</h3>
+<div class="paragraph">
+<p>Along with the ability to write a file, we also want the ability to update its metadata. This is accomplished by implementing the <code>SetBasicInfo</code>, <code>SetFileSize</code>, and <code>SetSecurity</code> operations. [The <code>SetSecurity</code> operation is not necessary if the file system does not support ACL&#8217;s.]</p>
+</div>
+<div class="paragraph">
+<p>The <code>SetBasicInfo</code> operation is used to update a file&#8217;s attributes and times. The implementation follows:</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>SetBasicInfo</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS SetBasicInfo(FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext, UINT32 FileAttributes,
+    UINT64 CreationTime, UINT64 LastAccessTime, UINT64 LastWriteTime, UINT64 ChangeTime,
+    FSP_FSCTL_FILE_INFO *FileInfo)
+{
+    HANDLE Handle = HandleFromContext(FileContext);
+    FILE_BASIC_INFO BasicInfo = { 0 };
+
+    if (INVALID_FILE_ATTRIBUTES == FileAttributes)
+        FileAttributes = 0;
+    else if (0 == FileAttributes)
+        FileAttributes = FILE_ATTRIBUTE_NORMAL;
+
+    BasicInfo.FileAttributes = FileAttributes;
+    BasicInfo.CreationTime.QuadPart = CreationTime;
+    BasicInfo.LastAccessTime.QuadPart = LastAccessTime;
+    BasicInfo.LastWriteTime.QuadPart = LastWriteTime;
+    //BasicInfo.ChangeTime = ChangeTime;
+
+    if (!SetFileInformationByHandle(Handle,
+        FileBasicInfo, &amp;BasicInfo, sizeof BasicInfo))
+        return FspNtStatusFromWin32(GetLastError());
+
+    return GetFileInfoInternal(Handle, FileInfo);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>SetFileSize</code> operation is used to change a file&#8217;s sizes. Files in a Windows file system can have two sizes: an "EndOfFile" size or <code>FileSize</code> and an <code>AllocationSize</code>. The <code>FileSize</code> is the number of bytes contained in a file. The <code>AllocationSize</code> is a concept that many file systems can safely ignore (or not expose to the kernel): it is the actual number of bytes that a file occupies on its storage medium.</p>
+</div>
+<div class="paragraph">
+<p>Although some file systems may have an internal block / chunk / cluster / sector that they use as their basic <code>AllocationUnit</code>, it is not necessary to expose this information to the kernel. The advantage to exposing it is that applications can use (little documented) file system API&#8217;s to preallocate files.</p>
+</div>
+<div class="paragraph">
+<p>Regardless of whether a file system exposes <code>AllocationSize</code> it must obey the following rule: it must always be that <code>FileSize &lt;= AllocationSize</code>. In general the WinFsp driver also assumes that the <code>AllocationSize</code> is a multiple of the <code>AllocationUnit</code>; in this case the <code>AllocationUnit</code> is the product of <code>SectorSize * SectorsPerAllocationUnit</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>SetFileSize</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS SetFileSize(FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext, UINT64 NewSize, BOOLEAN SetAllocationSize,
+    FSP_FSCTL_FILE_INFO *FileInfo)
+{
+    HANDLE Handle = HandleFromContext(FileContext);
+    FILE_ALLOCATION_INFO AllocationInfo;
+    FILE_END_OF_FILE_INFO EndOfFileInfo;
+
+    if (SetAllocationSize)
+    {
+        /*
+         * This file system does not maintain AllocationSize, although NTFS clearly can.
+         * However it must always be FileSize &lt;= AllocationSize and NTFS will make sure
+         * to truncate the FileSize if it sees an AllocationSize &lt; FileSize.
+         *
+         * If OTOH a very large AllocationSize is passed, the call below will increase
+         * the AllocationSize of the underlying file, although our file system does not
+         * expose this fact. This AllocationSize is only temporary as NTFS will reset
+         * the AllocationSize of the underlying file when it is closed.
+         */
+
+        AllocationInfo.AllocationSize.QuadPart = NewSize;
+
+        if (!SetFileInformationByHandle(Handle,
+            FileAllocationInfo, &amp;AllocationInfo, sizeof AllocationInfo))
+            return FspNtStatusFromWin32(GetLastError());
+    }
+    else
+    {
+        EndOfFileInfo.EndOfFile.QuadPart = NewSize;
+
+        if (!SetFileInformationByHandle(Handle,
+            FileEndOfFileInfo, &amp;EndOfFileInfo, sizeof EndOfFileInfo))
+            return FspNtStatusFromWin32(GetLastError());
+    }
+
+    return GetFileInfoInternal(Handle, FileInfo);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally the <code>SetSecurity</code> operation is used to update a file&#8217;s security information.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>SetSecurity</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS SetSecurity(FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    SECURITY_INFORMATION SecurityInformation, PSECURITY_DESCRIPTOR ModificationDescriptor)
+{
+    HANDLE Handle = HandleFromContext(FileContext);
+
+    if (!SetKernelObjectSecurity(Handle, SecurityInformation, ModificationDescriptor))
+        return FspNtStatusFromWin32(GetLastError());
+
+    return STATUS_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_flush">Flush</h3>
+<div class="paragraph">
+<p>Windows file systems are free to cache file information in order to speed up operations. In some cases it is important to ensure that all caches have been "flushed" and all information has been persisted in the final storage medium. Windows provides the <code>FlushFileBuffers</code> API for this purpose. User mode file systems that support flushing must implement the <code>Flush</code> operation.</p>
+</div>
+<div class="paragraph">
+<p>The <code>Flush</code> operation is used to flush a single file or the whole volume (file system). At the time the <code>Flush</code> call arrives the kernel has already flushed all its file caches (by calling <code>Write</code> for all dirty data in its caches). If the file system performs additional caching it should flush its own caches at this point.</p>
+</div>
+<div class="paragraph">
+<p>The implementation of <code>Flush</code> for our passthrough file system follows:</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>Flush</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS Flush(FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    FSP_FSCTL_FILE_INFO *FileInfo)
+{
+    HANDLE Handle = HandleFromContext(FileContext);
+
+    /* we do not flush the whole volume, so just return SUCCESS */
+    if (0 == Handle)
+        return STATUS_SUCCESS;
+
+    if (!FlushFileBuffers(Handle))
+        return FspNtStatusFromWin32(GetLastError());
+
+    return GetFileInfoInternal(Handle, FileInfo);
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_create">Create</h3>
+<div class="paragraph">
+<p>Our file system is now functional, but it still misses an important ability: the ability to create and delete files. We will tackle creating files first.</p>
+</div>
+<div class="paragraph">
+<p>The <code>Create</code> operation is used to create files and directories. A file or directory should be created only if it does not already exist. Whether to create a file or directory is controlled by the <code>FILE_DIRECTORY_FILE</code> flag.</p>
+</div>
+<div class="paragraph">
+<p>The implementation of <code>Create</code> follows:</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>Create</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS Create(FSP_FILE_SYSTEM *FileSystem,
+    PWSTR FileName, UINT32 CreateOptions, UINT32 GrantedAccess,
+    UINT32 FileAttributes, PSECURITY_DESCRIPTOR SecurityDescriptor, UINT64 AllocationSize,
+    PVOID *PFileContext, FSP_FSCTL_FILE_INFO *FileInfo)
+{
+    PTFS *Ptfs = (PTFS *)FileSystem-&gt;UserContext;
+    WCHAR FullPath[FULLPATH_SIZE];
+    SECURITY_ATTRIBUTES SecurityAttributes;
+    ULONG CreateFlags;
+    PTFS_FILE_CONTEXT *FileContext;
+
+    if (!ConcatPath(Ptfs, FileName, FullPath))
+        return STATUS_OBJECT_NAME_INVALID;
+
+    FileContext = malloc(sizeof *FileContext);                          // <b class="conum">(1)</b>
+    if (0 == FileContext)
+        return STATUS_INSUFFICIENT_RESOURCES;
+    memset(FileContext, 0, sizeof *FileContext);
+
+    SecurityAttributes.nLength = sizeof SecurityAttributes;
+    SecurityAttributes.lpSecurityDescriptor = SecurityDescriptor;
+    SecurityAttributes.bInheritHandle = FALSE;
+
+    CreateFlags = FILE_FLAG_BACKUP_SEMANTICS;                           // <b class="conum">(2)</b>
+    if (CreateOptions &amp; FILE_DELETE_ON_CLOSE)
+        CreateFlags |= FILE_FLAG_DELETE_ON_CLOSE;                       // <b class="conum">(3)</b>
+
+    if (CreateOptions &amp; FILE_DIRECTORY_FILE)
+    {
+        /*
+         * It is not widely known but CreateFileW can be used to create directories!
+         * It requires the specification of both FILE_FLAG_BACKUP_SEMANTICS and
+         * FILE_FLAG_POSIX_SEMANTICS. It also requires that FileAttributes has
+         * FILE_ATTRIBUTE_DIRECTORY set.
+         */
+        CreateFlags |= FILE_FLAG_POSIX_SEMANTICS;                       // <b class="conum">(2)</b>
+        FileAttributes |= FILE_ATTRIBUTE_DIRECTORY;
+    }
+    else
+        FileAttributes &amp;= ~FILE_ATTRIBUTE_DIRECTORY;
+
+    if (0 == FileAttributes)
+        FileAttributes = FILE_ATTRIBUTE_NORMAL;
+
+    FileContext-&gt;Handle = CreateFileW(FullPath,
+        GrantedAccess, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, &amp;SecurityAttributes,
+        CREATE_NEW, CreateFlags | FileAttributes, 0);                   // <b class="conum">(4)</b>
+    if (INVALID_HANDLE_VALUE == FileContext-&gt;Handle)
+    {
+        free(FileContext);
+        return FspNtStatusFromWin32(GetLastError());
+    }
+
+    *PFileContext = FileContext;
+
+    return GetFileInfoInternal(FileContext-&gt;Handle, FileInfo);          // <b class="conum">(5)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Create the <code>FileContext</code> object. This is used to track an open file instance.</p>
+</li>
+<li>
+<p>Allow creation of directories using the flags <code>FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_POSIX_SEMANTICS</code>.</p>
+</li>
+<li>
+<p>Include the FILE_FLAG_DELETE_ON_CLOSE flag. File systems do not normally have to track this flag as WinFsp will track it and post the appropriate <code>Cleanup</code> request. Passing it to the underlying file system here allows us to simplify <code>Cleanup</code> for this simple file system.</p>
+</li>
+<li>
+<p>Use CREATE_NEW to create new files only. Allow full sharing (<code>FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE</code>) as WinFsp performs its own sharing checks.</p>
+</li>
+<li>
+<p>Use <code>GetFileInfoInternal</code> to return information about the file.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_overwrite">Overwrite</h3>
+<div class="paragraph">
+<p>Another special operation for Windows file systems is the ability to "overwrite" or "supersede" files. This operation is used (for example) when an application calls <code>CreateFileW</code> with the <code>CREATE_ALWAYS</code> flag.</p>
+</div>
+<div class="paragraph">
+<p><code>Overwrite</code> must truncate the file to zero size. It must also replace or merge the file&#8217;s attributes according to the <code>ReplaceFileAttributes</code> parameter. The implementation of <code>Overwrite</code> for our file system follows.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>Overwrite</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS Overwrite(FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext, UINT32 FileAttributes, BOOLEAN ReplaceFileAttributes, UINT64 AllocationSize,
+    FSP_FSCTL_FILE_INFO *FileInfo)
+{
+    HANDLE Handle = HandleFromContext(FileContext);
+    FILE_BASIC_INFO BasicInfo = { 0 };
+    FILE_ALLOCATION_INFO AllocationInfo = { 0 };
+    FILE_ATTRIBUTE_TAG_INFO AttributeTagInfo;
+
+    if (ReplaceFileAttributes)
+    {
+        if (0 == FileAttributes)
+            FileAttributes = FILE_ATTRIBUTE_NORMAL;
+
+        BasicInfo.FileAttributes = FileAttributes;                      // <b class="conum">(1)</b>
+        if (!SetFileInformationByHandle(Handle,
+            FileBasicInfo, &amp;BasicInfo, sizeof BasicInfo))
+            return FspNtStatusFromWin32(GetLastError());
+    }
+    else if (0 != FileAttributes)
+    {
+        if (!GetFileInformationByHandleEx(Handle,
+            FileAttributeTagInfo, &amp;AttributeTagInfo, sizeof AttributeTagInfo))
+            return FspNtStatusFromWin32(GetLastError());
+
+        BasicInfo.FileAttributes =
+            FileAttributes | AttributeTagInfo.FileAttributes;           // <b class="conum">(2)</b>
+        if (BasicInfo.FileAttributes ^ FileAttributes)
+        {
+            if (!SetFileInformationByHandle(Handle,
+                FileBasicInfo, &amp;BasicInfo, sizeof BasicInfo))
+                return FspNtStatusFromWin32(GetLastError());
+        }
+    }
+
+    if (!SetFileInformationByHandle(Handle,
+        FileAllocationInfo, &amp;AllocationInfo, sizeof AllocationInfo))    // <b class="conum">(3)</b>
+        return FspNtStatusFromWin32(GetLastError());
+
+    return GetFileInfoInternal(Handle, FileInfo);
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>If <code>ReplaceFileAttributes</code> is true, set the file&#8217;s attributets to the specified ones (this is a "supersede" operation).</p>
+</li>
+<li>
+<p>If <code>ReplaceFileAttributes</code> is false, merge the specified file attributes with the existing ones (this is an "overwrite" operation).</p>
+</li>
+<li>
+<p>Set the underlying file&#8217;s allocation size to 0, which also sets the file size to 0, thus truncating the file.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_cleanup">Cleanup</h3>
+<div class="paragraph">
+<p>One of the important file system operations that we have not discussed so far is <code>Cleanup</code>. <code>Cleanup</code> is called whenever a file is about to be closed (when an application that opened a file calls <code>CloseHandle</code>). If the <code>VolumeParams</code> <code>PostCleanupWhenModifiedOnly</code> flag is set, then <code>Cleanup</code> is posted only when the file was modified or deleted. As such <code>Cleanup</code> support is essential if a file system supports deleting files.</p>
+</div>
+<div class="paragraph">
+<p>Our <code>Cleanup</code> implementation is minimal. We present it below and we discuss it afterwards.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>Cleanup</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static VOID Cleanup(FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext, PWSTR FileName, ULONG Flags)
+{
+    HANDLE Handle = HandleFromContext(FileContext);
+
+    if (Flags &amp; FspCleanupDelete)                                       // <b class="conum">(1)</b>
+    {
+        CloseHandle(Handle);
+
+        /* this will make all future uses of Handle to fail with STATUS_INVALID_HANDLE */
+        HandleFromContext(FileContext) = INVALID_HANDLE_VALUE;          // <b class="conum">(2)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Only close the underlying file&#8217;s handle if our file system&#8217;s file instance has been marked for deletion.</p>
+</li>
+<li>
+<p>This invalidates the underlying file&#8217;s handle, thus ensuring that additional file operations will fail with <code>STATUS_INVALID_HANDLE</code>.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>If our open file instance is not marked for deletion we do <strong>not</strong> <code>CloseHandle</code> the underlying handle; we will do so at a later time when we receive the <code>Close</code> request. This allows the file system to receive additional requests (for example, <code>Write</code> requests from the kernel lazy writer if kernel caching is enabled for this file system).</p>
+</div>
+<div class="paragraph">
+<p>If our open file instance is marked for deletion we <code>CloseHandle</code> the underlying handle, and we invalidate the handle. By calling <code>CloseHandle</code> we ensure that the underlying file system can now delete a file that has been previously marked for deletion by the <code>FILE_FLAG_DELETE_ON_CLOSE</code> flag or a <code>FileDispositionInfo</code> call (see <code>CanDelete</code> below). By invalidating the handle we ensure that no additional file operations can be performed on this file instance (they will fail with <code>STATUS_INVALID_HANDLE</code>). We will still receive a <code>Close</code> operation for our open file instance which calls <code>CloseHandle</code> again, but this is safe to do with INVALID_HANDLE_VALUE.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+The WinFsp kernel driver maintains a <code>DeletePending</code> flag for every open file. This flag becomes true when a file is opened with <code>FILE_FLAG_DELETE_ON_CLOSE</code> or when <code>FileDispositionInfo</code> is set. The WinFsp kernel driver sets <code>FspCleanupDelete</code> when it receives the last <code>CloseHandle</code> for a file that is being deleted. The user mode file system need not maintain its own <code>DeletePending</code> flag.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_candelete">CanDelete</h3>
+<div class="paragraph">
+<p>There are two ways for deleting a file or directory on Windows. One is to supply the <code>FILE_FLAG_DELETE_ON_CLOSE</code> flag during a <code>CreateFileW</code> call. The other one is to use the <code>FileDispositionInfo</code> information class with a call to <code>SetInformationByHandle</code> (which is what <code>DeleteFileW</code> and <code>RemoveDirectoryW</code> effectively do). [It is also possible to delete an (unopened) file using <code>Rename</code> by we will ignore this case here.]</p>
+</div>
+<div class="paragraph">
+<p><code>CanDelete</code> is called in the <code>FileDispositionInfo</code> case (only). In general <code>CanDelete</code> needs to check whether deleting the file or directory is allowed and return <code>STATUS_SUCCESS</code> or an appropriate status code. Most file systems need only check whether a directory is empty and disallow deletion by returning <code>STATUS_DIRECTORY_NOT_EMPTY</code> if it is not. <code>CanDelete</code> need <strong>not</strong> mark a file for deletion, this flag is maintained by the WinFsp kernel driver.</p>
+</div>
+<div class="paragraph">
+<p>In this implementation of <code>CanDelete</code> we take advantage of the fact that the underlying Windows file system already knows how to handle a <code>FileDispositionInfo</code> call.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>CanDelete</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS CanDelete(FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext, PWSTR FileName)
+{
+    HANDLE Handle = HandleFromContext(FileContext);
+    FILE_DISPOSITION_INFO DispositionInfo;
+
+    DispositionInfo.DeleteFile = TRUE;                                  // <b class="conum">(1)</b>
+
+    if (!SetFileInformationByHandle(Handle,
+        FileDispositionInfo, &amp;DispositionInfo, sizeof DispositionInfo))
+        return FspNtStatusFromWin32(GetLastError());
+
+    return STATUS_SUCCESS;
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Mark the underlying file system&#8217;s file for deletion.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_rename">Rename</h3>
+<div class="paragraph">
+<p>Our file system is almost fully functional. There remains one operation to implement: <code>Rename</code>.</p>
+</div>
+<div class="paragraph">
+<p><code>Rename</code> can be hard to implement for a general purpose file system, but in our case things are simple, because the underlying Windows file system will take care of the details.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>Rename</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS Rename(FSP_FILE_SYSTEM *FileSystem,
+    PVOID FileContext,
+    PWSTR FileName, PWSTR NewFileName, BOOLEAN ReplaceIfExists)
+{
+    PTFS *Ptfs = (PTFS *)FileSystem-&gt;UserContext;
+    WCHAR FullPath[FULLPATH_SIZE], NewFullPath[FULLPATH_SIZE];
+
+    if (!ConcatPath(Ptfs, FileName, FullPath))
+        return STATUS_OBJECT_NAME_INVALID;
+
+    if (!ConcatPath(Ptfs, NewFileName, NewFullPath))
+        return STATUS_OBJECT_NAME_INVALID;
+
+    if (!MoveFileExW(FullPath, NewFullPath, ReplaceIfExists ? MOVEFILE_REPLACE_EXISTING : 0))
+        return FspNtStatusFromWin32(GetLastError());
+
+    return STATUS_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_testing_the_file_system">Testing the file system</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We now have a functional file system. It supports the following Windows file system functionality:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Query volume information.</p>
+</li>
+<li>
+<p>Open, create, close, delete, rename files and directories.</p>
+</li>
+<li>
+<p>Query and set file and directory information.</p>
+</li>
+<li>
+<p>Query and set security information (ACL&#8217;s).</p>
+</li>
+<li>
+<p>Read and write files.</p>
+</li>
+<li>
+<p>Memory mapped I/O.</p>
+</li>
+<li>
+<p>Directory change notifications.</p>
+</li>
+<li>
+<p>Lock and unlock files.</p>
+</li>
+<li>
+<p>Opportunistic locks.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>There is some additional functionality which WinFsp supports but our file system does not implement:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Open, create, close, delete, query named streams.</p>
+</li>
+<li>
+<p>Reparse points and symbolic links.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The question is: how can we develop the confidence that our file system works as a "proper" Windows file system?</p>
+</div>
+<div class="paragraph">
+<p>WinFsp includes a number of test suites that are used for testing its components and its reference file system MEMFS. The primary test suite is called <code>winfsp-tests</code> and is a comprehensive test suite that exercises all aspects of Windows file system functionality that WinFsp supports. <code>Winfsp-tests</code> can be run in a special <code>--external</code> mode where it can be used to test other WinFsp-based file systems. We will use it in this case to test our passthrough file system.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<code>Winfsp-tests</code> is not included with the WinFsp installer. In order to use <code>winfsp-tests</code> one must first clone the WinFsp repository and build the WinFsp Visual Studio solution. The steps to do so are not included in this tutorial.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><code>Winfsp-tests</code> exercises some esoteric aspects of Windows file system functionality, so we do not expect all the tests to pass. For example, our simple file system does not maintain <code>AllocationSize</code>; we therefore expect related tests to fail. As another example, the passthrough file system uses normal Windows file API&#8217;s to implement its functionality, as such some security tests are expected to fail if the file system runs under a normal account.</p>
+</div>
+<div class="paragraph">
+<p>In order to test our file system we create a drive <code>Y:</code> using the command line <code>passthrough-x64 -p C:\...\passthrough-x64 -m Y:</code> and then execute the command.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>winfsp-tests run</strong></code></div>
+<div class="content">
+<pre>Y:\&gt;C:\...\winfsp-tests-x64 --external --resilient --case-insensitive-cmp -create_allocation_test -getfileinfo_name_test -delete_access_test -rename_flipflop_test -rename_mmap_test -reparse* -stream* <b class="conum">(1)</b> <b class="conum">(2)</b>
+[snip irrelevant tests]
+create_test............................ OK 0.03s
+create_related_test.................... OK 0.00s
+create_sd_test......................... OK 0.03s
+create_notraverse_test................. OK 0.00s
+create_backup_test..................... OK 0.00s
+create_restore_test.................... OK 0.00s
+create_share_test...................... OK 0.00s
+create_curdir_test..................... OK 0.00s
+create_namelen_test.................... OK 0.02s
+getfileinfo_test....................... OK 0.00s
+setfileinfo_test....................... OK 0.01s
+delete_test............................ OK 0.00s
+delete_pending_test.................... OK 0.00s
+delete_mmap_test....................... OK 0.02s
+rename_test............................ OK 0.06s
+rename_open_test....................... OK 0.00s
+rename_caseins_test.................... OK 0.02s
+getvolinfo_test........................ OK 0.00s
+setvolinfo_test........................ OK 0.00s
+getsecurity_test....................... OK 0.00s
+setsecurity_test....................... OK 0.01s
+rdwr_noncached_test.................... OK 0.02s
+rdwr_noncached_overlapped_test......... OK 0.03s
+rdwr_cached_test....................... OK 0.02s
+rdwr_cached_append_test................ OK 0.01s
+rdwr_cached_overlapped_test............ OK 0.03s
+rdwr_writethru_test.................... OK 0.06s
+rdwr_writethru_append_test............. OK 0.01s
+rdwr_writethru_overlapped_test......... OK 0.00s
+rdwr_mmap_test......................... OK 0.23s
+rdwr_mixed_test........................ OK 0.03s
+flush_test............................. OK 0.06s
+flush_volume_test...................... OK 0.00s
+lock_noncached_test.................... OK 0.02s
+lock_noncached_overlapped_test......... OK 0.02s
+lock_cached_test....................... OK 0.05s
+lock_cached_overlapped_test............ OK 0.02s
+querydir_test.......................... OK 0.39s
+querydir_expire_cache_test............. OK 0.00s
+querydir_buffer_overflow_test.......... OK 0.00s
+dirnotify_test......................... OK 1.01s
+--- COMPLETE ---</pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Run <code>winfsp-tests</code> with <code>--external</code>, <code>--resilient</code> switches which instructs it to run its external file system tests.</p>
+</li>
+<li>
+<p>Disable tests that are not expected to pass because they test functionality that either we did not implement (<code>-reparse*</code>, <code>-stream*</code>) or is esoteric (<code>-create_allocation_test</code>, <code>-getfileinfo_name_test</code>, <code>-rename_flipflop_test</code>, <code>-rename_mmap_test</code>) or requires that the file system is run under an account with sufficient security rights (<code>-delete_access_test</code>).</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_running_the_file_system_as_a_service">Running the file system as a service</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Our final task is to discuss how to convert our file system into a service that can be managed by the WinFsp launcher. This allows our file system to provide file services to all processes in the system.</p>
+</div>
+<div class="paragraph">
+<p>An important thing to consider is that our file system will be running in the SYSTEM account security context, which is different from the security context of any processes that want to use this file system. Recall that the passthrough file system is a simple layer over an underlying file system, therefore how the underlying file system handles security becomes important, particularly when the underlying file system is NTFS.</p>
+</div>
+<div class="paragraph">
+<p>For this reason we modify the passthrough file system to enable the "backup" and "restore" privileges which are available to a process running under the SYSTEM account. Enabling these privileges allows us to circumvent some NTFS access checks and simply use NTFS as a storage medium. With the <code>EnableBackupRestorePrivileges</code> implementation in place all that remains is to call it from <code>SvcStart</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>EnableBackupRestorePrivileges</strong></code></div>
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS EnableBackupRestorePrivileges(VOID)
+{
+    union
+    {
+        TOKEN_PRIVILEGES P;
+        UINT8 B[sizeof(TOKEN_PRIVILEGES) + sizeof(LUID_AND_ATTRIBUTES)];
+    } Privileges;
+    HANDLE Token;
+
+    Privileges.P.PrivilegeCount = 2;
+    Privileges.P.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+    Privileges.P.Privileges[1].Attributes = SE_PRIVILEGE_ENABLED;
+
+    if (!LookupPrivilegeValueW(0, SE_BACKUP_NAME, &amp;Privileges.P.Privileges[0].Luid) ||
+        !LookupPrivilegeValueW(0, SE_RESTORE_NAME, &amp;Privileges.P.Privileges[1].Luid))
+        return FspNtStatusFromWin32(GetLastError());
+
+    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &amp;Token))
+        return FspNtStatusFromWin32(GetLastError());
+
+    if (!AdjustTokenPrivileges(Token, FALSE, &amp;Privileges.P, 0, 0, 0))
+    {
+        CloseHandle(Token);
+
+        return FspNtStatusFromWin32(GetLastError());
+    }
+
+    CloseHandle(Token);
+
+    return STATUS_SUCCESS;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We are now ready to register our file system to be managed by the WinFsp launcher. For this purpose we will use the <code>fsreg.bat</code> utility which can be found in the WinFsp <code>bin</code> directory. <code>Fsreg.bat</code> will create all necessary entries in the Windows registry.</p>
+</div>
+<div class="paragraph">
+<p>From an administrator prompt switch to the passthrough directory and run:</p>
+</div>
+<div class="listingblock">
+<div class="title"><code><strong>fsreg.bat invocation</strong></code></div>
+<div class="content">
+<pre>fsreg.bat passthrough build\Debug\passthrough-x64.exe "-u %1 -m %2" "D:P(A;;RPWPLC;;;WD)"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With this step complete we can now launch our file system from any command prompt.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="NetUse.png" alt="First Run">
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively one can use the Windows explorer.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="Explorer.png" alt="First Run">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_conclusion">Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In less than 1000 lines of C code we have written a Windows file system. Our file system implements all commonly used file functionality on Windows. It integrates fully with the OS and has been tested to give us reasonable confidence that it works as expected under many scenarios.</p>
+</div>
+<div class="paragraph">
+<p>Time to go on and create your own file system! Some ideas for quick gratification:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>RegFs</strong>: Create a file system view of the registry. Bonus points if you make it read/write and if you find creative ways of handling different registry value types.</p>
+</li>
+<li>
+<p><strong>WinObjFs</strong>: Are you familiar with WinObj from SysInternals? It&#8217;s a fantastic app to explore the NTOS object namespace. Create a file system that presents this namespace as a file system. <strong>Make it read-only!</strong></p>
+</li>
+<li>
+<p><strong>ProcFs</strong>: Create something akin to procfs for Windows.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+      </div>
+
+    </div>
+  </body>
+</html>

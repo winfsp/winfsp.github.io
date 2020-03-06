@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>WinFsp API launch.h &middot; WinFsp</title>
+
+    <link rel="stylesheet" href="/css/primer.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+  </head>
+  <body class="bg-white text-gray-dark">
+    <div id="container" class="container-lg clearfix">
+
+      <div id="side" class="col-3 float-left">
+        <div class="p-3" style="min-height:100vh">
+          <img src="/logo.png" class="mb-3 width-fit auto-invert" />
+          <h1 class="f1-light text-uppercase text-center mb-3">WinFsp</h1>
+          <nav class="SideNav border"><a class="SideNav-item" href="/" >Main</a>
+              <a class="SideNav-item" href="/rel" >Download</a>
+              <a class="SideNav-item" href="/doc" aria-current="page">Documentation</a>
+              <nav class="SideNav py-2 pl-3">
+                  <a class="SideNav-subItem" href="/doc/Frequently-Asked-Questions/" >Frequently Asked Questions</a><a class="SideNav-subItem" href="/doc/Known-File-Systems/" >Known File Systems</a><a class="SideNav-subItem" href="/doc/Native-API-vs-FUSE/" >Native API vs FUSE</a><a class="SideNav-subItem" href="/doc/NTFS-Compatibility/" >NTFS Compatibility</a><a class="SideNav-subItem" href="/doc/Queued-Events/" >Queued Events</a><a class="SideNav-subItem" href="/doc/SSHFS-Port-Case-Study/" >SSHFS Port Case Study</a><a class="SideNav-subItem" href="/doc/WinFsp-API-launch.h/" aria-current="page">WinFsp API launch.h</a><a class="SideNav-subItem" href="/doc/WinFsp-API-winfsp.h/" >WinFsp API winfsp.h</a><a class="SideNav-subItem" href="/doc/WinFsp-as-an-IPC-Mechanism/" >WinFsp as an IPC Mechanism</a><a class="SideNav-subItem" href="/doc/WinFsp-Design/" >WinFsp Design</a><a class="SideNav-subItem" href="/doc/WinFsp-Kernel-Mode-File-Systems/" >WinFsp Kernel Mode File Systems</a><a class="SideNav-subItem" href="/doc/WinFsp-Performance-Testing/" >WinFsp Performance Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Service-Architecture/" >WinFsp Service Architecture</a><a class="SideNav-subItem" href="/doc/WinFsp-Testing/" >WinFsp Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Tutorial/" >WinFsp Tutorial</a>
+                </nav><a class="SideNav-item" href="/src" >Source</a>
+              <a class="SideNav-item" href="/blog" >Blog</a>
+              
+          </nav>
+        </div>
+      </div>
+
+      <div id="main" class="col-9 float-left">
+        <div class="p-3 markdown-body" style="min-height:100vh">
+<h1>WinFsp API launch.h</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>WinFsp Launch API.</p>
+</div>
+<div class="paragraph">
+<p>In order to use the WinFsp Launch API a program must include &lt;winfsp/launch.h&gt;
+and link with the winfsp_x64.dll (or winfsp_x86.dll) library.</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#_launch_control">Launch Control</a>
+<ul class="sectlevel2">
+<li><a href="#_functions">Functions</a></li>
+</ul>
+</li>
+<li><a href="#_service_registry">Service Registry</a>
+<ul class="sectlevel2">
+<li><a href="#_functions_2">Functions</a></li>
+<li><a href="#_typedefs">Typedefs</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_launch_control">Launch Control</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_functions">Functions</h3>
+<div class="paragraph">
+<p><strong>FspLaunchCallLauncherPipe</strong> - Call launcher pipe.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspLaunchCallLauncherPipe(
+    WCHAR Command,
+    ULONG Argc,
+    PWSTR *Argv,
+    ULONG *Argl,
+    PWSTR Buffer,
+    PULONG PSize,
+    PULONG PLauncherError);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Command</em> - Launcher command to send. For example, the 'L' launcher command instructs
+the launcher to list all running service instances.</p>
+</li>
+<li>
+<p><em>Argc</em> - Command argument count. May be 0.</p>
+</li>
+<li>
+<p><em>Argv</em> - Command argument array. May be NULL.</p>
+</li>
+<li>
+<p><em>Argl</em> - Command argument length array. May be NULL. If this is NULL all command arguments
+are assumed to be NULL-terminated strings. It is also possible for specific arguments
+to be NULL-terminated; in this case pass -1 in the corresponding Argl position.</p>
+</li>
+<li>
+<p><em>Buffer</em> - Buffer that receives the command response. May be NULL.</p>
+</li>
+<li>
+<p><em>PSize</em> - Pointer to a ULONG. On input it contains the size of the Buffer. On output it
+contains the number of bytes transferred. May be NULL.</p>
+</li>
+<li>
+<p><em>PLauncherError</em> - Receives the launcher error if any. This is always a Win32 error code. May not be NULL.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS if the command is sent successfully to the launcher, even if the launcher
+returns an error. Other status codes indicate a communication error. Launcher errors are
+reported through PLauncherError.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>This function is used to send a command to the launcher and receive a response.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspLaunchGetInfo</strong> - Get information about a service instance.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspLaunchGetInfo(
+    PWSTR ClassName,
+    PWSTR InstanceName,
+    PWSTR Buffer,
+    PULONG PSize,
+    PULONG PLauncherError);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>ClassName</em> - Class name of the service instance to stop.</p>
+</li>
+<li>
+<p><em>InstanceName</em> - Instance name of the service instance to stop.</p>
+</li>
+<li>
+<p><em>Buffer</em> - Buffer that receives the command response. May be NULL.</p>
+</li>
+<li>
+<p><em>PSize</em> - Pointer to a ULONG. On input it contains the size of the Buffer. On output it
+contains the number of bytes transferred. May be NULL.</p>
+</li>
+<li>
+<p><em>PLauncherError</em> - Receives the launcher error if any. This is always a Win32 error code. May not be NULL.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS if the command is sent successfully to the launcher, even if the launcher
+returns an error. Other status codes indicate a communication error. Launcher errors are
+reported through PLauncherError.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>The information is a list of NULL-terminated strings: the class name of the service instance,
+the instance name of the service instance and the full command line used to start the service
+instance.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspLaunchGetNameList</strong> - List service instances.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspLaunchGetNameList(
+    PWSTR Buffer,
+    PULONG PSize,
+    PULONG PLauncherError);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Buffer</em> - Buffer that receives the command response. May be NULL.</p>
+</li>
+<li>
+<p><em>PSize</em> - Pointer to a ULONG. On input it contains the size of the Buffer. On output it
+contains the number of bytes transferred. May be NULL.</p>
+</li>
+<li>
+<p><em>PLauncherError</em> - Receives the launcher error if any. This is always a Win32 error code. May not be NULL.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS if the command is sent successfully to the launcher, even if the launcher
+returns an error. Other status codes indicate a communication error. Launcher errors are
+reported through PLauncherError.</p>
+</div>
+<div class="paragraph">
+<p><strong>Discussion</strong></p>
+</div>
+<div class="paragraph">
+<p>The information is a list of pairs of NULL-terminated strings. Each pair contains the class
+name and instance name of a service instance. All currently running service instances are
+listed.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspLaunchStart</strong> - Start a service instance.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspLaunchStart(
+    PWSTR ClassName,
+    PWSTR InstanceName,
+    ULONG Argc,
+    PWSTR *Argv,
+    BOOLEAN HasSecret,
+    PULONG PLauncherError);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>ClassName</em> - Class name of the service instance to start.</p>
+</li>
+<li>
+<p><em>InstanceName</em> - Instance name of the service instance to start.</p>
+</li>
+<li>
+<p><em>Argc</em> - Service instance argument count. May be 0.</p>
+</li>
+<li>
+<p><em>Argv</em> - Service instance argument array. May be NULL.</p>
+</li>
+<li>
+<p><em>HasSecret</em> - Whether the last argument in Argv is assumed to be a secret (e.g. password) or not.
+Secrets are passed to service instances through standard input rather than the command
+line.</p>
+</li>
+<li>
+<p><em>PLauncherError</em> - Receives the launcher error if any. This is always a Win32 error code. May not be NULL.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS if the command is sent successfully to the launcher, even if the launcher
+returns an error. Other status codes indicate a communication error. Launcher errors are
+reported through PLauncherError.</p>
+</div>
+<div class="paragraph">
+<p><strong>FspLaunchStop</strong> - Stop a service instance.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspLaunchStop(
+    PWSTR ClassName,
+    PWSTR InstanceName,
+    PULONG PLauncherError);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>ClassName</em> - Class name of the service instance to stop.</p>
+</li>
+<li>
+<p><em>InstanceName</em> - Instance name of the service instance to stop.</p>
+</li>
+<li>
+<p><em>PLauncherError</em> - Receives the launcher error if any. This is always a Win32 error code. May not be NULL.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS if the command is sent successfully to the launcher, even if the launcher
+returns an error. Other status codes indicate a communication error. Launcher errors are
+reported through PLauncherError.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_service_registry">Service Registry</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_functions_2">Functions</h3>
+<div class="paragraph">
+<p><strong>FspLaunchRegFreeRecord</strong> - Free a service registry record.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspLaunchRegFreeRecord(
+    FSP_LAUNCH_REG_RECORD *Record);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Record</em> - The service record to free.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>FspLaunchRegGetRecord</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>FspLaunchRegGetRecord</strong> - Get a service registry record.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspLaunchRegGetRecord(
+    PWSTR ClassName,
+    PWSTR Agent,
+    FSP_LAUNCH_REG_RECORD **PRecord);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>ClassName</em> - The service class name.</p>
+</li>
+<li>
+<p><em>Agent</em> - The name of the agent that is retrieving the service record. This API matches
+the supplied Agent against the Agent in the service record and it only returns
+the record if they match. Pass NULL to match any Agent.</p>
+</li>
+<li>
+<p><em>PRecord</em> - Pointer to a record pointer. Memory for the service record will be allocated
+and a pointer to it will be stored at this address. This memory must be later
+freed using FspLaunchRegFreeRecord.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+<div class="paragraph">
+<p><strong>See Also</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>FspLaunchRegFreeRecord</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>FspLaunchRegSetRecord</strong> - Add/change/delete a service registry record.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspLaunchRegSetRecord(
+    PWSTR ClassName,
+    const FSP_LAUNCH_REG_RECORD *Record);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>ClassName</em> - The service class name.</p>
+</li>
+<li>
+<p><em>Record</em> - The record to set in the registry. If NULL, the registry record is deleted.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return Value</strong></p>
+</div>
+<div class="paragraph">
+<p>STATUS_SUCCESS or error code.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_typedefs">Typedefs</h3>
+<div class="paragraph">
+<p><strong>FSP_LAUNCH_REG_RECORD</strong> - Service registry record.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c" data-lang="c">typedef struct _FSP_LAUNCH_REG_RECORD {
+    PWSTR Agent;
+    PWSTR Executable;
+    PWSTR CommandLine;
+    PWSTR WorkDirectory;
+    PWSTR RunAs;
+    PWSTR Security;
+    PVOID Reserved0[6];
+    ULONG JobControl;
+    ULONG Credentials;
+    ULONG Reserved1[6];
+    UINT8 Buffer[];
+} FSP_LAUNCH_REG_RECORD;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+      </div>
+
+    </div>
+  </body>
+</html>

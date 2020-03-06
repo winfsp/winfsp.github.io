@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>WinFsp Performance Testing &middot; WinFsp</title>
+
+    <link rel="stylesheet" href="/css/primer.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+  </head>
+  <body class="bg-white text-gray-dark">
+    <div id="container" class="container-lg clearfix">
+
+      <div id="side" class="col-3 float-left">
+        <div class="p-3" style="min-height:100vh">
+          <img src="/logo.png" class="mb-3 width-fit auto-invert" />
+          <h1 class="f1-light text-uppercase text-center mb-3">WinFsp</h1>
+          <nav class="SideNav border"><a class="SideNav-item" href="/" >Main</a>
+              <a class="SideNav-item" href="/rel" >Download</a>
+              <a class="SideNav-item" href="/doc" aria-current="page">Documentation</a>
+              <nav class="SideNav py-2 pl-3">
+                  <a class="SideNav-subItem" href="/doc/Frequently-Asked-Questions/" >Frequently Asked Questions</a><a class="SideNav-subItem" href="/doc/Known-File-Systems/" >Known File Systems</a><a class="SideNav-subItem" href="/doc/Native-API-vs-FUSE/" >Native API vs FUSE</a><a class="SideNav-subItem" href="/doc/NTFS-Compatibility/" >NTFS Compatibility</a><a class="SideNav-subItem" href="/doc/Queued-Events/" >Queued Events</a><a class="SideNav-subItem" href="/doc/SSHFS-Port-Case-Study/" >SSHFS Port Case Study</a><a class="SideNav-subItem" href="/doc/WinFsp-API-launch.h/" >WinFsp API launch.h</a><a class="SideNav-subItem" href="/doc/WinFsp-API-winfsp.h/" >WinFsp API winfsp.h</a><a class="SideNav-subItem" href="/doc/WinFsp-as-an-IPC-Mechanism/" >WinFsp as an IPC Mechanism</a><a class="SideNav-subItem" href="/doc/WinFsp-Design/" >WinFsp Design</a><a class="SideNav-subItem" href="/doc/WinFsp-Kernel-Mode-File-Systems/" >WinFsp Kernel Mode File Systems</a><a class="SideNav-subItem" href="/doc/WinFsp-Performance-Testing/" aria-current="page">WinFsp Performance Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Service-Architecture/" >WinFsp Service Architecture</a><a class="SideNav-subItem" href="/doc/WinFsp-Testing/" >WinFsp Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Tutorial/" >WinFsp Tutorial</a>
+                </nav><a class="SideNav-item" href="/src" >Source</a>
+              <a class="SideNav-item" href="/blog" >Blog</a>
+              
+          </nav>
+        </div>
+      </div>
+
+      <div id="main" class="col-9 float-left">
+        <div class="p-3 markdown-body" style="min-height:100vh">
+<h1>WinFsp Performance Testing</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>This document discusses performance testing for WinFsp. The goal of this performance testing is to discover optimization opportunities for WinFsp and compare its performance to that of NTFS and Dokany.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_executive_summary">Executive Summary</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This performance testing shows that WinFsp has excellent performance in all tested scenarios. It outperforms NTFS in most scenarios (an unfair comparison as NTFS is a disk file system and WinFsp is tested with an in-memory file system). It also outperforms Dokany in all scenarios, often by an order of magnitude.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="file_tests.png" alt="file tests">
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="rdwr_tests.png" alt="rdwr tests">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_fsbench">Fsbench</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>All testing was performed using a new performance test suite developed as part of WinFsp, called <a href="https://github.com/billziss-gh/winfsp/blob/master/tst/fsbench/fsbench.c">fsbench</a>. Fsbench was developed because it allows the creation of tests that are important to file system developers; for example, it can answer questions of the type: "how long does it take to delete 1000 files" or "how long does it take to list a directory with 10000 files in it".</p>
+</div>
+<div class="paragraph">
+<p>Fsbench is based on the <a href="https://github.com/billziss-gh/winfsp/tree/master/ext/tlib">tlib</a> library, originally from the <strong>secfs</strong> project. Tlib is usually used to develop regression test suites in C/C++, but can be also used to create performance tests.</p>
+</div>
+<div class="paragraph">
+<p>Fsbench currently includes the following tests:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 60%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Test</th>
+<th class="tableblock halign-left valign-top">Measures performance of</th>
+<th class="tableblock halign-left valign-top">Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file_create_test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CreateFileW(CREATE_NEW) / CloseHandle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file count</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file_open_test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CreateFileW(OPEN_EXISTING) / CloseHandle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file count</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file_overwrite_test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CreateFileW(CREATE_ALWAYS) / CloseHandle with existing files</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file count</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file_list_test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">FindFirstFileW / FindNextFile / FindClose</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">iterations</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file_delete_test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DeleteFileW</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file count</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file_mkdir_test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CreateDirectoryW</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file count</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file_rmdir_test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RemoveDirectoryW</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file count</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">rdwr_cc_write_page_test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WriteFile (1 page; cached)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">iterations</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">rdwr_cc_read_page_test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ReadFile (1 page; cached)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">iterations</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">rdwr_nc_write_page_test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WriteFile (1 page; non-cached)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">iterations</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">rdwr_nc_read_page_test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ReadFile (1 page; non-cached)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">iterations</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">rdwr_cc_write_large_test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WriteFile (16 pages; cached)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">iterations</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">rdwr_cc_read_large_test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ReadFile (16 pages; cached)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">iterations</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">rdwr_nc_write_large_test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WriteFile (16 pages; non-cached)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">iterations</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">rdwr_nc_read_large_test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ReadFile (16 pages; non-cached)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">iterations</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mmap_write_test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Memory mapped write test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">iterations</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mmap_write_test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Memory mapped read test</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">iterations</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_tested_file_systems">Tested File Systems</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_ntfs">NTFS</h3>
+<div class="paragraph">
+<p>The comparison to NTFS is very important to establish a baseline. It is also very misleading because NTFS is a disk file system and MEMFS (either the WinFsp or Dokany variants) is an in memory file system. The tests will show that MEMFS is faster than NTFS. This should not be taken to mean that we are trying to make the (obvious) claim that an in memory file system is faster than a disk file system, but to show that the approach of writing a file system in user mode is a valid proposition and can be efficient.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_winfspmemfs">WinFsp/MEMFS</h3>
+<div class="paragraph">
+<p>MEMFS is the file system used to test WinFsp and shipped as a sample bundled with the WinFsp installer. MEMFS is a simple in memory file system and as such is very fast under most conditions. This is desirable because our goal with this performance testing is to measure the speed of the WinFsp system components rather the performance of a complex user mode file system. MEMFS has minimal overhead and is ideal for this purpose.</p>
+</div>
+<div class="paragraph">
+<p>WinFsp/MEMFS can be run in different configurations, which enable or disable WinFsp caching features. The tested configurations were:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>An infinite FileInfoTimeout, which enables caching of metadata and data.</p>
+</li>
+<li>
+<p>A FileInfoTimeout of 1s (second), which enables caching of metadata but disables caching of data.</p>
+</li>
+<li>
+<p>A FileInfoTimeout of 0, which completely disables caching.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The WinFsp git commit at the time of testing was d804f5674d76f11ea86d14f4bcb1157e6e40e719.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_dokanymemfs">Dokany/MEMFS</h3>
+<div class="paragraph">
+<p>To achieve fairness when comparing Dokany to WinFsp the MEMFS file system has been ported to Dokany. Substantial care was taken to ensure that WinFsp/MEMFS and Dokany/MEMFS perform equally well, so that the performance of the Dokany FSD and user-mode components can be measured and compared accurately.</p>
+</div>
+<div class="paragraph">
+<p>The Dokany/MEMFS project has its own <a href="https://github.com/billziss-gh/memfs-dokany">repository</a>. The project comes without a license, which means that it may not be used for any purpose other than as a reference.</p>
+</div>
+<div class="paragraph">
+<p>The Dokany version used for testing was 1.0.1. The Dokany/MEMFS git commit was 27a678d7c0d5ee2fb3fb2ecc8e38210857ae941c.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_test_environment">Test Environment</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Tests were performed on an idle computer/VM. There was a reboot of both the computer and VM before each file system was tested. Each test was run twice and the smaller time value chosen. The assumption is that even in a seemingly idle desktop system there is some activity which will affect the results; the smaller value is the preferred one to use because it reflects the time when there is less or no other activity.</p>
+</div>
+<div class="paragraph">
+<p>The test environment was as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>MacBook Pro (Retina, 13-inch, Early 2015)
+3.1 GHz Intel Core i7
+16 GB 1867 MHz DDR3
+500 GB SSD
+
+VirtualBox Version 5.0.20 r106931
+1 CPU
+4 GB RAM
+80 GB Dynamically allocated differencing storage
+
+Windows 10 (64-bit) Version 1511 (OS Build 10586.420)</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_test_results">Test Results</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the graphs below we use consistent coloring to quickly identify a file system. Red is used for NTFS, yellow for WinFsp/MEMFS with a FileInfoTimeout of 0, green for WinFsp/MEMFS with a FileInfoTimeout of 1, light blue for WinFsp/MEMFS with an infinite FileInfoTimeout and deep blue for Dokany/MEMFS.</p>
+</div>
+<div class="paragraph">
+<p>In all tests lower times are better (the file system is faster).</p>
+</div>
+<div class="sect2">
+<h3 id="_file_tests">File Tests</h3>
+<div class="paragraph">
+<p>These tests measure the performance of creating, opening, overwriting and listing files and directories.</p>
+</div>
+<div class="sect3">
+<h4 id="_file_create_test">file_create_test</h4>
+<div class="paragraph">
+<p>This test measures the performance of CreateFileW(CREATE_NEW) / CloseHandle. WinFsp has the best performance here. Dokany follows and NTFS is last as it has to actually update its data structures on disk.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="file_create_test.png" alt="file create test">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_file_open_test">file_open_test</h4>
+<div class="paragraph">
+<p>This test measures the performance of CreateFileW(OPEN_EXISTING) / CloseHandle. WinFsp again has the best (although uneven) performance, followed by NTFS and then Dokany.</p>
+</div>
+<div class="paragraph">
+<p>WinFsp appears to have very uneven performance here. In particular notice that opening 1000 files is slower than opening 2000 files, which makes no sense! I suspect that the test observes an initial acquisition of resouces when the test first starts, which is not necessary when the test runs for 2000 files at a later time. This uneven performance should probably be investigated in the future.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="file_open_test.png" alt="file open test">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_file_overwrite_test">file_overwrite_test</h4>
+<div class="paragraph">
+<p>This test measures the performance of CreateFileW(CREATE_ALWAYS) / CloseHandle. WinFsp is fastest, followed by NTFS and then Dokany.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="file_overwrite_test.png" alt="file overwrite test">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_file_list_test">file_list_test</h4>
+<div class="paragraph">
+<p>This test measures the performance of FindFirstFileW / FindNextFile / FindClose. NTFS wins this scenario, likely because it can satisfy the list operation from cache. WinFsp has overall good performance. Dokany appears to show slightly quadratic performance in this scenario.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="file_list_test.png" alt="file list test">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_file_delete_test">file_delete_test</h4>
+<div class="paragraph">
+<p>This test measures the performance of DeleteFileW. WinFsp has the best performance, followed by Dokany and NTFS with very similar performance.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="file_delete_test.png" alt="file delete test">
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_readwrite_tests">Read/Write Tests</h3>
+<div class="paragraph">
+<p>These tests measure the performance of cached, non-cached and memory-mapped I/O.</p>
+</div>
+<div class="sect3">
+<h4 id="_rdwr_cc_write_page_test">rdwr_cc_write_page_test</h4>
+<div class="paragraph">
+<p>This test measures the performance of cached WriteFile with 1 page writes. NTFS and WinFsp with an infinite FileInfoTimeout have the best performance, with a clear edge to NTFS (likely because of its use of FastIO, which WinFsp does not currently support). WinFsp with a FileInfoTimeout of 0 or 1 performance is next, because WinFsp does not use the NTOS Cache Manager in this scenario. Dokany performance is last.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="rdwr_cc_write_page_test.png" alt="rdwr cc write page test">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_rdwr_cc_read_page_test">rdwr_cc_read_page_test</h4>
+<div class="paragraph">
+<p>This test measures the performance of cached ReadFile with 1 page reads. The results here are very similar to the rdwr_cc_write_page_test case and similar comments apply.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="rdwr_cc_read_page_test.png" alt="rdwr cc read page test">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_rdwr_nc_write_page_test">rdwr_nc_write_page_test</h4>
+<div class="paragraph">
+<p>This test measures the performance of non-cached WriteFile with 1 page writes. WinFsp has the best performance, followed by Dokany. NTFS shows bad performance, which of course make sense as we are asking it to write all data to the disk.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="rdwr_nc_write_page_test.png" alt="rdwr nc write page test">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_rdwr_nc_read_page_test">rdwr_nc_read_page_test</h4>
+<div class="paragraph">
+<p>This test measures the performance of non-cached ReadFile with 1 page reads. The results here are very similar to the rdwr_nc_write_page_test case and similar comments apply.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="rdwr_nc_read_page_test.png" alt="rdwr nc read page test">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_mmap_write_test">mmap_write_test</h4>
+<div class="paragraph">
+<p>This test measures the performance of memory mapped writes. NTFS and WinFsp seem to have identical performance here, which actually makes sense because memory mapped I/O is effectively always cached and most of the actual I/O is done asynchronously by the system.</p>
+</div>
+<div class="paragraph">
+<p>There are no results for Dokany as it seems to (still) not support memory mapped files:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Y:\&gt;c:\Users\billziss\Projects\winfsp\build\VStudio\build\Release\fsbench-x64.exe --mmap=100 mmap*
+mmap_write_test........................ KO
+    ASSERT(0 != Mapping) failed at fsbench.c:226:mmap_dotest</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="mmap_write_test.png" alt="mmap write test">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_mmap_read_test">mmap_read_test</h4>
+<div class="paragraph">
+<p>This test measures the performance of memory mapped reads. Again NTFS and WinFsp seem to have identical performance here.</p>
+</div>
+<div class="paragraph">
+<p>There are no results for Dokany as it faces the same issue as with mmap_write_test.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="mmap_read_test.png" alt="mmap read test">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+      </div>
+
+    </div>
+  </body>
+</html>

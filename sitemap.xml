@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://winfsp.github.io/blog/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/doc/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/rel/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/doc/Frequently-Asked-Questions/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/doc/Known-File-Systems/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/doc/Native-API-vs-FUSE/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/doc/NTFS-Compatibility/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/doc/Queued-Events/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/src/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/doc/SSHFS-Port-Case-Study/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/doc/WinFsp-API-launch.h/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/doc/WinFsp-API-winfsp.h/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/doc/WinFsp-as-an-IPC-Mechanism/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/doc/WinFsp-Design/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/doc/WinFsp-Kernel-Mode-File-Systems/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/doc/WinFsp-Performance-Testing/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/doc/WinFsp-Service-Architecture/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/doc/WinFsp-Testing/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/doc/WinFsp-Tutorial/</loc>
+  </url>
+  
+</urlset>

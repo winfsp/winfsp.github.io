@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>SSHFS Port Case Study &middot; WinFsp</title>
+
+    <link rel="stylesheet" href="/css/primer.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+  </head>
+  <body class="bg-white text-gray-dark">
+    <div id="container" class="container-lg clearfix">
+
+      <div id="side" class="col-3 float-left">
+        <div class="p-3" style="min-height:100vh">
+          <img src="/logo.png" class="mb-3 width-fit auto-invert" />
+          <h1 class="f1-light text-uppercase text-center mb-3">WinFsp</h1>
+          <nav class="SideNav border"><a class="SideNav-item" href="/" >Main</a>
+              <a class="SideNav-item" href="/rel" >Download</a>
+              <a class="SideNav-item" href="/doc" aria-current="page">Documentation</a>
+              <nav class="SideNav py-2 pl-3">
+                  <a class="SideNav-subItem" href="/doc/Frequently-Asked-Questions/" >Frequently Asked Questions</a><a class="SideNav-subItem" href="/doc/Known-File-Systems/" >Known File Systems</a><a class="SideNav-subItem" href="/doc/Native-API-vs-FUSE/" >Native API vs FUSE</a><a class="SideNav-subItem" href="/doc/NTFS-Compatibility/" >NTFS Compatibility</a><a class="SideNav-subItem" href="/doc/Queued-Events/" >Queued Events</a><a class="SideNav-subItem" href="/doc/SSHFS-Port-Case-Study/" aria-current="page">SSHFS Port Case Study</a><a class="SideNav-subItem" href="/doc/WinFsp-API-launch.h/" >WinFsp API launch.h</a><a class="SideNav-subItem" href="/doc/WinFsp-API-winfsp.h/" >WinFsp API winfsp.h</a><a class="SideNav-subItem" href="/doc/WinFsp-as-an-IPC-Mechanism/" >WinFsp as an IPC Mechanism</a><a class="SideNav-subItem" href="/doc/WinFsp-Design/" >WinFsp Design</a><a class="SideNav-subItem" href="/doc/WinFsp-Kernel-Mode-File-Systems/" >WinFsp Kernel Mode File Systems</a><a class="SideNav-subItem" href="/doc/WinFsp-Performance-Testing/" >WinFsp Performance Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Service-Architecture/" >WinFsp Service Architecture</a><a class="SideNav-subItem" href="/doc/WinFsp-Testing/" >WinFsp Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Tutorial/" >WinFsp Tutorial</a>
+                </nav><a class="SideNav-item" href="/src" >Source</a>
+              <a class="SideNav-item" href="/blog" >Blog</a>
+              
+          </nav>
+        </div>
+      </div>
+
+      <div id="main" class="col-9 float-left">
+        <div class="p-3 markdown-body" style="min-height:100vh">
+<h1>SSHFS Port Case Study</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>This document is a case study in porting SSHFS to Windows and WinFsp. At the time that the document was started WinFsp had a native API, but no FUSE compatible API. The main purpose of the case study was to develop a FUSE compatible API for WinFsp.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_1_gather_information_about_sshfs">Step 1: Gather Information about SSHFS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The SSHFS project is one of the early FUSE projects. The project was originally written by Miklos Szeredi who is also the author of FUSE. SSHFS provides a file system interface on top of SFTP (Secure File Transfer Protocol).</p>
+</div>
+<div class="paragraph">
+<p>The project&#8217;s website is at <a href="https://github.com/libfuse/sshfs" class="bare">https://github.com/libfuse/sshfs</a>. A quick perusal of the source code shows that this is a POSIX program, the file <code>configure.ac</code> further shows that it depends on GLib and FUSE.</p>
+</div>
+<div class="paragraph">
+<p>Luckily Cygwin on Windows provides a POSIX interface and it also includes GLib and pkg-config. We are missing FUSE of course. Let&#8217;s try it anyway:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>billziss@windows:~/Projects/ext$ git clone https://github.com/libfuse/sshfs.git
+Cloning into 'sshfs'...
+[snip]
+billziss@windows:~/Projects/ext$ cd sshfs/
+billziss@windows:~/Projects/ext/sshfs [master]$ autoreconf -i
+[snip]
+billziss@windows:~/Projects/ext/sshfs [master]$ ./configure
+[snip]
+configure: error: Package requirements (fuse &gt;= 2.3 glib-2.0 gthread-2.0) were not met:
+
+No package 'fuse' found</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As expected we get an error because there is no package named FUSE. So let&#8217;s create one.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_2_create_a_fuse_compatible_package">Step 2: Create a FUSE Compatible Package</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>After a few days of development there exists now an initial FUSE implementation within WinFsp. Most of the FUSE API&#8217;s from the header files <code>fuse.h</code>, <code>fuse_common.h</code> and <code>fuse_opt.h</code> have been implemented. However none of the <code>fuse_operations</code> currently work as the necessary work to translate WinFsp requests to FUSE requests has not happened yet.</p>
+</div>
+<div class="sect2">
+<h3 id="_challenges">Challenges</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The FUSE API is old and somewhat hairy. There are multiple versions of it and choosing the right one was not easy. In the end version 2.8 of the API was chosen for implementation.</p>
+</li>
+<li>
+<p>The FUSE API uses a number of OS specific types (notably <code>struct stat</code>). Sometimes these types have multiple definitions even within the same OS (e.g. <code>struct stat</code> and <code>struct stat64</code>). For this reason it was decided to define our own <code>fuse_*</code> types (e.g. <code>struct fuse_stat</code>) instead of relying on the ones that come with MSVC. Care was taken to ensure that these types remain compatible with Cygwin as it is one of our primary target environments.</p>
+</li>
+<li>
+<p>The WinFsp DLL does <strong>not</strong> use the MSVCRT and uses its own memory allocator (<code>HeapAlloc</code>, <code>HeapFree</code>). Even if it used the MSVCRT <code>malloc</code>, it does not have access to the Cygwin <code>malloc</code>. The FUSE API has a few cases where users are expected to use <code>free</code> to deallocate memory (e.g. <code>fuse_opt_add_opt</code>). But which <code>free</code> is that for a Cygwin program? The Cygwin <code>free</code>, the MSVCRT <code>free</code> or our own <code>MemFree</code>?</p>
+<div class="paragraph">
+<p>To solve this problem we use the following pattern: every FUSE API is implemented as a <code>static inline</code> function that calls a WinFsp-FUSE API and passes it an extra argument that describes the environment:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>static inline int fuse_opt_add_opt(char **opts, const char *opt)
+{
+    return fsp_fuse_opt_add_opt(fsp_fuse_env(), opts, opt);
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>fsp_fuse_env</code> function is another <code>static inline</code> function that simply "captures" the current environment (things like the environment&#8217;s <code>malloc</code> and <code>free</code>).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>...
+#elif defined(__CYGWIN__)
+...
+#define FSP_FUSE_ENV_INIT               \
+    {                                   \
+        'C',                            \
+        malloc, free,                   \
+        fsp_fuse_daemonize,             \
+        fsp_fuse_set_signal_handlers,   \
+        fsp_fuse_remove_signal_handlers,\
+    }
+...
+#else
+...
+
+static inline struct fsp_fuse_env *fsp_fuse_env(void)
+{
+    static struct fsp_fuse_env env = FSP_FUSE_ENV_INIT;
+    return &amp;env;
+}</pre>
+</div>
+</div>
+</li>
+<li>
+<p>The implementation of <code>fuse_opt</code> proved an unexpected challenge. The function <code>fuse_opt_parse</code> is very flexible, but it also has a lot of quirks. It took a lot of trial and error to arrive at a clean reimplementation.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_things_that_worked_rather_nicely">Things that worked rather nicely</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The pattern <code>fuse_new</code> / <code>fuse_loop</code> / <code>fuse_destroy</code> fits nicely to the WinFsp service model: <code>FspServiceCreate</code> / <code>FspServiceLoop</code> / <code>FspServiceDelete</code>. This means that every (high-level)  FUSE file system can rather easily be converted into a Windows service if desired.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_integrating_with_cygwin">Integrating with Cygwin</h3>
+<div class="paragraph">
+<p>It remains to show how to use the WinFsp-FUSE implementation from Cygwin and SSHFS. SSHFS uses <code>pkg-config</code> for its build configuration. <code>Pkg-config</code> requires a <code>fuse.pc</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>arch=x64
+prefix=${pcfiledir}/..
+incdir=${prefix}/inc/fuse
+implib=${prefix}/bin/winfsp-${arch}.dll
+
+Name: fuse
+Description: WinFsp FUSE compatible API
+Version: 2.8
+URL: http://www.secfs.net/winfsp/
+Libs: "${implib}"
+Cflags: -I"${incdir}"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The WinFsp installer has been modified to place this file within its installation directory. It remains to point <code>pkg-config</code> to the appropriate location (using <code>PKG_CONFIG_PATH</code>) and the SSHFS configuration process can now find the FUSE package.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sshfs_win">SSHFS-Win</h3>
+<div class="paragraph">
+<p>The sshfs-win open-source project (work in progress) can be found here: <a href="https://bitbucket.org/billziss/sshfs-win" class="bare">https://bitbucket.org/billziss/sshfs-win</a></p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_3_mapping_windows_to_posix">Step 3: Mapping Windows to POSIX</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It would seem that we are now ready to start implementing the <code>fuse_operations</code>. However there is another matter that we need to attend to first and that is mapping the Windows file system view of the world to the POSIX one and vice-versa.</p>
+</div>
+<div class="sect2">
+<h3 id="_mapping_paths">Mapping Paths</h3>
+<div class="paragraph">
+<p>The Windows and POSIX file systems both use paths to address files. The path conventions are different, so we need a technique to convert between the two. This goes beyond a simple translation of the backslash character (<code>\</code>) to slash (<code>/</code>), because several characters are reserved and cannot be used in a Windows file path, but are legal when used in a POSIX path.</p>
+</div>
+<div class="paragraph">
+<p>The reserved Windows characters are:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>&lt;   &gt;   :   "   /   \   |   ?   *
+any character between 0 and 31</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>POSIX only has two reserved characters: slash (<code>/</code>) and <code>NUL</code>.</p>
+</div>
+<div class="paragraph">
+<p>So how do we map between the two? Luckily this problem has been solved before by "Services for Macintosh" (SFM), "Services for UNIX" (SFU) and Gygwin. The solution involves the use of the Unicode "private use area". When mapping a POSIX path to Windows, if we encounter any of the Windows reserved characters we simply map it to the Unicode range U+F000 - U+F0FF. The reverse mapping from Windows to POSIX is obvious.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_mapping_security">Mapping Security</h3>
+<div class="paragraph">
+<p>Mapping Windows security to POSIX (and vice-versa) is a much more interesting (and difficult) problem. We have the following requirements:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>We need a method to map a Windows SID (Security Identifier) to a POSIX uid/gid.</p>
+</li>
+<li>
+<p>We need a method to map a Windows ACL (Access Control List) to a POSIX permission set.</p>
+</li>
+<li>
+<p>We want any mapping method we come up with to be bijective (to the extent that it is possible).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Luckily "Services for UNIX" (and Cygwin) come to the rescue again. The following Cygwin document describes in great detail a method to map a Windows SID to a POSIX uid/gid that is compatible with SFU: <a href="https://cygwin.com/cygwin-ug-net/ntsec.html" class="bare">https://cygwin.com/cygwin-ug-net/ntsec.html</a>. A different document from SFU describes how to map a Windows ACL to POSIX permissions: <a href="https://technet.microsoft.com/en-us/library/bb463216.aspx" class="bare">https://technet.microsoft.com/en-us/library/bb463216.aspx</a>.</p>
+</div>
+<div class="paragraph">
+<p>The mappings provided are not perfect, but they come pretty close. They are also proven as they have been used in SFU and Cygwin for years.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_winfsp_implementation">WinFsp Implementation</h3>
+<div class="paragraph">
+<p>A WinFsp implementation of the above mappings can be found in the file <code>src/dll/posix.c</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_4_implementing_fuse_core">Step 4: Implementing FUSE Core</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We are now finally ready to implement the <code>fuse_operations</code>. This actually proves to be a straightforward mapping of the WinFSP <code>FSP_FILE_SYSTEM_INTERACE</code> to <code>fuse_operations</code>:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">GetVolumeInfo</dt>
+<dd>
+<p>Mapped to <code>statfs</code>. Volume labels are not supported by FUSE (see below).</p>
+</dd>
+<dt class="hdlist1">SetVolumeLabel</dt>
+<dd>
+<p>No equivalent on FUSE, so simply return <code>STATUS_INVALID_PARAMETER</code>. One thought is to map this call into a <code>setxattr("sys.VolumeLabel")</code> (or similar) call on the root directory (<code>/</code>).</p>
+</dd>
+<dt class="hdlist1">GetSecurityByName</dt>
+<dd>
+<p>Mapped to <code>fgetattr</code>/<code>getattr</code>. The returned <code>stat</code> information is translated into a Windows security descriptor using <code>FspPosixMapPermissionsToSecurityDescriptor</code>.</p>
+</dd>
+<dt class="hdlist1">Create</dt>
+<dd>
+<p>This is used to create a new file or directory. If a file is created this is mapped to <code>create</code> or <code>mknod</code>;`open`. If a directory is created this is mapped to <code>mkdir</code>;`opendir` calls (the reason is that on Windows a directory remains open after being created). In some circumstances a <code>chown</code> may be issued as well. After the file or directory has been created a <code>fgetattr</code>/<code>getattr</code> is issued to get <code>stat</code> information to return to the FSD.</p>
+</dd>
+<dt class="hdlist1">Open</dt>
+<dd>
+<p>This is used to open a new file or directory. First a <code>fgetattr</code>/<code>getattr</code> is issued. If the file is not a directory it is followed by <code>open</code>. If the file is a directory it is followed by <code>opendir</code>.</p>
+</dd>
+<dt class="hdlist1">Overwrite</dt>
+<dd>
+<p>This is used to overwrite a file when one of the <code>FILE_OVERWRITE</code>, <code>FILE_SUPERSEDE</code> or <code>FILE_OVERWRITE_IF</code> flags has been set. Mapped to <code>ftruncate</code>/<code>truncate</code>.</p>
+</dd>
+<dt class="hdlist1">Cleanup</dt>
+<dd>
+<p>Mapped to <code>unlink</code> when deleting a file and <code>rmdir</code> when deleting a directory.</p>
+</dd>
+<dt class="hdlist1">Close</dt>
+<dd>
+<p>Mapped to <code>flush</code>;`release` when closing a file and <code>releasedir</code> when closing a directory.</p>
+</dd>
+<dt class="hdlist1">Read</dt>
+<dd>
+<p>Mapped to <code>read</code>.</p>
+</dd>
+<dt class="hdlist1">Write</dt>
+<dd>
+<p>Mapped to <code>fgetattr</code>/<code>getattr</code> and <code>write</code>.</p>
+</dd>
+<dt class="hdlist1">Flush</dt>
+<dd>
+<p>Mapped to <code>fsync</code> or <code>fsyncdir</code>.</p>
+</dd>
+<dt class="hdlist1">GetFileInfo</dt>
+<dd>
+<p>Mapped to <code>fgetattr</code>/<code>getattr</code>.</p>
+</dd>
+<dt class="hdlist1">SetBasicInfo</dt>
+<dd>
+<p>Mapped to <code>utimens</code>/<code>utime</code>.</p>
+</dd>
+<dt class="hdlist1">SetAllocationSize</dt>
+<dd>
+<p>Mapped to <code>fgetattr</code>/<code>getattr</code> followed by <code>ftruncate</code>/<code>truncate</code>. Note that this call and <code>SetFileSize</code> may be consolidated soon in the WinFsp API.</p>
+</dd>
+<dt class="hdlist1">SetFileSize</dt>
+<dd>
+<p>Mapped to <code>fgetattr</code>/<code>getattr</code> followed by <code>ftruncate</code>/<code>truncate</code>. Note that this call and <code>SetAllocationSize</code> may be consolidated soon in the WinFsp API.</p>
+</dd>
+<dt class="hdlist1">CanDelete</dt>
+<dd>
+<p>For directories only: mapped to a <code>getdir</code>/<code>readdir</code> call to determine if they are empty and can therefore be deleted.</p>
+</dd>
+<dt class="hdlist1">Rename</dt>
+<dd>
+<p>Mapped to <code>fgetattr</code>/<code>getattr</code> on the destination file name and <code>rename</code>.</p>
+</dd>
+<dt class="hdlist1">GetSecurity</dt>
+<dd>
+<p>Mapped to <code>fgetattr</code>/<code>getattr</code>. The returned <code>stat</code> information is translated into a Windows security descriptor using <code>FspPosixMapPermissionsToSecurityDescriptor</code>.</p>
+</dd>
+<dt class="hdlist1">SetSecurity</dt>
+<dd>
+<p>Mapped to <code>fgetattr</code>/<code>getattr</code> followed by <code>chmod</code> and/or <code>chown</code>.</p>
+</dd>
+<dt class="hdlist1">ReadDirectory</dt>
+<dd>
+<p>Mapped to <code>getdir</code>/<code>readdir</code>. Note that because of how the Windows directory enumeration API&#8217;s work there is a further <code>fgetattr</code>/<code>getattr</code> per file returned!</p>
+</dd>
+</dl>
+</div>
+<div class="sect2">
+<h3 id="_some_additional_challenges">Some Additional Challenges</h3>
+<div class="paragraph">
+<p>Let us now discuss a couple of final challenges in getting a proper FUSE port working under Cygwin: the implementation of <code>fuse_set_signal_handlers</code>/<code>fuse_remove_signal_handlers</code> and <code>fuse_daemonize</code>.</p>
+</div>
+<div class="paragraph">
+<p>Let us start with <code>fuse_set_signal_handlers</code>/<code>fuse_remove_signal_handlers</code>. Cygwin supports POSIX signals and we can simply set up signal handlers similar to what libfuse does. However this simple approach does not work within WinFsp, because it uses native API&#8217;s that Cygwin cannot interrupt with its signal mechanism. For example, the <code>fuse_loop</code> FUSE call eventually results in a <code>WaitForSingleObject</code> API call that Cygwin cannot interrupt. Even trying with an alertable <code>WaitForSingleObjectEx</code> did not work as unfortunately Cygwin does not issue a <code>QueueUserAPC</code> when issuing a signal. So we need an alternative mechanism to support signals.</p>
+</div>
+<div class="paragraph">
+<p>The alternative is to use <code>sigwait</code> in a separate thread. <code>Fsp_fuse_signal_handler</code> is a WinFsp API that knows how to interrupt that <code>WaitForSingleObject</code> (actually it just signals the waited event).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>static inline void *fsp_fuse_signal_thread(void *psigmask)
+{
+    int sig;
+
+    if (0 == sigwait(psigmask, &amp;sig))
+        fsp_fuse_signal_handler(sig);
+
+    return 0;
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let us now move to <code>fuse_daemonize</code>. This FUSE call allows a FUSE file system to become a (UNIX) daemon. This is achieved by using the POSIX fork call, which unfortunately has many limitations in Cygwin. One such limitation (and the one that bit us in WinFsp) is that it does not know how to clone Windows heaps (<code>HeapAlloc</code>/<code>HeapFree</code>).</p>
+</div>
+<div class="paragraph">
+<p>Recall that WinFsp uses its own memory allocator (just a thin wrapper around <code>HeapAlloc</code>/<code>HeapFree</code>). This means that any allocations made prior to the fork() call are doomed after a fork(); with good luck the pointers will point to invalid memory and one will get an Access Violation; with bad luck the pointers will point to valid memory that contains bad data and the program may stumble for a while, just enough to hide the actual cause of the problem.</p>
+</div>
+<div class="paragraph">
+<p>Luckily there is a rather straightforward work-around: "do not allocate any non-Cygwin resources prior to fork". This is actually possible within WinFsp, because we are already capturing the Cygwin environment and its <code>malloc</code>/<code>free</code> (see <code>fsp_fuse_env</code> in "Step 2"). It is also possible, because the typical FUSE program structure looks like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>fuse_new
+fuse_daemonize          // do not allocate any non-Cygwin resources prior to this
+fuse_loop/fuse_loop_mt  // safe to allocate non-Cygwin resources
+fuse_destroy</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With this change <code>fuse_daemonize</code> works and allows me to declare the Cygwin portion of the SSHFS port complete!</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_5_posix_special_files">Step 5: POSIX special files</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Although WinFsp now has a working FUSE implementation there remains an important problem: how to handle POSIX special files such as named pipes (FIFO), devices (CHR, BLK), sockets (SOCK) or symbolic links (LNK).</p>
+</div>
+<div class="paragraph">
+<p>While Windows has support for symbolic links (LNK) there is no direct support for other POSIX special files. The question then is how to represent such files when they are accessed by Windows. This is especially important to systems like Cygwin that understand POSIX special files and can even create them.</p>
+</div>
+<div class="paragraph">
+<p>Cygwin normally emulates symbolic links and special files using special shortcut (.lnk) files. However many FUSE file systems support POSIX special files; it is desirable then that applications, like Cygwin, that understand them should be able to create and access them without resorting to hacks like using .lnk files.</p>
+</div>
+<div class="paragraph">
+<p>The problem was originally mentioned by Herbert Stocker on the Cygwin mailing list:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>The mkfifo system call will have Cygwin create a .lnk file and
+WinFsp will forward it as such to the file system process. The
+system calls readdir or open will then have the file system
+process tell WinFsp that there is a .lnk file and Cygwin will
+translate this back to a fifo, so in this sense it does work.</p>
+</div>
+<div class="paragraph">
+<p>But the file system will see a file (with name *.lnk) where it
+should see a pipe (mknod call with \'mode' set to S_IFIFO).
+IMHO one could say this is a break of the FUSE API.</p>
+</div>
+<div class="paragraph">
+<p>Practically it will break:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>File systems that special-treat pipe files (or .lnk files).</p>
+</li>
+<li>
+<p>If one uses sshfs to connect to a Linux based server and
+issues the command mkfifo foo from Cygwin, the server will
+end up with a .lnk file instead of a pipe special file.</p>
+</li>
+<li>
+<p>Imagine something like mysqlfs, which stores the stuff in a
+database. When you run SQL statements to analyze the data
+in the file system, you won&#8217;t see the pipes as such. Or if
+you open the file system from Linux you&#8217;ll see the .lnk
+files.</p>
+</li>
+</ul>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Herbert is of course right. A .lnk file is not a FIFO to any application other than Cygwin. We need a better mechanism for representing special files. One such mechanism is reparse points.</p>
+</div>
+<div class="paragraph">
+<p>Reparse points can be viewed as a form of special metadata that can be attached to a file or directory. The interesting thing about reparse points is that they can have special meaning to a file system driver (NTFS/WinFsp), a filter driver (e.g. a hierarchical storage system) or even an application (Cygwin).</p>
+</div>
+<div class="paragraph">
+<p>Symbolic links are already implemented as reparse points on Windows. We could perhaps define a new reparse point type for representing POSIX special files. Turns out that this is unnecessary, because Microsoft has already defined a reparse point type for special files on NFS: <a href="https://msdn.microsoft.com/en-us/library/dn617178.aspx" class="bare">https://msdn.microsoft.com/en-us/library/dn617178.aspx</a></p>
+</div>
+<div class="paragraph">
+<p>It is a relatively straightforward task then to map reparse point operations into their FUSE equivalents:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">GetReparsePoint</dt>
+<dd>
+<p>Mapped to <code>getattr</code>/<code>fgetattr</code> and possibly <code>readlink</code> (in the case of a symbolic link). The returned <code>stat.st_mode</code> information is transformed to the appropriate reparse point information.</p>
+</dd>
+<dt class="hdlist1">SetReparsePoint</dt>
+<dd>
+<p>Mapped to <code>symlink</code> or <code>mknod</code> depending on whether a symbolic link or other special file is created.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+
+</div>
+      </div>
+
+    </div>
+  </body>
+</html>

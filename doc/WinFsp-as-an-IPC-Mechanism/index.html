@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>WinFsp as an IPC Mechanism &middot; WinFsp</title>
+
+    <link rel="stylesheet" href="/css/primer.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+  </head>
+  <body class="bg-white text-gray-dark">
+    <div id="container" class="container-lg clearfix">
+
+      <div id="side" class="col-3 float-left">
+        <div class="p-3" style="min-height:100vh">
+          <img src="/logo.png" class="mb-3 width-fit auto-invert" />
+          <h1 class="f1-light text-uppercase text-center mb-3">WinFsp</h1>
+          <nav class="SideNav border"><a class="SideNav-item" href="/" >Main</a>
+              <a class="SideNav-item" href="/rel" >Download</a>
+              <a class="SideNav-item" href="/doc" aria-current="page">Documentation</a>
+              <nav class="SideNav py-2 pl-3">
+                  <a class="SideNav-subItem" href="/doc/Frequently-Asked-Questions/" >Frequently Asked Questions</a><a class="SideNav-subItem" href="/doc/Known-File-Systems/" >Known File Systems</a><a class="SideNav-subItem" href="/doc/Native-API-vs-FUSE/" >Native API vs FUSE</a><a class="SideNav-subItem" href="/doc/NTFS-Compatibility/" >NTFS Compatibility</a><a class="SideNav-subItem" href="/doc/Queued-Events/" >Queued Events</a><a class="SideNav-subItem" href="/doc/SSHFS-Port-Case-Study/" >SSHFS Port Case Study</a><a class="SideNav-subItem" href="/doc/WinFsp-API-launch.h/" >WinFsp API launch.h</a><a class="SideNav-subItem" href="/doc/WinFsp-API-winfsp.h/" >WinFsp API winfsp.h</a><a class="SideNav-subItem" href="/doc/WinFsp-as-an-IPC-Mechanism/" aria-current="page">WinFsp as an IPC Mechanism</a><a class="SideNav-subItem" href="/doc/WinFsp-Design/" >WinFsp Design</a><a class="SideNav-subItem" href="/doc/WinFsp-Kernel-Mode-File-Systems/" >WinFsp Kernel Mode File Systems</a><a class="SideNav-subItem" href="/doc/WinFsp-Performance-Testing/" >WinFsp Performance Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Service-Architecture/" >WinFsp Service Architecture</a><a class="SideNav-subItem" href="/doc/WinFsp-Testing/" >WinFsp Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Tutorial/" >WinFsp Tutorial</a>
+                </nav><a class="SideNav-item" href="/src" >Source</a>
+              <a class="SideNav-item" href="/blog" >Blog</a>
+              
+          </nav>
+        </div>
+      </div>
+
+      <div id="main" class="col-9 float-left">
+        <div class="p-3 markdown-body" style="min-height:100vh">
+<h1>WinFsp as an IPC Mechanism</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>WinFsp enables the creation of user mode file systems for Windows. At its core WinFsp is also an Inter-Process Communication (IPC) mechanism that uses the familiar file system interface for communication. This document discusses WinFsp from that viewpoint.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_single_file_api_request">Single File API Request</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When a process uses the familiar file API to access a file on Windows, this API request gets packaged into an I/O Request Packet (IRP) and gets routed to the relevant File System Driver (FSD). The usual FSD&#8217;s in Windows (NTFS, FastFat, etc.) will process the IRP and return a response to the process. For the remainder of this discussion, we will call this process the Originating Process (OP).</p>
+</div>
+<div class="paragraph">
+<p>In the WinFsp case things are more complicated. WinFsp will forward IRP&#8217;s to another process, which implements a user mode file system. This process will process the IRP and return a response, which WinFsp will eventually forward to the OP. We will call the process that implements the user mode file system, the File System process (FS).</p>
+</div>
+<div class="paragraph">
+<p>In the following we will also use the notation [U] to denote user mode processing and [K] to denote kernel mode processing. Additionally because a Context Switch always goes through kernel mode, we will simplify the diagrams and omit this detail when it is not important.</p>
+</div>
+<div class="paragraph">
+<p>Consider then what happens when an OP issues a synchronous (non-overlapped), non-cached (non-buffered) WriteFile call.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="synchronous.png" alt="synchronous">
+</div>
+</div>
+<div class="paragraph">
+<p>Let us now consider what happens when an OP issues an asynchronous (overlapped), non-cached (non-buffered) WriteFile call. This scenario does not show how the OP receives the WriteFile result.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="asynchronous.png" alt="asynchronous">
+</div>
+</div>
+<div class="paragraph">
+<p>It should be noted that from the WinFsp perspective both cases look similar. WinFsp processing occurs:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>At <strong>OP[K]</strong> time immediately after receipt of an IRP. An IRP is said to be in the <em>Pending</em> stage at this point.</p>
+</li>
+<li>
+<p>At <strong>FS[K]</strong> time after a context switch, but before the TRANSACT call. An IRP is said to be in the <em>Prepare</em> stage at this point.</p>
+</li>
+<li>
+<p>At <strong>FS[K]</strong> time after the TRANSACT call. An IRP is said to be in the <em>Complete</em> stage at this point. Upon completion of this stage the IRP will be completed and relinquished to the OS.</p>
+</li>
+<li>
+<p>AT <strong>FS[U]</strong> time between the two TRANSACT calls.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The TRANSACT calls are DeviceIoControl requests that the FS issues to WinFsp. A single TRANSACT call can be used to communicate a file system response and retrieve the next file system request.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_multiple_file_api_requests">Multiple File API Requests</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Let us now consider what may happen with two simultaneous API Requests from two different processes. For example, two WriteFile requests for different files.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="multiple.png" alt="multiple">
+</div>
+</div>
+<div class="paragraph">
+<p>Notice that it is possible for the FS to process multiple file system requests without context switching.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_io_queues_and_performance">I/O Queues and Performance</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>I/O Queues are the fundamental IPC mechanism in WinFsp. The purpose of the I/O Queue is to forward an IRP from the OP to the FS and when FS processing is complete to forward the response back to the OP. I/O Queues are discussed in detail in the WinFsp design document.</p>
+</div>
+<div class="paragraph">
+<p>WinFsp owes its excellent performance primarily to the design of the I/O Queues. I/O Queues borrow heavily from the design of I/O completion ports and schedule threads in a similar manner:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>They have a Last-In First-Out (LIFO) wait discipline.</p>
+</li>
+<li>
+<p>They limit the number of threads that can be satisfied concurrently to the number of processors.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The first property ensures that when an FS thread finishes processing a file system request, it will very likely pick up the next one from the I/O Queue without blocking and context switching to another FS thread. Minimizing context switches results in better performance.</p>
+</div>
+<div class="paragraph">
+<p>The second property ensures that even if there are multiple file system requests waiting to be serviced in the I/O Queue, it will not schedule more thread than the number of processors. Having more than one threads scheduled on each processor is counter-productive.</p>
+</div>
+</div>
+</div>
+
+</div>
+      </div>
+
+    </div>
+  </body>
+</html>
