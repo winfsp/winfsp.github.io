@@ -77,14 +77,14 @@ and link with the winfsp_x64.dll (or winfsp_x86.dll) library.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspLaunchCallLauncherPipe(
-    WCHAR Command,
-    ULONG Argc,
-    PWSTR *Argv,
-    ULONG *Argl,
-    PWSTR Buffer,
-    PULONG PSize,
-    PULONG PLauncherError);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">FspLaunchCallLauncherPipe</span><span class="tok-p">(</span>
+    <span class="tok-n">WCHAR</span> <span class="tok-n">Command</span><span class="tok-p">,</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">Argc</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-o">*</span><span class="tok-n">Argv</span><span class="tok-p">,</span>
+    <span class="tok-n">ULONG</span> <span class="tok-o">*</span><span class="tok-n">Argl</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span>
+    <span class="tok-n">PULONG</span> <span class="tok-n">PSize</span><span class="tok-p">,</span>
+    <span class="tok-n">PULONG</span> <span class="tok-n">PLauncherError</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -138,12 +138,12 @@ reported through PLauncherError.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspLaunchGetInfo(
-    PWSTR ClassName,
-    PWSTR InstanceName,
-    PWSTR Buffer,
-    PULONG PSize,
-    PULONG PLauncherError);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">FspLaunchGetInfo</span><span class="tok-p">(</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">ClassName</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">InstanceName</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span>
+    <span class="tok-n">PULONG</span> <span class="tok-n">PSize</span><span class="tok-p">,</span>
+    <span class="tok-n">PULONG</span> <span class="tok-n">PLauncherError</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -190,10 +190,10 @@ instance.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspLaunchGetNameList(
-    PWSTR Buffer,
-    PULONG PSize,
-    PULONG PLauncherError);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">FspLaunchGetNameList</span><span class="tok-p">(</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span>
+    <span class="tok-n">PULONG</span> <span class="tok-n">PSize</span><span class="tok-p">,</span>
+    <span class="tok-n">PULONG</span> <span class="tok-n">PLauncherError</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -234,13 +234,13 @@ listed.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspLaunchStart(
-    PWSTR ClassName,
-    PWSTR InstanceName,
-    ULONG Argc,
-    PWSTR *Argv,
-    BOOLEAN HasSecret,
-    PULONG PLauncherError);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">FspLaunchStart</span><span class="tok-p">(</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">ClassName</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">InstanceName</span><span class="tok-p">,</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">Argc</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-o">*</span><span class="tok-n">Argv</span><span class="tok-p">,</span>
+    <span class="tok-n">BOOLEAN</span> <span class="tok-n">HasSecret</span><span class="tok-p">,</span>
+    <span class="tok-n">PULONG</span> <span class="tok-n">PLauncherError</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -283,10 +283,10 @@ reported through PLauncherError.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspLaunchStop(
-    PWSTR ClassName,
-    PWSTR InstanceName,
-    PULONG PLauncherError);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">FspLaunchStop</span><span class="tok-p">(</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">ClassName</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">InstanceName</span><span class="tok-p">,</span>
+    <span class="tok-n">PULONG</span> <span class="tok-n">PLauncherError</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -326,8 +326,8 @@ reported through PLauncherError.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspLaunchRegFreeRecord(
-    FSP_LAUNCH_REG_RECORD *Record);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">VOID</span> <span class="tok-nf">FspLaunchRegFreeRecord</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_LAUNCH_REG_RECORD</span> <span class="tok-o">*</span><span class="tok-n">Record</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -355,10 +355,10 @@ reported through PLauncherError.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspLaunchRegGetRecord(
-    PWSTR ClassName,
-    PWSTR Agent,
-    FSP_LAUNCH_REG_RECORD **PRecord);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">FspLaunchRegGetRecord</span><span class="tok-p">(</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">ClassName</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">Agent</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_LAUNCH_REG_RECORD</span> <span class="tok-o">**</span><span class="tok-n">PRecord</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -402,9 +402,9 @@ freed using FspLaunchRegFreeRecord.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspLaunchRegSetRecord(
-    PWSTR ClassName,
-    const FSP_LAUNCH_REG_RECORD *Record);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">FspLaunchRegSetRecord</span><span class="tok-p">(</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">ClassName</span><span class="tok-p">,</span>
+    <span class="tok-k">const</span> <span class="tok-n">FSP_LAUNCH_REG_RECORD</span> <span class="tok-o">*</span><span class="tok-n">Record</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -434,19 +434,19 @@ freed using FspLaunchRegFreeRecord.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">typedef struct _FSP_LAUNCH_REG_RECORD {
-    PWSTR Agent;
-    PWSTR Executable;
-    PWSTR CommandLine;
-    PWSTR WorkDirectory;
-    PWSTR RunAs;
-    PWSTR Security;
-    PVOID Reserved0[6];
-    ULONG JobControl;
-    ULONG Credentials;
-    ULONG Reserved1[6];
-    UINT8 Buffer[];
-} FSP_LAUNCH_REG_RECORD;</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">typedef</span> <span class="tok-k">struct</span> <span class="tok-n">_FSP_LAUNCH_REG_RECORD</span> <span class="tok-p">{</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">Agent</span><span class="tok-p">;</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">Executable</span><span class="tok-p">;</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">CommandLine</span><span class="tok-p">;</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">WorkDirectory</span><span class="tok-p">;</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">RunAs</span><span class="tok-p">;</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">Security</span><span class="tok-p">;</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">Reserved0</span><span class="tok-p">[</span><span class="tok-mi">6</span><span class="tok-p">];</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">JobControl</span><span class="tok-p">;</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">Credentials</span><span class="tok-p">;</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">Reserved1</span><span class="tok-p">[</span><span class="tok-mi">6</span><span class="tok-p">];</span>
+    <span class="tok-n">UINT8</span> <span class="tok-n">Buffer</span><span class="tok-p">[];</span>
+<span class="tok-p">}</span> <span class="tok-n">FSP_LAUNCH_REG_RECORD</span><span class="tok-p">;</span></code></pre>
 </div>
 </div>
 </div>

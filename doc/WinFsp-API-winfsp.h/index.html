@@ -132,10 +132,10 @@ used to store the file descriptor for an open file.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *CanDelete)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    PWSTR FileName);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">CanDelete</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -191,11 +191,11 @@ It does not get called when a file or directory is opened with FILE_DELETE_ON_CL
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">VOID ( *Cleanup)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    PWSTR FileName,
-    ULONG Flags);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">VOID</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">Cleanup</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">Flags</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -296,9 +296,9 @@ the file was modified/deleted.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">VOID ( *Close)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">VOID</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">Close</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -319,15 +319,15 @@ the file was modified/deleted.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *Control)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    UINT32 ControlCode,
-    PVOID InputBuffer,
-    ULONG InputBufferLength,
-    PVOID OutputBuffer,
-    ULONG OutputBufferLength,
-    PULONG PBytesTransferred);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">Control</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT32</span> <span class="tok-n">ControlCode</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">InputBuffer</span><span class="tok-p">,</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">InputBufferLength</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">OutputBuffer</span><span class="tok-p">,</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">OutputBufferLength</span><span class="tok-p">,</span>
+    <span class="tok-n">PULONG</span> <span class="tok-n">PBytesTransferred</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -380,16 +380,16 @@ Pointer to a memory location that will receive the actual number of bytes transf
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *Create)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PWSTR FileName,
-    UINT32 CreateOptions,
-    UINT32 GrantedAccess,
-    UINT32 FileAttributes,
-    PSECURITY_DESCRIPTOR SecurityDescriptor,
-    UINT64 AllocationSize,
-    PVOID *PFileContext,
-    FSP_FSCTL_FILE_INFO *FileInfo);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">Create</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT32</span> <span class="tok-n">CreateOptions</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT32</span> <span class="tok-n">GrantedAccess</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT32</span> <span class="tok-n">FileAttributes</span><span class="tok-p">,</span>
+    <span class="tok-n">PSECURITY_DESCRIPTOR</span> <span class="tok-n">SecurityDescriptor</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT64</span> <span class="tok-n">AllocationSize</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-o">*</span><span class="tok-n">PFileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -451,12 +451,12 @@ from this call. This information includes file attributes, file times, etc.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *DeleteReparsePoint)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    PWSTR FileName,
-    PVOID Buffer,
-    SIZE_T Size);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">DeleteReparsePoint</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span>
+    <span class="tok-n">SIZE_T</span> <span class="tok-n">Size</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -492,10 +492,10 @@ from this call. This information includes file attributes, file times, etc.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *Flush)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    FSP_FSCTL_FILE_INFO *FileInfo);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">Flush</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -534,11 +534,11 @@ flushing file (not volume).</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *GetDirInfoByName)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    PWSTR FileName,
-    FSP_FSCTL_DIR_INFO *DirInfo);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">GetDirInfoByName</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_DIR_INFO</span> <span class="tok-o">*</span><span class="tok-n">DirInfo</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -575,10 +575,10 @@ attributes, file times, etc.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *GetFileInfo)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    FSP_FSCTL_FILE_INFO *FileInfo);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">GetFileInfo</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -610,12 +610,12 @@ from this call. This information includes file attributes, file times, etc.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *GetReparsePoint)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    PWSTR FileName,
-    PVOID Buffer,
-    PSIZE_T PSize);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">GetReparsePoint</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span>
+    <span class="tok-n">PSIZE_T</span> <span class="tok-n">PSize</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -664,11 +664,11 @@ On output it will contain the actual size of data copied.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *GetSecurity)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    PSECURITY_DESCRIPTOR SecurityDescriptor,
-    SIZE_T *PSecurityDescriptorSize);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">GetSecurity</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">PSECURITY_DESCRIPTOR</span> <span class="tok-n">SecurityDescriptor</span><span class="tok-p">,</span>
+    <span class="tok-n">SIZE_T</span> <span class="tok-o">*</span><span class="tok-n">PSecurityDescriptorSize</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -705,12 +705,12 @@ descriptor copied into the security descriptor buffer. Cannot be NULL.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *GetSecurityByName)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PWSTR FileName,
-    PUINT32 PFileAttributes/* or ReparsePointIndex */,
-    PSECURITY_DESCRIPTOR SecurityDescriptor,
-    SIZE_T *PSecurityDescriptorSize);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">GetSecurityByName</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span>
+    <span class="tok-n">PUINT32</span> <span class="tok-n">PFileAttributes</span><span class="tok-cm">/* or ReparsePointIndex */</span><span class="tok-p">,</span>
+    <span class="tok-n">PSECURITY_DESCRIPTOR</span> <span class="tok-n">SecurityDescriptor</span><span class="tok-p">,</span>
+    <span class="tok-n">SIZE_T</span> <span class="tok-o">*</span><span class="tok-n">PSecurityDescriptorSize</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -757,12 +757,12 @@ component.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *GetStreamInfo)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    PVOID Buffer,
-    ULONG Length,
-    PULONG PBytesTransferred);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">GetStreamInfo</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">Length</span><span class="tok-p">,</span>
+    <span class="tok-n">PULONG</span> <span class="tok-n">PBytesTransferred</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -809,9 +809,9 @@ Pointer to a memory location that will receive the actual number of bytes stored
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *GetVolumeInfo)(
-    FSP_FILE_SYSTEM *FileSystem,
-    FSP_FSCTL_VOLUME_INFO *VolumeInfo);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">GetVolumeInfo</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_VOLUME_INFO</span> <span class="tok-o">*</span><span class="tok-n">VolumeInfo</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -840,13 +840,13 @@ from this call.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *Open)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PWSTR FileName,
-    UINT32 CreateOptions,
-    UINT32 GrantedAccess,
-    PVOID *PFileContext,
-    FSP_FSCTL_FILE_INFO *FileInfo);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">Open</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT32</span> <span class="tok-n">CreateOptions</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT32</span> <span class="tok-n">GrantedAccess</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-o">*</span><span class="tok-n">PFileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -896,13 +896,13 @@ from this call. This information includes file attributes, file times, etc.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *Overwrite)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    UINT32 FileAttributes,
-    BOOLEAN ReplaceFileAttributes,
-    UINT64 AllocationSize,
-    FSP_FSCTL_FILE_INFO *FileInfo);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">Overwrite</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT32</span> <span class="tok-n">FileAttributes</span><span class="tok-p">,</span>
+    <span class="tok-n">BOOLEAN</span> <span class="tok-n">ReplaceFileAttributes</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT64</span> <span class="tok-n">AllocationSize</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -944,13 +944,13 @@ from this call. This information includes file attributes, file times, etc.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *Read)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    PVOID Buffer,
-    UINT64 Offset,
-    ULONG Length,
-    PULONG PBytesTransferred);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">Read</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT64</span> <span class="tok-n">Offset</span><span class="tok-p">,</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">Length</span><span class="tok-p">,</span>
+    <span class="tok-n">PULONG</span> <span class="tok-n">PBytesTransferred</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -991,14 +991,14 @@ operation.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *ReadDirectory)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    PWSTR Pattern,
-    PWSTR Marker,
-    PVOID Buffer,
-    ULONG Length,
-    PULONG PBytesTransferred);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">ReadDirectory</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">Pattern</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">Marker</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">Length</span><span class="tok-p">,</span>
+    <span class="tok-n">PULONG</span> <span class="tok-n">PBytesTransferred</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1056,12 +1056,12 @@ operation.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *Rename)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    PWSTR FileName,
-    PWSTR NewFileName,
-    BOOLEAN ReplaceIfExists);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">Rename</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">NewFileName</span><span class="tok-p">,</span>
+    <span class="tok-n">BOOLEAN</span> <span class="tok-n">ReplaceIfExists</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1114,14 +1114,14 @@ has open handles.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *ResolveReparsePoints)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PWSTR FileName,
-    UINT32 ReparsePointIndex,
-    BOOLEAN ResolveLastPathComponent,
-    PIO_STATUS_BLOCK PIoStatus,
-    PVOID Buffer,
-    PSIZE_T PSize);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">ResolveReparsePoints</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT32</span> <span class="tok-n">ReparsePointIndex</span><span class="tok-p">,</span>
+    <span class="tok-n">BOOLEAN</span> <span class="tok-n">ResolveLastPathComponent</span><span class="tok-p">,</span>
+    <span class="tok-n">PIO_STATUS_BLOCK</span> <span class="tok-n">PIoStatus</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span>
+    <span class="tok-n">PSIZE_T</span> <span class="tok-n">PSize</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1190,15 +1190,15 @@ should be returned to the FSD with status STATUS_REPARSE/IO_REPARSE.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *SetBasicInfo)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    UINT32 FileAttributes,
-    UINT64 CreationTime,
-    UINT64 LastAccessTime,
-    UINT64 LastWriteTime,
-    UINT64 ChangeTime,
-    FSP_FSCTL_FILE_INFO *FileInfo);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">SetBasicInfo</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT32</span> <span class="tok-n">FileAttributes</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT64</span> <span class="tok-n">CreationTime</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT64</span> <span class="tok-n">LastAccessTime</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT64</span> <span class="tok-n">LastWriteTime</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT64</span> <span class="tok-n">ChangeTime</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1250,12 +1250,12 @@ from this call. This information includes file attributes, file times, etc.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *SetFileSize)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    UINT64 NewSize,
-    BOOLEAN SetAllocationSize,
-    FSP_FSCTL_FILE_INFO *FileInfo);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">SetFileSize</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT64</span> <span class="tok-n">NewSize</span><span class="tok-p">,</span>
+    <span class="tok-n">BOOLEAN</span> <span class="tok-n">SetAllocationSize</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1325,12 +1325,12 @@ file size.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *SetReparsePoint)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    PWSTR FileName,
-    PVOID Buffer,
-    SIZE_T Size);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">SetReparsePoint</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span>
+    <span class="tok-n">SIZE_T</span> <span class="tok-n">Size</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1377,11 +1377,11 @@ contains a symbolic link path, it should not be assumed to be NULL terminated.</
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *SetSecurity)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    SECURITY_INFORMATION SecurityInformation,
-    PSECURITY_DESCRIPTOR ModificationDescriptor);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">SetSecurity</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">SECURITY_INFORMATION</span> <span class="tok-n">SecurityInformation</span><span class="tok-p">,</span>
+    <span class="tok-n">PSECURITY_DESCRIPTOR</span> <span class="tok-n">ModificationDescriptor</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1428,10 +1428,10 @@ be modified.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *SetVolumeLabel)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PWSTR VolumeLabel,
-    FSP_FSCTL_VOLUME_INFO *VolumeInfo);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">SetVolumeLabel</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">VolumeLabel</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_VOLUME_INFO</span> <span class="tok-o">*</span><span class="tok-n">VolumeInfo</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1463,16 +1463,16 @@ from this call.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS ( *Write)(
-    FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    PVOID Buffer,
-    UINT64 Offset,
-    ULONG Length,
-    BOOLEAN WriteToEndOfFile,
-    BOOLEAN ConstrainedIo,
-    PULONG PBytesTransferred,
-    FSP_FSCTL_FILE_INFO *FileInfo);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span> <span class="tok-o">*</span><span class="tok-n">Write</span><span class="tok-p">)(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT64</span> <span class="tok-n">Offset</span><span class="tok-p">,</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">Length</span><span class="tok-p">,</span>
+    <span class="tok-n">BOOLEAN</span> <span class="tok-n">WriteToEndOfFile</span><span class="tok-p">,</span>
+    <span class="tok-n">BOOLEAN</span> <span class="tok-n">ConstrainedIo</span><span class="tok-p">,</span>
+    <span class="tok-n">PULONG</span> <span class="tok-n">PBytesTransferred</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1529,9 +1529,9 @@ operation.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspDeleteSecurityDescriptor(
-    PSECURITY_DESCRIPTOR SecurityDescriptor,
-    NTSTATUS (*CreateFunc)());</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">VOID</span> <span class="tok-nf">FspDeleteSecurityDescriptor</span><span class="tok-p">(</span>
+    <span class="tok-n">PSECURITY_DESCRIPTOR</span> <span class="tok-n">SecurityDescriptor</span><span class="tok-p">,</span>
+    <span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span><span class="tok-o">*</span><span class="tok-n">CreateFunc</span><span class="tok-p">)());</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1578,11 +1578,11 @@ set to FspSetSecurityDescriptor for the public API.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API BOOLEAN FspFileSystemAddDirInfo(
-    FSP_FSCTL_DIR_INFO *DirInfo,
-    PVOID Buffer,
-    ULONG Length,
-    PULONG PBytesTransferred);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">BOOLEAN</span> <span class="tok-nf">FspFileSystemAddDirInfo</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_FSCTL_DIR_INFO</span> <span class="tok-o">*</span><span class="tok-n">DirInfo</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">Length</span><span class="tok-p">,</span>
+    <span class="tok-n">PULONG</span> <span class="tok-n">PBytesTransferred</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1638,11 +1638,11 @@ buffer has been used so far.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API BOOLEAN FspFileSystemAddStreamInfo(
-    FSP_FSCTL_STREAM_INFO *StreamInfo,
-    PVOID Buffer,
-    ULONG Length,
-    PULONG PBytesTransferred);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">BOOLEAN</span> <span class="tok-nf">FspFileSystemAddStreamInfo</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_FSCTL_STREAM_INFO</span> <span class="tok-o">*</span><span class="tok-n">StreamInfo</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">Length</span><span class="tok-p">,</span>
+    <span class="tok-n">PULONG</span> <span class="tok-n">PBytesTransferred</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1696,11 +1696,11 @@ contain the same value passed to the GetStreamInfo PBytesTransferred parameter.<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspFileSystemCanReplaceReparsePoint(
-    PVOID CurrentReparseData,
-    SIZE_T CurrentReparseDataSize,
-    PVOID ReplaceReparseData,
-    SIZE_T ReplaceReparseDataSize);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">FspFileSystemCanReplaceReparsePoint</span><span class="tok-p">(</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">CurrentReparseData</span><span class="tok-p">,</span>
+    <span class="tok-n">SIZE_T</span> <span class="tok-n">CurrentReparseDataSize</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">ReplaceReparseData</span><span class="tok-p">,</span>
+    <span class="tok-n">SIZE_T</span> <span class="tok-n">ReplaceReparseDataSize</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1753,11 +1753,11 @@ in file systems that support reparse points.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspFileSystemCreate(
-    PWSTR DevicePath,
-    const FSP_FSCTL_VOLUME_PARAMS *VolumeParams,
-    const FSP_FILE_SYSTEM_INTERFACE *Interface,
-    FSP_FILE_SYSTEM **PFileSystem);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">FspFileSystemCreate</span><span class="tok-p">(</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">DevicePath</span><span class="tok-p">,</span>
+    <span class="tok-k">const</span> <span class="tok-n">FSP_FSCTL_VOLUME_PARAMS</span> <span class="tok-o">*</span><span class="tok-n">VolumeParams</span><span class="tok-p">,</span>
+    <span class="tok-k">const</span> <span class="tok-n">FSP_FILE_SYSTEM_INTERFACE</span> <span class="tok-o">*</span><span class="tok-n">Interface</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">**</span><span class="tok-n">PFileSystem</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1793,8 +1793,8 @@ call.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspFileSystemDelete(
-    FSP_FILE_SYSTEM *FileSystem);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">VOID</span> <span class="tok-nf">FspFileSystemDelete</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1812,18 +1812,18 @@ call.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API BOOLEAN FspFileSystemFindReparsePoint(
-    FSP_FILE_SYSTEM *FileSystem,
-    NTSTATUS (*GetReparsePointByName)(
-        FSP_FILE_SYSTEM *FileSystem,
-        PVOID Context,
-        PWSTR FileName,
-        BOOLEAN IsDirectory,
-        PVOID Buffer,
-        PSIZE_T PSize),
-    PVOID Context,
-    PWSTR FileName,
-    PUINT32 PReparsePointIndex);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">BOOLEAN</span> <span class="tok-nf">FspFileSystemFindReparsePoint</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span><span class="tok-o">*</span><span class="tok-n">GetReparsePointByName</span><span class="tok-p">)(</span>
+        <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+        <span class="tok-n">PVOID</span> <span class="tok-n">Context</span><span class="tok-p">,</span>
+        <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span>
+        <span class="tok-n">BOOLEAN</span> <span class="tok-n">IsDirectory</span><span class="tok-p">,</span>
+        <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span>
+        <span class="tok-n">PSIZE_T</span> <span class="tok-n">PSize</span><span class="tok-p">),</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">Context</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span>
+    <span class="tok-n">PUINT32</span> <span class="tok-n">PReparsePointIndex</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1887,8 +1887,8 @@ that support reparse points.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static inline FSP_FSCTL_OPEN_FILE_INFO *FspFileSystemGetOpenFileInfo(
-    FSP_FSCTL_FILE_INFO *FileInfo)</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-kr">inline</span> <span class="tok-n">FSP_FSCTL_OPEN_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FspFileSystemGetOpenFileInfo</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1966,8 +1966,8 @@ should not contain a terminating zero.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API FSP_FILE_SYSTEM_OPERATION_CONTEXT *FspFileSystemGetOperationContext(
-    VOID);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">FSP_FILE_SYSTEM_OPERATION_CONTEXT</span> <span class="tok-o">*</span><span class="tok-nf">FspFileSystemGetOperationContext</span><span class="tok-p">(</span>
+    <span class="tok-n">VOID</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1989,8 +1989,8 @@ Request and Response associated with this operation.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static inline UINT32 FspFileSystemOperationProcessId(
-    VOID)</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-kr">inline</span> <span class="tok-n">UINT32</span> <span class="tok-n">FspFileSystemOperationProcessId</span><span class="tok-p">(</span>
+    <span class="tok-n">VOID</span><span class="tok-p">)</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2004,9 +2004,9 @@ Request and Response associated with this operation.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspFileSystemPreflight(
-    PWSTR DevicePath,
-    PWSTR MountPoint);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">FspFileSystemPreflight</span><span class="tok-p">(</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">DevicePath</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">MountPoint</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2035,8 +2035,8 @@ use the next available drive letter counting downwards from Z: as its mount poin
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspFileSystemRemoveMountPoint(
-    FSP_FILE_SYSTEM *FileSystem);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">VOID</span> <span class="tok-nf">FspFileSystemRemoveMountPoint</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2054,22 +2054,22 @@ use the next available drive letter counting downwards from Z: as its mount poin
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspFileSystemResolveReparsePoints(
-    FSP_FILE_SYSTEM *FileSystem,
-    NTSTATUS (*GetReparsePointByName)(
-        FSP_FILE_SYSTEM *FileSystem,
-        PVOID Context,
-        PWSTR FileName,
-        BOOLEAN IsDirectory,
-        PVOID Buffer,
-        PSIZE_T PSize),
-    PVOID Context,
-    PWSTR FileName,
-    UINT32 ReparsePointIndex,
-    BOOLEAN ResolveLastPathComponent,
-    PIO_STATUS_BLOCK PIoStatus,
-    PVOID Buffer,
-    PSIZE_T PSize);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">FspFileSystemResolveReparsePoints</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">NTSTATUS</span> <span class="tok-p">(</span><span class="tok-o">*</span><span class="tok-n">GetReparsePointByName</span><span class="tok-p">)(</span>
+        <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+        <span class="tok-n">PVOID</span> <span class="tok-n">Context</span><span class="tok-p">,</span>
+        <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span>
+        <span class="tok-n">BOOLEAN</span> <span class="tok-n">IsDirectory</span><span class="tok-p">,</span>
+        <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span>
+        <span class="tok-n">PSIZE_T</span> <span class="tok-n">PSize</span><span class="tok-p">),</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">Context</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT32</span> <span class="tok-n">ReparsePointIndex</span><span class="tok-p">,</span>
+    <span class="tok-n">BOOLEAN</span> <span class="tok-n">ResolveLastPathComponent</span><span class="tok-p">,</span>
+    <span class="tok-n">PIO_STATUS_BLOCK</span> <span class="tok-n">PIoStatus</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span>
+    <span class="tok-n">PSIZE_T</span> <span class="tok-n">PSize</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2150,9 +2150,9 @@ that support reparse points.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspFileSystemSendResponse(
-    FSP_FILE_SYSTEM *FileSystem,
-    FSP_FSCTL_TRANSACT_RSP *Response);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">VOID</span> <span class="tok-nf">FspFileSystemSendResponse</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_TRANSACT_RSP</span> <span class="tok-o">*</span><span class="tok-n">Response</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2198,9 +2198,9 @@ At a later time the file system can use FspFileSystemSendResponse to send the re
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspFileSystemSetMountPoint(
-    FSP_FILE_SYSTEM *FileSystem,
-    PWSTR MountPoint);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">FspFileSystemSetMountPoint</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">MountPoint</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2246,9 +2246,9 @@ be used for network file systems. This is a limitation that Windows imposes on j
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static inline VOID FspFileSystemSetOperationGuardStrategy(
-    FSP_FILE_SYSTEM *FileSystem,
-    FSP_FILE_SYSTEM_OPERATION_GUARD_STRATEGY GuardStrategy)</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-kr">inline</span> <span class="tok-n">VOID</span> <span class="tok-n">FspFileSystemSetOperationGuardStrategy</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FILE_SYSTEM_OPERATION_GUARD_STRATEGY</span> <span class="tok-n">GuardStrategy</span><span class="tok-p">)</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2279,9 +2279,9 @@ be used for network file systems. This is a limitation that Windows imposes on j
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspFileSystemStartDispatcher(
-    FSP_FILE_SYSTEM *FileSystem,
-    ULONG ThreadCount);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">FspFileSystemStartDispatcher</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">ThreadCount</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2317,8 +2317,8 @@ file system requests from the kernel.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspFileSystemStopDispatcher(
-    FSP_FILE_SYSTEM *FileSystem);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">VOID</span> <span class="tok-nf">FspFileSystemStopDispatcher</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2336,11 +2336,11 @@ file system requests from the kernel.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspSetSecurityDescriptor(
-    PSECURITY_DESCRIPTOR InputDescriptor,
-    SECURITY_INFORMATION SecurityInformation,
-    PSECURITY_DESCRIPTOR ModificationDescriptor,
-    PSECURITY_DESCRIPTOR *PSecurityDescriptor);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">FspSetSecurityDescriptor</span><span class="tok-p">(</span>
+    <span class="tok-n">PSECURITY_DESCRIPTOR</span> <span class="tok-n">InputDescriptor</span><span class="tok-p">,</span>
+    <span class="tok-n">SECURITY_INFORMATION</span> <span class="tok-n">SecurityInformation</span><span class="tok-p">,</span>
+    <span class="tok-n">PSECURITY_DESCRIPTOR</span> <span class="tok-n">ModificationDescriptor</span><span class="tok-p">,</span>
+    <span class="tok-n">PSECURITY_DESCRIPTOR</span> <span class="tok-o">*</span><span class="tok-n">PSecurityDescriptor</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2399,10 +2399,10 @@ This security descriptor can be later freed using FspDeleteSecurityDescriptor.</
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">typedef enum {
-    FSP_FILE_SYSTEM_OPERATION_GUARD_STRATEGY_FINE = 0,
-    FSP_FILE_SYSTEM_OPERATION_GUARD_STRATEGY_COARSE,
-} FSP_FILE_SYSTEM_OPERATION_GUARD_STRATEGY;</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">typedef</span> <span class="tok-k">enum</span> <span class="tok-p">{</span>
+    <span class="tok-n">FSP_FILE_SYSTEM_OPERATION_GUARD_STRATEGY_FINE</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FILE_SYSTEM_OPERATION_GUARD_STRATEGY_COARSE</span><span class="tok-p">,</span>
+<span class="tok-p">}</span> <span class="tok-n">FSP_FILE_SYSTEM_OPERATION_GUARD_STRATEGY</span><span class="tok-p">;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2470,9 +2470,9 @@ necessary to expose a user mode file system to Windows.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspServiceAcceptControl(
-    FSP_SERVICE *Service,
-    ULONG Control);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">VOID</span> <span class="tok-nf">FspServiceAcceptControl</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_SERVICE</span> <span class="tok-o">*</span><span class="tok-n">Service</span><span class="tok-p">,</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">Control</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2500,8 +2500,8 @@ ignored.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspServiceAllowConsoleMode(
-    FSP_SERVICE *Service);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">VOID</span> <span class="tok-nf">FspServiceAllowConsoleMode</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_SERVICE</span> <span class="tok-o">*</span><span class="tok-n">Service</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2532,9 +2532,9 @@ multiple instances of a user mode file system.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspServiceContextCheck(
-    HANDLE Token,
-    PBOOLEAN PIsLocalSystem);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">FspServiceContextCheck</span><span class="tok-p">(</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Token</span><span class="tok-p">,</span>
+    <span class="tok-n">PBOOLEAN</span> <span class="tok-n">PIsLocalSystem</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2563,12 +2563,12 @@ Other error codes are possible.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspServiceCreate(
-    PWSTR ServiceName,
-    FSP_SERVICE_START *OnStart,
-    FSP_SERVICE_STOP *OnStop,
-    FSP_SERVICE_CONTROL *OnControl,
-    FSP_SERVICE **PService);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">FspServiceCreate</span><span class="tok-p">(</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">ServiceName</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_SERVICE_START</span> <span class="tok-o">*</span><span class="tok-n">OnStart</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_SERVICE_STOP</span> <span class="tok-o">*</span><span class="tok-n">OnStop</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_SERVICE_CONTROL</span> <span class="tok-o">*</span><span class="tok-n">OnControl</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_SERVICE</span> <span class="tok-o">**</span><span class="tok-n">PService</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2606,8 +2606,8 @@ call.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspServiceDelete(
-    FSP_SERVICE *Service);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">VOID</span> <span class="tok-nf">FspServiceDelete</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_SERVICE</span> <span class="tok-o">*</span><span class="tok-n">Service</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2625,8 +2625,8 @@ call.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API ULONG FspServiceGetExitCode(
-    FSP_SERVICE *Service);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">ULONG</span> <span class="tok-nf">FspServiceGetExitCode</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_SERVICE</span> <span class="tok-o">*</span><span class="tok-n">Service</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2650,8 +2650,8 @@ call.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API BOOLEAN FspServiceIsInteractive(
-    VOID);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">BOOLEAN</span> <span class="tok-nf">FspServiceIsInteractive</span><span class="tok-p">(</span>
+    <span class="tok-n">VOID</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2665,10 +2665,10 @@ call.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspServiceLog(
-    ULONG Type,
-    PWSTR Format,
-    ...);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">VOID</span> <span class="tok-nf">FspServiceLog</span><span class="tok-p">(</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">Type</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">Format</span><span class="tok-p">,</span>
+    <span class="tok-p">...);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2697,8 +2697,8 @@ console if running in user interactive mode.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API NTSTATUS FspServiceLoop(
-    FSP_SERVICE *Service);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">FspServiceLoop</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_SERVICE</span> <span class="tok-o">*</span><span class="tok-n">Service</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2730,9 +2730,9 @@ not available (and console mode is allowed) it will enter console mode.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspServiceRequestTime(
-    FSP_SERVICE *Service,
-    ULONG Time);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">VOID</span> <span class="tok-nf">FspServiceRequestTime</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_SERVICE</span> <span class="tok-o">*</span><span class="tok-n">Service</span><span class="tok-p">,</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">Time</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2759,12 +2759,12 @@ not available (and console mode is allowed) it will enter console mode.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API ULONG FspServiceRunEx(
-    PWSTR ServiceName,
-    FSP_SERVICE_START *OnStart,
-    FSP_SERVICE_STOP *OnStop,
-    FSP_SERVICE_CONTROL *OnControl,
-    PVOID UserContext);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">ULONG</span> <span class="tok-nf">FspServiceRunEx</span><span class="tok-p">(</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">ServiceName</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_SERVICE_START</span> <span class="tok-o">*</span><span class="tok-n">OnStart</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_SERVICE_STOP</span> <span class="tok-o">*</span><span class="tok-n">OnStop</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_SERVICE_CONTROL</span> <span class="tok-o">*</span><span class="tok-n">OnControl</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">UserContext</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2807,9 +2807,9 @@ run and delete a service. It is intended to be used from a service&#8217;s main/
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspServiceSetExitCode(
-    FSP_SERVICE *Service,
-    ULONG ExitCode);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">VOID</span> <span class="tok-nf">FspServiceSetExitCode</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_SERVICE</span> <span class="tok-o">*</span><span class="tok-n">Service</span><span class="tok-p">,</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">ExitCode</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2830,8 +2830,8 @@ run and delete a service. It is intended to be used from a service&#8217;s main/
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">FSP_API VOID FspServiceStop(
-    FSP_SERVICE *Service);</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">FSP_API</span> <span class="tok-n">VOID</span> <span class="tok-nf">FspServiceStop</span><span class="tok-p">(</span>
+    <span class="tok-n">FSP_SERVICE</span> <span class="tok-o">*</span><span class="tok-n">Service</span><span class="tok-p">);</span></code></pre>
 </div>
 </div>
 <div class="paragraph">

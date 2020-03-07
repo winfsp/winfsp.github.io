@@ -140,26 +140,26 @@ A user mode file system services requests from the operating system. Therefore i
 <div class="listingblock">
 <div class="title"><code><strong>passthrough.c</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">#include &lt;winfsp/winfsp.h&gt;                                              // <b class="conum">(1)</b>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-cp">#include</span> <span class="tok-cpf">&lt;winfsp/winfsp.h&gt;                                              </span><span class="tok-cp"></span>// <b class="conum">(1)</b>
 
-#define PROGNAME                        "passthrough"
+<span class="tok-cp">#define PROGNAME                        &quot;passthrough&quot;</span>
 
-static
-NTSTATUS SvcStart(FSP_SERVICE *Service, ULONG argc, PWSTR *argv)        // <b class="conum">(2)</b>
-{
-    return STATUS_NOT_IMPLEMENTED;
-}
+<span class="tok-k">static</span>
+<span class="tok-n">NTSTATUS</span> <span class="tok-nf">SvcStart</span><span class="tok-p">(</span><span class="tok-n">FSP_SERVICE</span> <span class="tok-o">*</span><span class="tok-n">Service</span><span class="tok-p">,</span> <span class="tok-n">ULONG</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">PWSTR</span> <span class="tok-o">*</span><span class="tok-n">argv</span><span class="tok-p">)</span>        // <b class="conum">(2)</b>
+<span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-n">STATUS_NOT_IMPLEMENTED</span><span class="tok-p">;</span>
+<span class="tok-p">}</span>
 
-static
-NTSTATUS SvcStop(FSP_SERVICE *Service)                                  // <b class="conum">(3)</b>
-{
-    return STATUS_NOT_IMPLEMENTED;
-}
+<span class="tok-k">static</span>
+<span class="tok-n">NTSTATUS</span> <span class="tok-nf">SvcStop</span><span class="tok-p">(</span><span class="tok-n">FSP_SERVICE</span> <span class="tok-o">*</span><span class="tok-n">Service</span><span class="tok-p">)</span>                                  // <b class="conum">(3)</b>
+<span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-n">STATUS_NOT_IMPLEMENTED</span><span class="tok-p">;</span>
+<span class="tok-p">}</span>
 
-int wmain(int argc, wchar_t **argv)
-{
-    return FspServiceRun(L"" PROGNAME, SvcStart, SvcStop, 0);           // <b class="conum">(4)</b>
-}</code></pre>
+<span class="tok-kt">int</span> <span class="tok-nf">wmain</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-kt">wchar_t</span> <span class="tok-o">**</span><span class="tok-n">argv</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-n">FspServiceRun</span><span class="tok-p">(</span><span class="tok-sa">L</span><span class="tok-s">&quot;&quot;</span> <span class="tok-n">PROGNAME</span><span class="tok-p">,</span> <span class="tok-n">SvcStart</span><span class="tok-p">,</span> <span class="tok-n">SvcStop</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>           // <b class="conum">(4)</b>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -245,8 +245,8 @@ WinFsp made a conscious decision not to install the WinFsp DLL in one of the Win
 <div class="listingblock">
 <div class="title"><code><strong>wmain excerpt</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">    if (!NT_SUCCESS(FspLoad(0)))
-        return ERROR_DELAY_LOAD_FAILED;</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span>    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">NT_SUCCESS</span><span class="tok-p">(</span><span class="tok-n">FspLoad</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">)))</span>
+        <span class="tok-k">return</span> <span class="tok-n">ERROR_DELAY_LOAD_FAILED</span><span class="tok-p">;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -292,11 +292,11 @@ options:
 <div class="listingblock">
 <div class="title"><code><strong>SvcStart excerpt</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">    PWSTR DebugLogFile = 0;
-    ULONG DebugFlags = 0;
-    PWSTR VolumePrefix = 0;
-    PWSTR PassThrough = 0;
-    PWSTR MountPoint = 0;</code></pre>
+<pre class="pygments highlight"><code data-lang="c"><span></span>    <span class="tok-n">PWSTR</span> <span class="tok-n">DebugLogFile</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">DebugFlags</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">VolumePrefix</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">PassThrough</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">MountPoint</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -305,27 +305,27 @@ options:
 <div class="listingblock">
 <div class="title"><code><strong>SvcStart excerpt</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">    if (0 != DebugLogFile)
-    {
-        if (0 == wcscmp(L"-", DebugLogFile))
-            DebugLogHandle = GetStdHandle(STD_ERROR_HANDLE);
-        else
-            DebugLogHandle = CreateFileW(
-                DebugLogFile,
-                FILE_APPEND_DATA,
-                FILE_SHARE_READ | FILE_SHARE_WRITE,
-                0,
-                OPEN_ALWAYS,
-                FILE_ATTRIBUTE_NORMAL,
-                0);
-        if (INVALID_HANDLE_VALUE == DebugLogHandle)
-        {
-            fail(L"cannot open debug log file");
-            goto usage;
-        }
+<pre class="pygments highlight"><code data-lang="c"><span></span>    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">!=</span> <span class="tok-n">DebugLogFile</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">==</span> <span class="tok-n">wcscmp</span><span class="tok-p">(</span><span class="tok-sa">L</span><span class="tok-s">&quot;-&quot;</span><span class="tok-p">,</span> <span class="tok-n">DebugLogFile</span><span class="tok-p">))</span>
+            <span class="tok-n">DebugLogHandle</span> <span class="tok-o">=</span> <span class="tok-n">GetStdHandle</span><span class="tok-p">(</span><span class="tok-n">STD_ERROR_HANDLE</span><span class="tok-p">);</span>
+        <span class="tok-k">else</span>
+            <span class="tok-n">DebugLogHandle</span> <span class="tok-o">=</span> <span class="tok-n">CreateFileW</span><span class="tok-p">(</span>
+                <span class="tok-n">DebugLogFile</span><span class="tok-p">,</span>
+                <span class="tok-n">FILE_APPEND_DATA</span><span class="tok-p">,</span>
+                <span class="tok-n">FILE_SHARE_READ</span> <span class="tok-o">|</span> <span class="tok-n">FILE_SHARE_WRITE</span><span class="tok-p">,</span>
+                <span class="tok-mi">0</span><span class="tok-p">,</span>
+                <span class="tok-n">OPEN_ALWAYS</span><span class="tok-p">,</span>
+                <span class="tok-n">FILE_ATTRIBUTE_NORMAL</span><span class="tok-p">,</span>
+                <span class="tok-mi">0</span><span class="tok-p">);</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">INVALID_HANDLE_VALUE</span> <span class="tok-o">==</span> <span class="tok-n">DebugLogHandle</span><span class="tok-p">)</span>
+        <span class="tok-p">{</span>
+            <span class="tok-n">fail</span><span class="tok-p">(</span><span class="tok-sa">L</span><span class="tok-s">&quot;cannot open debug log file&quot;</span><span class="tok-p">);</span>
+            <span class="tok-k">goto</span> <span class="tok-n">usage</span><span class="tok-p">;</span>
+        <span class="tok-p">}</span>
 
-        FspDebugLogSetHandle(DebugLogHandle);
-    }</code></pre>
+        <span class="tok-n">FspDebugLogSetHandle</span><span class="tok-p">(</span><span class="tok-n">DebugLogHandle</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -334,24 +334,24 @@ options:
 <div class="listingblock">
 <div class="title"><code><strong>SvcStart excerpt</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">    Result = PtfsCreate(PassThrough, VolumePrefix, MountPoint, DebugFlags,
-        &amp;Ptfs);                                                         // <b class="conum">(1)</b>
-    if (!NT_SUCCESS(Result))
-    {
-        fail(L"cannot create file system");
-        goto exit;
-    }
+<pre class="pygments highlight"><code data-lang="c"><span></span>    <span class="tok-n">Result</span> <span class="tok-o">=</span> <span class="tok-n">PtfsCreate</span><span class="tok-p">(</span><span class="tok-n">PassThrough</span><span class="tok-p">,</span> <span class="tok-n">VolumePrefix</span><span class="tok-p">,</span> <span class="tok-n">MountPoint</span><span class="tok-p">,</span> <span class="tok-n">DebugFlags</span><span class="tok-p">,</span>
+        <span class="tok-o">&amp;</span><span class="tok-n">Ptfs</span><span class="tok-p">);</span>                                                         // <b class="conum">(1)</b>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">NT_SUCCESS</span><span class="tok-p">(</span><span class="tok-n">Result</span><span class="tok-p">))</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">fail</span><span class="tok-p">(</span><span class="tok-sa">L</span><span class="tok-s">&quot;cannot create file system&quot;</span><span class="tok-p">);</span>
+        <span class="tok-k">goto</span> <span class="tok-n">exit</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
 
-    Result = FspFileSystemStartDispatcher(Ptfs-&gt;FileSystem, 0);         // <b class="conum">(2)</b>
-    if (!NT_SUCCESS(Result))
-    {
-        fail(L"cannot start file system");
-        goto exit;
-    }
+    <span class="tok-n">Result</span> <span class="tok-o">=</span> <span class="tok-n">FspFileSystemStartDispatcher</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-o">-&gt;</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>         // <b class="conum">(2)</b>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">NT_SUCCESS</span><span class="tok-p">(</span><span class="tok-n">Result</span><span class="tok-p">))</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">fail</span><span class="tok-p">(</span><span class="tok-sa">L</span><span class="tok-s">&quot;cannot start file system&quot;</span><span class="tok-p">);</span>
+        <span class="tok-k">goto</span> <span class="tok-n">exit</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
 
-    ...
+    <span class="tok-p">...</span>
 
-    Service-&gt;UserContext = Ptfs;                                        // <b class="conum">(3)</b></code></pre>
+    <span class="tok-n">Service</span><span class="tok-o">-&gt;</span><span class="tok-n">UserContext</span> <span class="tok-o">=</span> <span class="tok-n">Ptfs</span><span class="tok-p">;</span>                                        // <b class="conum">(3)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -373,115 +373,115 @@ options:
 <div class="listingblock">
 <div class="title"><code><strong>PtfsCreate</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">typedef struct
-{
-    FSP_FILE_SYSTEM *FileSystem;
-    PWSTR Path;
-} PTFS;
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">typedef</span> <span class="tok-k">struct</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">;</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">Path</span><span class="tok-p">;</span>
+<span class="tok-p">}</span> <span class="tok-n">PTFS</span><span class="tok-p">;</span>
 
-...
+<span class="tok-p">...</span>
 
-static NTSTATUS PtfsCreate(PWSTR Path, PWSTR VolumePrefix, PWSTR MountPoint, UINT32 DebugFlags,
-    PTFS **PPtfs)
-{
-    WCHAR FullPath[MAX_PATH];
-    ULONG Length;
-    HANDLE Handle;
-    FILETIME CreationTime;
-    DWORD LastError;
-    FSP_FSCTL_VOLUME_PARAMS VolumeParams;
-    PTFS *Ptfs = 0;
-    NTSTATUS Result;
+<span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">PtfsCreate</span><span class="tok-p">(</span><span class="tok-n">PWSTR</span> <span class="tok-n">Path</span><span class="tok-p">,</span> <span class="tok-n">PWSTR</span> <span class="tok-n">VolumePrefix</span><span class="tok-p">,</span> <span class="tok-n">PWSTR</span> <span class="tok-n">MountPoint</span><span class="tok-p">,</span> <span class="tok-n">UINT32</span> <span class="tok-n">DebugFlags</span><span class="tok-p">,</span>
+    <span class="tok-n">PTFS</span> <span class="tok-o">**</span><span class="tok-n">PPtfs</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">WCHAR</span> <span class="tok-n">FullPath</span><span class="tok-p">[</span><span class="tok-n">MAX_PATH</span><span class="tok-p">];</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">Length</span><span class="tok-p">;</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span><span class="tok-p">;</span>
+    <span class="tok-n">FILETIME</span> <span class="tok-n">CreationTime</span><span class="tok-p">;</span>
+    <span class="tok-n">DWORD</span> <span class="tok-n">LastError</span><span class="tok-p">;</span>
+    <span class="tok-n">FSP_FSCTL_VOLUME_PARAMS</span> <span class="tok-n">VolumeParams</span><span class="tok-p">;</span>
+    <span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-n">Ptfs</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-n">NTSTATUS</span> <span class="tok-n">Result</span><span class="tok-p">;</span>
 
-    *PPtfs = 0;
+    <span class="tok-o">*</span><span class="tok-n">PPtfs</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
 
-    Handle = CreateFileW(
-        Path, FILE_READ_ATTRIBUTES, 0, 0,
-        OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
-    if (INVALID_HANDLE_VALUE == Handle)
-        return FspNtStatusFromWin32(GetLastError());
+    <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">CreateFileW</span><span class="tok-p">(</span>
+        <span class="tok-n">Path</span><span class="tok-p">,</span> <span class="tok-n">FILE_READ_ATTRIBUTES</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span>
+        <span class="tok-n">OPEN_EXISTING</span><span class="tok-p">,</span> <span class="tok-n">FILE_FLAG_BACKUP_SEMANTICS</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">INVALID_HANDLE_VALUE</span> <span class="tok-o">==</span> <span class="tok-n">Handle</span><span class="tok-p">)</span>
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-    Length = GetFinalPathNameByHandleW(Handle,
-        FullPath, FULLPATH_SIZE - 1, 0);                                // <b class="conum">(1)</b>
-    if (0 == Length)
-    {
-        LastError = GetLastError();
-        CloseHandle(Handle);
-        return FspNtStatusFromWin32(LastError);
-    }
-    if (L'\\' == FullPath[Length - 1])
-        FullPath[--Length] = L'\0';
+    <span class="tok-n">Length</span> <span class="tok-o">=</span> <span class="tok-n">GetFinalPathNameByHandleW</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span>
+        <span class="tok-n">FullPath</span><span class="tok-p">,</span> <span class="tok-n">FULLPATH_SIZE</span> <span class="tok-o">-</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>                                // <b class="conum">(1)</b>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">==</span> <span class="tok-n">Length</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">LastError</span> <span class="tok-o">=</span> <span class="tok-n">GetLastError</span><span class="tok-p">();</span>
+        <span class="tok-n">CloseHandle</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">);</span>
+        <span class="tok-k">return</span> <span class="tok-nf">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">LastError</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-sa">L</span><span class="tok-sc">&#39;\\&#39;</span> <span class="tok-o">==</span> <span class="tok-n">FullPath</span><span class="tok-p">[</span><span class="tok-n">Length</span> <span class="tok-o">-</span> <span class="tok-mi">1</span><span class="tok-p">])</span>
+        <span class="tok-n">FullPath</span><span class="tok-p">[</span><span class="tok-o">--</span><span class="tok-n">Length</span><span class="tok-p">]</span> <span class="tok-o">=</span> <span class="tok-sa">L</span><span class="tok-sc">&#39;\0&#39;</span><span class="tok-p">;</span>
 
-    if (!GetFileTime(Handle, &amp;CreationTime, 0, 0))                      // <b class="conum">(2)</b>
-    {
-        LastError = GetLastError();
-        CloseHandle(Handle);
-        return FspNtStatusFromWin32(LastError);
-    }
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">GetFileTime</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">CreationTime</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">))</span>                      // <b class="conum">(2)</b>
+    <span class="tok-p">{</span>
+        <span class="tok-n">LastError</span> <span class="tok-o">=</span> <span class="tok-n">GetLastError</span><span class="tok-p">();</span>
+        <span class="tok-n">CloseHandle</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">);</span>
+        <span class="tok-k">return</span> <span class="tok-nf">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">LastError</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
 
-    CloseHandle(Handle);
+    <span class="tok-n">CloseHandle</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">);</span>
 
-    /* from now on we must goto exit on failure */
+    <span class="tok-cm">/* from now on we must goto exit on failure */</span>
 
-    Ptfs = malloc(sizeof *Ptfs);                                        // <b class="conum">(3)</b>
-    if (0 == Ptfs)
-    {
-        Result = STATUS_INSUFFICIENT_RESOURCES;
-        goto exit;
-    }
-    memset(Ptfs, 0, sizeof *Ptfs);
+    <span class="tok-n">Ptfs</span> <span class="tok-o">=</span> <span class="tok-n">malloc</span><span class="tok-p">(</span><span class="tok-k">sizeof</span> <span class="tok-o">*</span><span class="tok-n">Ptfs</span><span class="tok-p">);</span>                                        // <b class="conum">(3)</b>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">==</span> <span class="tok-n">Ptfs</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">Result</span> <span class="tok-o">=</span> <span class="tok-n">STATUS_INSUFFICIENT_RESOURCES</span><span class="tok-p">;</span>
+        <span class="tok-k">goto</span> <span class="tok-n">exit</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
+    <span class="tok-n">memset</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-o">*</span><span class="tok-n">Ptfs</span><span class="tok-p">);</span>
 
-    Length = (Length + 1) * sizeof(WCHAR);
-    Ptfs-&gt;Path = malloc(Length);                                        // <b class="conum">(3)</b>
-    if (0 == Ptfs-&gt;Path)
-    {
-        Result = STATUS_INSUFFICIENT_RESOURCES;
-        goto exit;
-    }
-    memcpy(Ptfs-&gt;Path, FullPath, Length);
+    <span class="tok-n">Length</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">Length</span> <span class="tok-o">+</span> <span class="tok-mi">1</span><span class="tok-p">)</span> <span class="tok-o">*</span> <span class="tok-k">sizeof</span><span class="tok-p">(</span><span class="tok-n">WCHAR</span><span class="tok-p">);</span>
+    <span class="tok-n">Ptfs</span><span class="tok-o">-&gt;</span><span class="tok-n">Path</span> <span class="tok-o">=</span> <span class="tok-n">malloc</span><span class="tok-p">(</span><span class="tok-n">Length</span><span class="tok-p">);</span>                                        // <b class="conum">(3)</b>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">==</span> <span class="tok-n">Ptfs</span><span class="tok-o">-&gt;</span><span class="tok-n">Path</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">Result</span> <span class="tok-o">=</span> <span class="tok-n">STATUS_INSUFFICIENT_RESOURCES</span><span class="tok-p">;</span>
+        <span class="tok-k">goto</span> <span class="tok-n">exit</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
+    <span class="tok-n">memcpy</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-o">-&gt;</span><span class="tok-n">Path</span><span class="tok-p">,</span> <span class="tok-n">FullPath</span><span class="tok-p">,</span> <span class="tok-n">Length</span><span class="tok-p">);</span>
 
-    memset(&amp;VolumeParams, 0, sizeof VolumeParams);                      // <b class="conum">(4)</b>
-    VolumeParams.SectorSize = ALLOCATION_UNIT;
-    VolumeParams.SectorsPerAllocationUnit = 1;
-    VolumeParams.VolumeCreationTime = ((PLARGE_INTEGER)&amp;CreationTime)-&gt;QuadPart;
-    VolumeParams.VolumeSerialNumber = 0;
-    VolumeParams.FileInfoTimeout = 1000;
-    VolumeParams.CaseSensitiveSearch = 0;
-    VolumeParams.CasePreservedNames = 1;
-    VolumeParams.UnicodeOnDisk = 1;
-    VolumeParams.PersistentAcls = 1;
-    VolumeParams.PostCleanupWhenModifiedOnly = 1;                       // <b class="conum">(4)</b>
-    VolumeParams.UmFileContextIsUserContext2 = 1;                       // <b class="conum">(4)</b>
-    if (0 != VolumePrefix)
-        wcscpy_s(VolumeParams.Prefix, sizeof VolumeParams.Prefix / sizeof(WCHAR), VolumePrefix);
-    wcscpy_s(VolumeParams.FileSystemName, sizeof VolumeParams.FileSystemName / sizeof(WCHAR),
-        L"" PROGNAME);
+    <span class="tok-n">memset</span><span class="tok-p">(</span><span class="tok-o">&amp;</span><span class="tok-n">VolumeParams</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-n">VolumeParams</span><span class="tok-p">);</span>                      // <b class="conum">(4)</b>
+    <span class="tok-n">VolumeParams</span><span class="tok-p">.</span><span class="tok-n">SectorSize</span> <span class="tok-o">=</span> <span class="tok-n">ALLOCATION_UNIT</span><span class="tok-p">;</span>
+    <span class="tok-n">VolumeParams</span><span class="tok-p">.</span><span class="tok-n">SectorsPerAllocationUnit</span> <span class="tok-o">=</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
+    <span class="tok-n">VolumeParams</span><span class="tok-p">.</span><span class="tok-n">VolumeCreationTime</span> <span class="tok-o">=</span> <span class="tok-p">((</span><span class="tok-n">PLARGE_INTEGER</span><span class="tok-p">)</span><span class="tok-o">&amp;</span><span class="tok-n">CreationTime</span><span class="tok-p">)</span><span class="tok-o">-&gt;</span><span class="tok-n">QuadPart</span><span class="tok-p">;</span>
+    <span class="tok-n">VolumeParams</span><span class="tok-p">.</span><span class="tok-n">VolumeSerialNumber</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-n">VolumeParams</span><span class="tok-p">.</span><span class="tok-n">FileInfoTimeout</span> <span class="tok-o">=</span> <span class="tok-mi">1000</span><span class="tok-p">;</span>
+    <span class="tok-n">VolumeParams</span><span class="tok-p">.</span><span class="tok-n">CaseSensitiveSearch</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-n">VolumeParams</span><span class="tok-p">.</span><span class="tok-n">CasePreservedNames</span> <span class="tok-o">=</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
+    <span class="tok-n">VolumeParams</span><span class="tok-p">.</span><span class="tok-n">UnicodeOnDisk</span> <span class="tok-o">=</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
+    <span class="tok-n">VolumeParams</span><span class="tok-p">.</span><span class="tok-n">PersistentAcls</span> <span class="tok-o">=</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
+    <span class="tok-n">VolumeParams</span><span class="tok-p">.</span><span class="tok-n">PostCleanupWhenModifiedOnly</span> <span class="tok-o">=</span> <span class="tok-mi">1</span><span class="tok-p">;</span>                       // <b class="conum">(4)</b>
+    <span class="tok-n">VolumeParams</span><span class="tok-p">.</span><span class="tok-n">UmFileContextIsUserContext2</span> <span class="tok-o">=</span> <span class="tok-mi">1</span><span class="tok-p">;</span>                       // <b class="conum">(4)</b>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">!=</span> <span class="tok-n">VolumePrefix</span><span class="tok-p">)</span>
+        <span class="tok-n">wcscpy_s</span><span class="tok-p">(</span><span class="tok-n">VolumeParams</span><span class="tok-p">.</span><span class="tok-n">Prefix</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-n">VolumeParams</span><span class="tok-p">.</span><span class="tok-n">Prefix</span> <span class="tok-o">/</span> <span class="tok-k">sizeof</span><span class="tok-p">(</span><span class="tok-n">WCHAR</span><span class="tok-p">),</span> <span class="tok-n">VolumePrefix</span><span class="tok-p">);</span>
+    <span class="tok-n">wcscpy_s</span><span class="tok-p">(</span><span class="tok-n">VolumeParams</span><span class="tok-p">.</span><span class="tok-n">FileSystemName</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-n">VolumeParams</span><span class="tok-p">.</span><span class="tok-n">FileSystemName</span> <span class="tok-o">/</span> <span class="tok-k">sizeof</span><span class="tok-p">(</span><span class="tok-n">WCHAR</span><span class="tok-p">),</span>
+        <span class="tok-sa">L</span><span class="tok-s">&quot;&quot;</span> <span class="tok-n">PROGNAME</span><span class="tok-p">);</span>
 
-    Result = FspFileSystemCreate(
-        VolumeParams.Prefix[0] ? L"" FSP_FSCTL_NET_DEVICE_NAME : L"" FSP_FSCTL_DISK_DEVICE_NAME,
-        &amp;VolumeParams,
-        &amp;PtfsInterface,
-        &amp;Ptfs-&gt;FileSystem);                                             // <b class="conum">(5)</b>
-    if (!NT_SUCCESS(Result))
-        goto exit;
-    Ptfs-&gt;FileSystem-&gt;UserContext = Ptfs;                               // <b class="conum">(5)</b>
+    <span class="tok-n">Result</span> <span class="tok-o">=</span> <span class="tok-n">FspFileSystemCreate</span><span class="tok-p">(</span>
+        <span class="tok-n">VolumeParams</span><span class="tok-p">.</span><span class="tok-n">Prefix</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">]</span> <span class="tok-o">?</span> <span class="tok-sa">L</span><span class="tok-s">&quot;&quot;</span> <span class="tok-nl">FSP_FSCTL_NET_DEVICE_NAME</span> <span class="tok-p">:</span> <span class="tok-sa">L</span><span class="tok-s">&quot;&quot;</span> <span class="tok-n">FSP_FSCTL_DISK_DEVICE_NAME</span><span class="tok-p">,</span>
+        <span class="tok-o">&amp;</span><span class="tok-n">VolumeParams</span><span class="tok-p">,</span>
+        <span class="tok-o">&amp;</span><span class="tok-n">PtfsInterface</span><span class="tok-p">,</span>
+        <span class="tok-o">&amp;</span><span class="tok-n">Ptfs</span><span class="tok-o">-&gt;</span><span class="tok-n">FileSystem</span><span class="tok-p">);</span>                                             // <b class="conum">(5)</b>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">NT_SUCCESS</span><span class="tok-p">(</span><span class="tok-n">Result</span><span class="tok-p">))</span>
+        <span class="tok-k">goto</span> <span class="tok-n">exit</span><span class="tok-p">;</span>
+    <span class="tok-n">Ptfs</span><span class="tok-o">-&gt;</span><span class="tok-n">FileSystem</span><span class="tok-o">-&gt;</span><span class="tok-n">UserContext</span> <span class="tok-o">=</span> <span class="tok-n">Ptfs</span><span class="tok-p">;</span>                               // <b class="conum">(5)</b>
 
-    Result = FspFileSystemSetMountPoint(Ptfs-&gt;FileSystem, MountPoint);  // <b class="conum">(6)</b>
-    if (!NT_SUCCESS(Result))
-        goto exit;
+    <span class="tok-n">Result</span> <span class="tok-o">=</span> <span class="tok-n">FspFileSystemSetMountPoint</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-o">-&gt;</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span> <span class="tok-n">MountPoint</span><span class="tok-p">);</span>  // <b class="conum">(6)</b>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">NT_SUCCESS</span><span class="tok-p">(</span><span class="tok-n">Result</span><span class="tok-p">))</span>
+        <span class="tok-k">goto</span> <span class="tok-n">exit</span><span class="tok-p">;</span>
 
-    FspFileSystemSetDebugLog(Ptfs-&gt;FileSystem, DebugFlags);             // <b class="conum">(7)</b>
+    <span class="tok-n">FspFileSystemSetDebugLog</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-o">-&gt;</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span> <span class="tok-n">DebugFlags</span><span class="tok-p">);</span>             // <b class="conum">(7)</b>
 
-    Result = STATUS_SUCCESS;
+    <span class="tok-n">Result</span> <span class="tok-o">=</span> <span class="tok-n">STATUS_SUCCESS</span><span class="tok-p">;</span>
 
-exit:
-    if (NT_SUCCESS(Result))
-        *PPtfs = Ptfs;
-    else if (0 != Ptfs)
-        PtfsDelete(Ptfs);
+<span class="tok-nl">exit</span><span class="tok-p">:</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">NT_SUCCESS</span><span class="tok-p">(</span><span class="tok-n">Result</span><span class="tok-p">))</span>
+        <span class="tok-o">*</span><span class="tok-n">PPtfs</span> <span class="tok-o">=</span> <span class="tok-n">Ptfs</span><span class="tok-p">;</span>
+    <span class="tok-k">else</span> <span class="tok-nf">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">!=</span> <span class="tok-n">Ptfs</span><span class="tok-p">)</span>
+        <span class="tok-n">PtfsDelete</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-p">);</span>
 
-    return Result;
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">Result</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -518,10 +518,10 @@ exit:
 <div class="listingblock">
 <div class="title"><code><strong>SvcStop excerpt</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">    PTFS *Ptfs = Service-&gt;UserContext;                                  // <b class="conum">(1)</b>
+<pre class="pygments highlight"><code data-lang="c"><span></span>    <span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-n">Ptfs</span> <span class="tok-o">=</span> <span class="tok-n">Service</span><span class="tok-o">-&gt;</span><span class="tok-n">UserContext</span><span class="tok-p">;</span>                                  // <b class="conum">(1)</b>
 
-    FspFileSystemStopDispatcher(Ptfs-&gt;FileSystem);                      // <b class="conum">(2)</b>
-    PtfsDelete(Ptfs);                                                   // <b class="conum">(3)</b></code></pre>
+    <span class="tok-n">FspFileSystemStopDispatcher</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-o">-&gt;</span><span class="tok-n">FileSystem</span><span class="tok-p">);</span>                      // <b class="conum">(2)</b>
+    <span class="tok-n">PtfsDelete</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-p">);</span>                                                   // <b class="conum">(3)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -543,16 +543,16 @@ exit:
 <div class="listingblock">
 <div class="title"><code><strong>PtfsDelete</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static VOID PtfsDelete(PTFS *Ptfs)
-{
-    if (0 != Ptfs-&gt;FileSystem)
-        FspFileSystemDelete(Ptfs-&gt;FileSystem);                          // <b class="conum">(1)</b>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">VOID</span> <span class="tok-nf">PtfsDelete</span><span class="tok-p">(</span><span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-n">Ptfs</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">!=</span> <span class="tok-n">Ptfs</span><span class="tok-o">-&gt;</span><span class="tok-n">FileSystem</span><span class="tok-p">)</span>
+        <span class="tok-n">FspFileSystemDelete</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-o">-&gt;</span><span class="tok-n">FileSystem</span><span class="tok-p">);</span>                          // <b class="conum">(1)</b>
 
-    if (0 != Ptfs-&gt;Path)
-        free(Ptfs-&gt;Path);                                               // <b class="conum">(2)</b>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">!=</span> <span class="tok-n">Ptfs</span><span class="tok-o">-&gt;</span><span class="tok-n">Path</span><span class="tok-p">)</span>
+        <span class="tok-n">free</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-o">-&gt;</span><span class="tok-n">Path</span><span class="tok-p">);</span>                                               // <b class="conum">(2)</b>
 
-    free(Ptfs);                                                         // <b class="conum">(2)</b>
-}</code></pre>
+    <span class="tok-n">free</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-p">);</span>                                                         // <b class="conum">(2)</b>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -600,43 +600,43 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>File system operations stubs</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS GetVolumeInfo(FSP_FILE_SYSTEM *FileSystem,
-    FSP_FSCTL_VOLUME_INFO *VolumeInfo)
-{
-    return STATUS_INVALID_DEVICE_REQUEST;
-}
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">GetVolumeInfo</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_VOLUME_INFO</span> <span class="tok-o">*</span><span class="tok-n">VolumeInfo</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-n">STATUS_INVALID_DEVICE_REQUEST</span><span class="tok-p">;</span>
+<span class="tok-p">}</span>
 
-static NTSTATUS SetVolumeLabel_(FSP_FILE_SYSTEM *FileSystem,
-    PWSTR VolumeLabel,
-    FSP_FSCTL_VOLUME_INFO *VolumeInfo)
-{
-    return STATUS_INVALID_DEVICE_REQUEST;
-}
+<span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">SetVolumeLabel_</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">VolumeLabel</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_VOLUME_INFO</span> <span class="tok-o">*</span><span class="tok-n">VolumeInfo</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-n">STATUS_INVALID_DEVICE_REQUEST</span><span class="tok-p">;</span>
+<span class="tok-p">}</span>
 
-...
+<span class="tok-p">...</span>
 
-static FSP_FILE_SYSTEM_INTERFACE PtfsInterface =
-{
-    GetVolumeInfo,
-    SetVolumeLabel_,
-    GetSecurityByName,
-    Create,
-    Open,
-    Overwrite,
-    Cleanup,
-    Close,
-    Read,
-    Write,
-    Flush,
-    GetFileInfo,
-    SetBasicInfo,
-    SetFileSize,
-    CanDelete,
-    Rename,
-    GetSecurity,
-    SetSecurity,
-    ReadDirectory,
-};</code></pre>
+<span class="tok-k">static</span> <span class="tok-n">FSP_FILE_SYSTEM_INTERFACE</span> <span class="tok-n">PtfsInterface</span> <span class="tok-o">=</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">GetVolumeInfo</span><span class="tok-p">,</span>
+    <span class="tok-n">SetVolumeLabel_</span><span class="tok-p">,</span>
+    <span class="tok-n">GetSecurityByName</span><span class="tok-p">,</span>
+    <span class="tok-n">Create</span><span class="tok-p">,</span>
+    <span class="tok-n">Open</span><span class="tok-p">,</span>
+    <span class="tok-n">Overwrite</span><span class="tok-p">,</span>
+    <span class="tok-n">Cleanup</span><span class="tok-p">,</span>
+    <span class="tok-n">Close</span><span class="tok-p">,</span>
+    <span class="tok-n">Read</span><span class="tok-p">,</span>
+    <span class="tok-n">Write</span><span class="tok-p">,</span>
+    <span class="tok-n">Flush</span><span class="tok-p">,</span>
+    <span class="tok-n">GetFileInfo</span><span class="tok-p">,</span>
+    <span class="tok-n">SetBasicInfo</span><span class="tok-p">,</span>
+    <span class="tok-n">SetFileSize</span><span class="tok-p">,</span>
+    <span class="tok-n">CanDelete</span><span class="tok-p">,</span>
+    <span class="tok-n">Rename</span><span class="tok-p">,</span>
+    <span class="tok-n">GetSecurity</span><span class="tok-p">,</span>
+    <span class="tok-n">SetSecurity</span><span class="tok-p">,</span>
+    <span class="tok-n">ReadDirectory</span><span class="tok-p">,</span>
+<span class="tok-p">};</span></code></pre>
 </div>
 </div>
 <div class="sect2">
@@ -650,63 +650,63 @@ static FSP_FILE_SYSTEM_INTERFACE PtfsInterface =
 <div class="listingblock">
 <div class="title"><code><strong>GetSecurityByName</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS GetSecurityByName(FSP_FILE_SYSTEM *FileSystem,
-    PWSTR FileName, PUINT32 PFileAttributes,
-    PSECURITY_DESCRIPTOR SecurityDescriptor, SIZE_T *PSecurityDescriptorSize)
-{
-    PTFS *Ptfs = (PTFS *)FileSystem-&gt;UserContext;
-    WCHAR FullPath[FULLPATH_SIZE];
-    HANDLE Handle;
-    FILE_ATTRIBUTE_TAG_INFO AttributeTagInfo;
-    DWORD SecurityDescriptorSizeNeeded;
-    NTSTATUS Result;
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">GetSecurityByName</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span> <span class="tok-n">PUINT32</span> <span class="tok-n">PFileAttributes</span><span class="tok-p">,</span>
+    <span class="tok-n">PSECURITY_DESCRIPTOR</span> <span class="tok-n">SecurityDescriptor</span><span class="tok-p">,</span> <span class="tok-n">SIZE_T</span> <span class="tok-o">*</span><span class="tok-n">PSecurityDescriptorSize</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-n">Ptfs</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-p">)</span><span class="tok-n">FileSystem</span><span class="tok-o">-&gt;</span><span class="tok-n">UserContext</span><span class="tok-p">;</span>
+    <span class="tok-n">WCHAR</span> <span class="tok-n">FullPath</span><span class="tok-p">[</span><span class="tok-n">FULLPATH_SIZE</span><span class="tok-p">];</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span><span class="tok-p">;</span>
+    <span class="tok-n">FILE_ATTRIBUTE_TAG_INFO</span> <span class="tok-n">AttributeTagInfo</span><span class="tok-p">;</span>
+    <span class="tok-n">DWORD</span> <span class="tok-n">SecurityDescriptorSizeNeeded</span><span class="tok-p">;</span>
+    <span class="tok-n">NTSTATUS</span> <span class="tok-n">Result</span><span class="tok-p">;</span>
 
-    if (!ConcatPath(Ptfs, FileName, FullPath))
-        return STATUS_OBJECT_NAME_INVALID;
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">ConcatPath</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-p">,</span> <span class="tok-n">FileName</span><span class="tok-p">,</span> <span class="tok-n">FullPath</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">STATUS_OBJECT_NAME_INVALID</span><span class="tok-p">;</span>
 
-    Handle = CreateFileW(FullPath,
-        FILE_READ_ATTRIBUTES | READ_CONTROL, 0, 0,
-        OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
-    if (INVALID_HANDLE_VALUE == Handle)
-    {
-        Result = FspNtStatusFromWin32(GetLastError());
-        goto exit;
-    }
+    <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">CreateFileW</span><span class="tok-p">(</span><span class="tok-n">FullPath</span><span class="tok-p">,</span>
+        <span class="tok-n">FILE_READ_ATTRIBUTES</span> <span class="tok-o">|</span> <span class="tok-n">READ_CONTROL</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span>
+        <span class="tok-n">OPEN_EXISTING</span><span class="tok-p">,</span> <span class="tok-n">FILE_FLAG_BACKUP_SEMANTICS</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">INVALID_HANDLE_VALUE</span> <span class="tok-o">==</span> <span class="tok-n">Handle</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">Result</span> <span class="tok-o">=</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
+        <span class="tok-k">goto</span> <span class="tok-n">exit</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
 
-    if (0 != PFileAttributes)
-    {
-        if (!GetFileInformationByHandleEx(Handle,
-            FileAttributeTagInfo, &amp;AttributeTagInfo, sizeof AttributeTagInfo))
-        {
-            Result = FspNtStatusFromWin32(GetLastError());
-            goto exit;
-        }
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">!=</span> <span class="tok-n">PFileAttributes</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">GetFileInformationByHandleEx</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span>
+            <span class="tok-n">FileAttributeTagInfo</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">AttributeTagInfo</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-n">AttributeTagInfo</span><span class="tok-p">))</span>
+        <span class="tok-p">{</span>
+            <span class="tok-n">Result</span> <span class="tok-o">=</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
+            <span class="tok-k">goto</span> <span class="tok-n">exit</span><span class="tok-p">;</span>
+        <span class="tok-p">}</span>
 
-        *PFileAttributes = AttributeTagInfo.FileAttributes;             // <b class="conum">(1)</b>
-    }
+        <span class="tok-o">*</span><span class="tok-n">PFileAttributes</span> <span class="tok-o">=</span> <span class="tok-n">AttributeTagInfo</span><span class="tok-p">.</span><span class="tok-n">FileAttributes</span><span class="tok-p">;</span>             // <b class="conum">(1)</b>
+    <span class="tok-p">}</span>
 
-    if (0 != PSecurityDescriptorSize)
-    {
-        if (!GetKernelObjectSecurity(Handle,
-            OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
-            SecurityDescriptor, (DWORD)*PSecurityDescriptorSize, &amp;SecurityDescriptorSizeNeeded))
-        {
-            *PSecurityDescriptorSize = SecurityDescriptorSizeNeeded;
-            Result = FspNtStatusFromWin32(GetLastError());
-            goto exit;
-        }
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">!=</span> <span class="tok-n">PSecurityDescriptorSize</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">GetKernelObjectSecurity</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span>
+            <span class="tok-n">OWNER_SECURITY_INFORMATION</span> <span class="tok-o">|</span> <span class="tok-n">GROUP_SECURITY_INFORMATION</span> <span class="tok-o">|</span> <span class="tok-n">DACL_SECURITY_INFORMATION</span><span class="tok-p">,</span>
+            <span class="tok-n">SecurityDescriptor</span><span class="tok-p">,</span> <span class="tok-p">(</span><span class="tok-n">DWORD</span><span class="tok-p">)</span><span class="tok-o">*</span><span class="tok-n">PSecurityDescriptorSize</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">SecurityDescriptorSizeNeeded</span><span class="tok-p">))</span>
+        <span class="tok-p">{</span>
+            <span class="tok-o">*</span><span class="tok-n">PSecurityDescriptorSize</span> <span class="tok-o">=</span> <span class="tok-n">SecurityDescriptorSizeNeeded</span><span class="tok-p">;</span>
+            <span class="tok-n">Result</span> <span class="tok-o">=</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
+            <span class="tok-k">goto</span> <span class="tok-n">exit</span><span class="tok-p">;</span>
+        <span class="tok-p">}</span>
 
-        *PSecurityDescriptorSize = SecurityDescriptorSizeNeeded;        // <b class="conum">(2)</b>
-    }
+        <span class="tok-o">*</span><span class="tok-n">PSecurityDescriptorSize</span> <span class="tok-o">=</span> <span class="tok-n">SecurityDescriptorSizeNeeded</span><span class="tok-p">;</span>        // <b class="conum">(2)</b>
+    <span class="tok-p">}</span>
 
-    Result = STATUS_SUCCESS;
+    <span class="tok-n">Result</span> <span class="tok-o">=</span> <span class="tok-n">STATUS_SUCCESS</span><span class="tok-p">;</span>
 
-exit:
-    if (INVALID_HANDLE_VALUE != Handle)
-        CloseHandle(Handle);
+<span class="tok-nl">exit</span><span class="tok-p">:</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">INVALID_HANDLE_VALUE</span> <span class="tok-o">!=</span> <span class="tok-n">Handle</span><span class="tok-p">)</span>
+        <span class="tok-n">CloseHandle</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">);</span>
 
-    return Result;
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">Result</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -725,40 +725,40 @@ exit:
 <div class="listingblock">
 <div class="title"><code><strong>Open</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS Open(FSP_FILE_SYSTEM *FileSystem,
-    PWSTR FileName, UINT32 CreateOptions, UINT32 GrantedAccess,
-    PVOID *PFileContext, FSP_FSCTL_FILE_INFO *FileInfo)
-{
-    PTFS *Ptfs = (PTFS *)FileSystem-&gt;UserContext;
-    WCHAR FullPath[FULLPATH_SIZE];
-    ULONG CreateFlags;
-    PTFS_FILE_CONTEXT *FileContext;
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">Open</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span> <span class="tok-n">UINT32</span> <span class="tok-n">CreateOptions</span><span class="tok-p">,</span> <span class="tok-n">UINT32</span> <span class="tok-n">GrantedAccess</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-o">*</span><span class="tok-n">PFileContext</span><span class="tok-p">,</span> <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-n">Ptfs</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-p">)</span><span class="tok-n">FileSystem</span><span class="tok-o">-&gt;</span><span class="tok-n">UserContext</span><span class="tok-p">;</span>
+    <span class="tok-n">WCHAR</span> <span class="tok-n">FullPath</span><span class="tok-p">[</span><span class="tok-n">FULLPATH_SIZE</span><span class="tok-p">];</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">CreateFlags</span><span class="tok-p">;</span>
+    <span class="tok-n">PTFS_FILE_CONTEXT</span> <span class="tok-o">*</span><span class="tok-n">FileContext</span><span class="tok-p">;</span>
 
-    if (!ConcatPath(Ptfs, FileName, FullPath))
-        return STATUS_OBJECT_NAME_INVALID;
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">ConcatPath</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-p">,</span> <span class="tok-n">FileName</span><span class="tok-p">,</span> <span class="tok-n">FullPath</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">STATUS_OBJECT_NAME_INVALID</span><span class="tok-p">;</span>
 
-    FileContext = malloc(sizeof *FileContext);                          // <b class="conum">(1)</b>
-    if (0 == FileContext)
-        return STATUS_INSUFFICIENT_RESOURCES;
-    memset(FileContext, 0, sizeof *FileContext);
+    <span class="tok-n">FileContext</span> <span class="tok-o">=</span> <span class="tok-n">malloc</span><span class="tok-p">(</span><span class="tok-k">sizeof</span> <span class="tok-o">*</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>                          // <b class="conum">(1)</b>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">==</span> <span class="tok-n">FileContext</span><span class="tok-p">)</span>
+        <span class="tok-k">return</span> <span class="tok-n">STATUS_INSUFFICIENT_RESOURCES</span><span class="tok-p">;</span>
+    <span class="tok-n">memset</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-o">*</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
 
-    CreateFlags = FILE_FLAG_BACKUP_SEMANTICS;                           // <b class="conum">(2)</b>
-    if (CreateOptions &amp; FILE_DELETE_ON_CLOSE)
-        CreateFlags |= FILE_FLAG_DELETE_ON_CLOSE;                       // <b class="conum">(3)</b>
+    <span class="tok-n">CreateFlags</span> <span class="tok-o">=</span> <span class="tok-n">FILE_FLAG_BACKUP_SEMANTICS</span><span class="tok-p">;</span>                           // <b class="conum">(2)</b>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">CreateOptions</span> <span class="tok-o">&amp;</span> <span class="tok-n">FILE_DELETE_ON_CLOSE</span><span class="tok-p">)</span>
+        <span class="tok-n">CreateFlags</span> <span class="tok-o">|=</span> <span class="tok-n">FILE_FLAG_DELETE_ON_CLOSE</span><span class="tok-p">;</span>                       // <b class="conum">(3)</b>
 
-    FileContext-&gt;Handle = CreateFileW(FullPath,
-        GrantedAccess, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0,
-        OPEN_EXISTING, CreateFlags, 0);                                 // <b class="conum">(4)</b>
-    if (INVALID_HANDLE_VALUE == FileContext-&gt;Handle)
-    {
-        free(FileContext);
-        return FspNtStatusFromWin32(GetLastError());
-    }
+    <span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">CreateFileW</span><span class="tok-p">(</span><span class="tok-n">FullPath</span><span class="tok-p">,</span>
+        <span class="tok-n">GrantedAccess</span><span class="tok-p">,</span> <span class="tok-n">FILE_SHARE_READ</span> <span class="tok-o">|</span> <span class="tok-n">FILE_SHARE_WRITE</span> <span class="tok-o">|</span> <span class="tok-n">FILE_SHARE_DELETE</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span>
+        <span class="tok-n">OPEN_EXISTING</span><span class="tok-p">,</span> <span class="tok-n">CreateFlags</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>                                 // <b class="conum">(4)</b>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">INVALID_HANDLE_VALUE</span> <span class="tok-o">==</span> <span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">Handle</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">free</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
+    <span class="tok-p">}</span>
 
-    *PFileContext = FileContext;
+    <span class="tok-o">*</span><span class="tok-n">PFileContext</span> <span class="tok-o">=</span> <span class="tok-n">FileContext</span><span class="tok-p">;</span>
 
-    return GetFileInfoInternal(FileContext-&gt;Handle, FileInfo);          // <b class="conum">(5)</b>
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>          // <b class="conum">(5)</b>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -786,28 +786,28 @@ exit:
 <div class="listingblock">
 <div class="title"><code><strong>GetFileInfoInternal</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS GetFileInfoInternal(HANDLE Handle, FSP_FSCTL_FILE_INFO *FileInfo)
-{
-    BY_HANDLE_FILE_INFORMATION ByHandleFileInfo;
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">BY_HANDLE_FILE_INFORMATION</span> <span class="tok-n">ByHandleFileInfo</span><span class="tok-p">;</span>
 
-    if (!GetFileInformationByHandle(Handle, &amp;ByHandleFileInfo))
-        return FspNtStatusFromWin32(GetLastError());
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">GetFileInformationByHandle</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">ByHandleFileInfo</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-    FileInfo-&gt;FileAttributes = ByHandleFileInfo.dwFileAttributes;
-    FileInfo-&gt;ReparseTag = 0;
-    FileInfo-&gt;FileSize =
-        ((UINT64)ByHandleFileInfo.nFileSizeHigh &lt;&lt; 32) | (UINT64)ByHandleFileInfo.nFileSizeLow;
-    FileInfo-&gt;AllocationSize = (FileInfo-&gt;FileSize + ALLOCATION_UNIT - 1)
-        / ALLOCATION_UNIT * ALLOCATION_UNIT;
-    FileInfo-&gt;CreationTime = ((PLARGE_INTEGER)&amp;ByHandleFileInfo.ftCreationTime)-&gt;QuadPart;
-    FileInfo-&gt;LastAccessTime = ((PLARGE_INTEGER)&amp;ByHandleFileInfo.ftLastAccessTime)-&gt;QuadPart;
-    FileInfo-&gt;LastWriteTime = ((PLARGE_INTEGER)&amp;ByHandleFileInfo.ftLastWriteTime)-&gt;QuadPart;
-    FileInfo-&gt;ChangeTime = FileInfo-&gt;LastWriteTime;
-    FileInfo-&gt;IndexNumber = 0;
-    FileInfo-&gt;HardLinks = 0;
+    <span class="tok-n">FileInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">FileAttributes</span> <span class="tok-o">=</span> <span class="tok-n">ByHandleFileInfo</span><span class="tok-p">.</span><span class="tok-n">dwFileAttributes</span><span class="tok-p">;</span>
+    <span class="tok-n">FileInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">ReparseTag</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-n">FileInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">FileSize</span> <span class="tok-o">=</span>
+        <span class="tok-p">((</span><span class="tok-n">UINT64</span><span class="tok-p">)</span><span class="tok-n">ByHandleFileInfo</span><span class="tok-p">.</span><span class="tok-n">nFileSizeHigh</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-mi">32</span><span class="tok-p">)</span> <span class="tok-o">|</span> <span class="tok-p">(</span><span class="tok-n">UINT64</span><span class="tok-p">)</span><span class="tok-n">ByHandleFileInfo</span><span class="tok-p">.</span><span class="tok-n">nFileSizeLow</span><span class="tok-p">;</span>
+    <span class="tok-n">FileInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">AllocationSize</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">FileInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">FileSize</span> <span class="tok-o">+</span> <span class="tok-n">ALLOCATION_UNIT</span> <span class="tok-o">-</span> <span class="tok-mi">1</span><span class="tok-p">)</span>
+        <span class="tok-o">/</span> <span class="tok-n">ALLOCATION_UNIT</span> <span class="tok-o">*</span> <span class="tok-n">ALLOCATION_UNIT</span><span class="tok-p">;</span>
+    <span class="tok-n">FileInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">CreationTime</span> <span class="tok-o">=</span> <span class="tok-p">((</span><span class="tok-n">PLARGE_INTEGER</span><span class="tok-p">)</span><span class="tok-o">&amp;</span><span class="tok-n">ByHandleFileInfo</span><span class="tok-p">.</span><span class="tok-n">ftCreationTime</span><span class="tok-p">)</span><span class="tok-o">-&gt;</span><span class="tok-n">QuadPart</span><span class="tok-p">;</span>
+    <span class="tok-n">FileInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">LastAccessTime</span> <span class="tok-o">=</span> <span class="tok-p">((</span><span class="tok-n">PLARGE_INTEGER</span><span class="tok-p">)</span><span class="tok-o">&amp;</span><span class="tok-n">ByHandleFileInfo</span><span class="tok-p">.</span><span class="tok-n">ftLastAccessTime</span><span class="tok-p">)</span><span class="tok-o">-&gt;</span><span class="tok-n">QuadPart</span><span class="tok-p">;</span>
+    <span class="tok-n">FileInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">LastWriteTime</span> <span class="tok-o">=</span> <span class="tok-p">((</span><span class="tok-n">PLARGE_INTEGER</span><span class="tok-p">)</span><span class="tok-o">&amp;</span><span class="tok-n">ByHandleFileInfo</span><span class="tok-p">.</span><span class="tok-n">ftLastWriteTime</span><span class="tok-p">)</span><span class="tok-o">-&gt;</span><span class="tok-n">QuadPart</span><span class="tok-p">;</span>
+    <span class="tok-n">FileInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">ChangeTime</span> <span class="tok-o">=</span> <span class="tok-n">FileInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">LastWriteTime</span><span class="tok-p">;</span>
+    <span class="tok-n">FileInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">IndexNumber</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-n">FileInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">HardLinks</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
 
-    return STATUS_SUCCESS;
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">STATUS_SUCCESS</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -816,17 +816,17 @@ exit:
 <div class="listingblock">
 <div class="title"><code><strong>Close</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static VOID Close(FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext0)
-{
-    PTFS_FILE_CONTEXT *FileContext = FileContext0;
-    HANDLE Handle = HandleFromContext(FileContext);
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">VOID</span> <span class="tok-nf">Close</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext0</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">PTFS_FILE_CONTEXT</span> <span class="tok-o">*</span><span class="tok-n">FileContext</span> <span class="tok-o">=</span> <span class="tok-n">FileContext0</span><span class="tok-p">;</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">HandleFromContext</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
 
-    CloseHandle(Handle);                                                // <b class="conum">(1)</b>
+    <span class="tok-n">CloseHandle</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">);</span>                                                // <b class="conum">(1)</b>
 
-    FspFileSystemDeleteDirectoryBuffer(&amp;FileContext-&gt;DirBuffer);        // <b class="conum">(2)</b>
-    free(FileContext);                                                  // <b class="conum">(3)</b>
-}</code></pre>
+    <span class="tok-n">FspFileSystemDeleteDirectoryBuffer</span><span class="tok-p">(</span><span class="tok-o">&amp;</span><span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">DirBuffer</span><span class="tok-p">);</span>        // <b class="conum">(2)</b>
+    <span class="tok-n">free</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>                                                  // <b class="conum">(3)</b>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -848,13 +848,13 @@ exit:
 <div class="listingblock">
 <div class="title"><code><strong>PTFS_FILE_CONTEXT</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">#define HandleFromContext(FC)           (((PTFS_FILE_CONTEXT *)(FC))-&gt;Handle)
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-cp">#define HandleFromContext(FC)           (((PTFS_FILE_CONTEXT *)(FC))-&gt;Handle)</span>
 
-typedef struct
-{
-    HANDLE Handle;
-    PVOID DirBuffer;
-} PTFS_FILE_CONTEXT;</code></pre>
+<span class="tok-k">typedef</span> <span class="tok-k">struct</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span><span class="tok-p">;</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">DirBuffer</span><span class="tok-p">;</span>
+<span class="tok-p">}</span> <span class="tok-n">PTFS_FILE_CONTEXT</span><span class="tok-p">;</span></code></pre>
 </div>
 </div>
 </div>
@@ -878,90 +878,90 @@ typedef struct
 <div class="listingblock">
 <div class="title"><code><strong>ReadDirectory</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS ReadDirectory(FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext0, PWSTR Pattern, PWSTR Marker,
-    PVOID Buffer, ULONG BufferLength, PULONG PBytesTransferred)
-{
-    PTFS *Ptfs = (PTFS *)FileSystem-&gt;UserContext;
-    PTFS_FILE_CONTEXT *FileContext = FileContext0;
-    HANDLE Handle = HandleFromContext(FileContext);
-    WCHAR FullPath[FULLPATH_SIZE];
-    ULONG Length, PatternLength;
-    HANDLE FindHandle;
-    WIN32_FIND_DATAW FindData;
-    union
-    {
-        UINT8 B[FIELD_OFFSET(FSP_FSCTL_DIR_INFO, FileNameBuf) + MAX_PATH * sizeof(WCHAR)];
-        FSP_FSCTL_DIR_INFO D;
-    } DirInfoBuf;
-    FSP_FSCTL_DIR_INFO *DirInfo = &amp;DirInfoBuf.D;
-    NTSTATUS DirBufferResult;
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">ReadDirectory</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext0</span><span class="tok-p">,</span> <span class="tok-n">PWSTR</span> <span class="tok-n">Pattern</span><span class="tok-p">,</span> <span class="tok-n">PWSTR</span> <span class="tok-n">Marker</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span> <span class="tok-n">ULONG</span> <span class="tok-n">BufferLength</span><span class="tok-p">,</span> <span class="tok-n">PULONG</span> <span class="tok-n">PBytesTransferred</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-n">Ptfs</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-p">)</span><span class="tok-n">FileSystem</span><span class="tok-o">-&gt;</span><span class="tok-n">UserContext</span><span class="tok-p">;</span>
+    <span class="tok-n">PTFS_FILE_CONTEXT</span> <span class="tok-o">*</span><span class="tok-n">FileContext</span> <span class="tok-o">=</span> <span class="tok-n">FileContext0</span><span class="tok-p">;</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">HandleFromContext</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
+    <span class="tok-n">WCHAR</span> <span class="tok-n">FullPath</span><span class="tok-p">[</span><span class="tok-n">FULLPATH_SIZE</span><span class="tok-p">];</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">Length</span><span class="tok-p">,</span> <span class="tok-n">PatternLength</span><span class="tok-p">;</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">FindHandle</span><span class="tok-p">;</span>
+    <span class="tok-n">WIN32_FIND_DATAW</span> <span class="tok-n">FindData</span><span class="tok-p">;</span>
+    <span class="tok-k">union</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">UINT8</span> <span class="tok-n">B</span><span class="tok-p">[</span><span class="tok-n">FIELD_OFFSET</span><span class="tok-p">(</span><span class="tok-n">FSP_FSCTL_DIR_INFO</span><span class="tok-p">,</span> <span class="tok-n">FileNameBuf</span><span class="tok-p">)</span> <span class="tok-o">+</span> <span class="tok-n">MAX_PATH</span> <span class="tok-o">*</span> <span class="tok-k">sizeof</span><span class="tok-p">(</span><span class="tok-n">WCHAR</span><span class="tok-p">)];</span>
+        <span class="tok-n">FSP_FSCTL_DIR_INFO</span> <span class="tok-n">D</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span> <span class="tok-n">DirInfoBuf</span><span class="tok-p">;</span>
+    <span class="tok-n">FSP_FSCTL_DIR_INFO</span> <span class="tok-o">*</span><span class="tok-n">DirInfo</span> <span class="tok-o">=</span> <span class="tok-o">&amp;</span><span class="tok-n">DirInfoBuf</span><span class="tok-p">.</span><span class="tok-n">D</span><span class="tok-p">;</span>
+    <span class="tok-n">NTSTATUS</span> <span class="tok-n">DirBufferResult</span><span class="tok-p">;</span>
 
-    DirBufferResult = STATUS_SUCCESS;
-    if (FspFileSystemAcquireDirectoryBuffer(&amp;FileContext-&gt;DirBuffer, 0 == Marker,
-        &amp;DirBufferResult))                                              // <b class="conum">(1)</b>
-    {
-        if (0 == Pattern)
-            Pattern = L"*";
-        PatternLength = (ULONG)wcslen(Pattern);
+    <span class="tok-n">DirBufferResult</span> <span class="tok-o">=</span> <span class="tok-n">STATUS_SUCCESS</span><span class="tok-p">;</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">FspFileSystemAcquireDirectoryBuffer</span><span class="tok-p">(</span><span class="tok-o">&amp;</span><span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">DirBuffer</span><span class="tok-p">,</span> <span class="tok-mi">0</span> <span class="tok-o">==</span> <span class="tok-n">Marker</span><span class="tok-p">,</span>
+        <span class="tok-o">&amp;</span><span class="tok-n">DirBufferResult</span><span class="tok-p">))</span>                                              // <b class="conum">(1)</b>
+    <span class="tok-p">{</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">==</span> <span class="tok-n">Pattern</span><span class="tok-p">)</span>
+            <span class="tok-n">Pattern</span> <span class="tok-o">=</span> <span class="tok-sa">L</span><span class="tok-s">&quot;*&quot;</span><span class="tok-p">;</span>
+        <span class="tok-n">PatternLength</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">ULONG</span><span class="tok-p">)</span><span class="tok-n">wcslen</span><span class="tok-p">(</span><span class="tok-n">Pattern</span><span class="tok-p">);</span>
 
-        Length = GetFinalPathNameByHandleW(Handle, FullPath, FULLPATH_SIZE - 1, 0);
-        if (0 == Length)
-            DirBufferResult = FspNtStatusFromWin32(GetLastError());
-        else if (Length + 1 + PatternLength &gt;= FULLPATH_SIZE)
-            DirBufferResult = STATUS_OBJECT_NAME_INVALID;
-        if (!NT_SUCCESS(DirBufferResult))
-        {
-            FspFileSystemReleaseDirectoryBuffer(&amp;FileContext-&gt;DirBuffer);
-            return DirBufferResult;
-        }
+        <span class="tok-n">Length</span> <span class="tok-o">=</span> <span class="tok-n">GetFinalPathNameByHandleW</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FullPath</span><span class="tok-p">,</span> <span class="tok-n">FULLPATH_SIZE</span> <span class="tok-o">-</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">==</span> <span class="tok-n">Length</span><span class="tok-p">)</span>
+            <span class="tok-n">DirBufferResult</span> <span class="tok-o">=</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
+        <span class="tok-k">else</span> <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">Length</span> <span class="tok-o">+</span> <span class="tok-mi">1</span> <span class="tok-o">+</span> <span class="tok-n">PatternLength</span> <span class="tok-o">&gt;=</span> <span class="tok-n">FULLPATH_SIZE</span><span class="tok-p">)</span>
+            <span class="tok-n">DirBufferResult</span> <span class="tok-o">=</span> <span class="tok-n">STATUS_OBJECT_NAME_INVALID</span><span class="tok-p">;</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">NT_SUCCESS</span><span class="tok-p">(</span><span class="tok-n">DirBufferResult</span><span class="tok-p">))</span>
+        <span class="tok-p">{</span>
+            <span class="tok-n">FspFileSystemReleaseDirectoryBuffer</span><span class="tok-p">(</span><span class="tok-o">&amp;</span><span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">DirBuffer</span><span class="tok-p">);</span>
+            <span class="tok-k">return</span> <span class="tok-n">DirBufferResult</span><span class="tok-p">;</span>
+        <span class="tok-p">}</span>
 
-        if (L'\\' != FullPath[Length - 1])
-            FullPath[Length++] = L'\\';
-        memcpy(FullPath + Length, Pattern, PatternLength * sizeof(WCHAR));
-        FullPath[Length + PatternLength] = L'\0';
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-sa">L</span><span class="tok-sc">&#39;\\&#39;</span> <span class="tok-o">!=</span> <span class="tok-n">FullPath</span><span class="tok-p">[</span><span class="tok-n">Length</span> <span class="tok-o">-</span> <span class="tok-mi">1</span><span class="tok-p">])</span>
+            <span class="tok-n">FullPath</span><span class="tok-p">[</span><span class="tok-n">Length</span><span class="tok-o">++</span><span class="tok-p">]</span> <span class="tok-o">=</span> <span class="tok-sa">L</span><span class="tok-sc">&#39;\\&#39;</span><span class="tok-p">;</span>
+        <span class="tok-n">memcpy</span><span class="tok-p">(</span><span class="tok-n">FullPath</span> <span class="tok-o">+</span> <span class="tok-n">Length</span><span class="tok-p">,</span> <span class="tok-n">Pattern</span><span class="tok-p">,</span> <span class="tok-n">PatternLength</span> <span class="tok-o">*</span> <span class="tok-k">sizeof</span><span class="tok-p">(</span><span class="tok-n">WCHAR</span><span class="tok-p">));</span>
+        <span class="tok-n">FullPath</span><span class="tok-p">[</span><span class="tok-n">Length</span> <span class="tok-o">+</span> <span class="tok-n">PatternLength</span><span class="tok-p">]</span> <span class="tok-o">=</span> <span class="tok-sa">L</span><span class="tok-sc">&#39;\0&#39;</span><span class="tok-p">;</span>
 
-        FindHandle = FindFirstFileW(FullPath, &amp;FindData);               // <b class="conum">(2)</b>
-        if (INVALID_HANDLE_VALUE != FindHandle)
-        {
-            do
-            {
-                memset(DirInfo, 0, sizeof *DirInfo);
-                Length = (ULONG)wcslen(FindData.cFileName);
-                DirInfo-&gt;Size = (UINT16)(FIELD_OFFSET(FSP_FSCTL_DIR_INFO, FileNameBuf) + Length * sizeof(WCHAR));
-                DirInfo-&gt;FileInfo.FileAttributes = FindData.dwFileAttributes;
-                DirInfo-&gt;FileInfo.ReparseTag = 0;
-                DirInfo-&gt;FileInfo.FileSize =
-                    ((UINT64)FindData.nFileSizeHigh &lt;&lt; 32) | (UINT64)FindData.nFileSizeLow;
-                DirInfo-&gt;FileInfo.AllocationSize = (DirInfo-&gt;FileInfo.FileSize + ALLOCATION_UNIT - 1)
-                    / ALLOCATION_UNIT * ALLOCATION_UNIT;
-                DirInfo-&gt;FileInfo.CreationTime = ((PLARGE_INTEGER)&amp;FindData.ftCreationTime)-&gt;QuadPart;
-                DirInfo-&gt;FileInfo.LastAccessTime = ((PLARGE_INTEGER)&amp;FindData.ftLastAccessTime)-&gt;QuadPart;
-                DirInfo-&gt;FileInfo.LastWriteTime = ((PLARGE_INTEGER)&amp;FindData.ftLastWriteTime)-&gt;QuadPart;
-                DirInfo-&gt;FileInfo.ChangeTime = DirInfo-&gt;FileInfo.LastWriteTime;
-                DirInfo-&gt;FileInfo.IndexNumber = 0;
-                DirInfo-&gt;FileInfo.HardLinks = 0;
-                memcpy(DirInfo-&gt;FileNameBuf, FindData.cFileName, Length * sizeof(WCHAR));
+        <span class="tok-n">FindHandle</span> <span class="tok-o">=</span> <span class="tok-n">FindFirstFileW</span><span class="tok-p">(</span><span class="tok-n">FullPath</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">FindData</span><span class="tok-p">);</span>               // <b class="conum">(2)</b>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">INVALID_HANDLE_VALUE</span> <span class="tok-o">!=</span> <span class="tok-n">FindHandle</span><span class="tok-p">)</span>
+        <span class="tok-p">{</span>
+            <span class="tok-k">do</span>
+            <span class="tok-p">{</span>
+                <span class="tok-n">memset</span><span class="tok-p">(</span><span class="tok-n">DirInfo</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-o">*</span><span class="tok-n">DirInfo</span><span class="tok-p">);</span>
+                <span class="tok-n">Length</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">ULONG</span><span class="tok-p">)</span><span class="tok-n">wcslen</span><span class="tok-p">(</span><span class="tok-n">FindData</span><span class="tok-p">.</span><span class="tok-n">cFileName</span><span class="tok-p">);</span>
+                <span class="tok-n">DirInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">Size</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">UINT16</span><span class="tok-p">)(</span><span class="tok-n">FIELD_OFFSET</span><span class="tok-p">(</span><span class="tok-n">FSP_FSCTL_DIR_INFO</span><span class="tok-p">,</span> <span class="tok-n">FileNameBuf</span><span class="tok-p">)</span> <span class="tok-o">+</span> <span class="tok-n">Length</span> <span class="tok-o">*</span> <span class="tok-k">sizeof</span><span class="tok-p">(</span><span class="tok-n">WCHAR</span><span class="tok-p">));</span>
+                <span class="tok-n">DirInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">FileInfo</span><span class="tok-p">.</span><span class="tok-n">FileAttributes</span> <span class="tok-o">=</span> <span class="tok-n">FindData</span><span class="tok-p">.</span><span class="tok-n">dwFileAttributes</span><span class="tok-p">;</span>
+                <span class="tok-n">DirInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">FileInfo</span><span class="tok-p">.</span><span class="tok-n">ReparseTag</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+                <span class="tok-n">DirInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">FileInfo</span><span class="tok-p">.</span><span class="tok-n">FileSize</span> <span class="tok-o">=</span>
+                    <span class="tok-p">((</span><span class="tok-n">UINT64</span><span class="tok-p">)</span><span class="tok-n">FindData</span><span class="tok-p">.</span><span class="tok-n">nFileSizeHigh</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-mi">32</span><span class="tok-p">)</span> <span class="tok-o">|</span> <span class="tok-p">(</span><span class="tok-n">UINT64</span><span class="tok-p">)</span><span class="tok-n">FindData</span><span class="tok-p">.</span><span class="tok-n">nFileSizeLow</span><span class="tok-p">;</span>
+                <span class="tok-n">DirInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">FileInfo</span><span class="tok-p">.</span><span class="tok-n">AllocationSize</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">DirInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">FileInfo</span><span class="tok-p">.</span><span class="tok-n">FileSize</span> <span class="tok-o">+</span> <span class="tok-n">ALLOCATION_UNIT</span> <span class="tok-o">-</span> <span class="tok-mi">1</span><span class="tok-p">)</span>
+                    <span class="tok-o">/</span> <span class="tok-n">ALLOCATION_UNIT</span> <span class="tok-o">*</span> <span class="tok-n">ALLOCATION_UNIT</span><span class="tok-p">;</span>
+                <span class="tok-n">DirInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">FileInfo</span><span class="tok-p">.</span><span class="tok-n">CreationTime</span> <span class="tok-o">=</span> <span class="tok-p">((</span><span class="tok-n">PLARGE_INTEGER</span><span class="tok-p">)</span><span class="tok-o">&amp;</span><span class="tok-n">FindData</span><span class="tok-p">.</span><span class="tok-n">ftCreationTime</span><span class="tok-p">)</span><span class="tok-o">-&gt;</span><span class="tok-n">QuadPart</span><span class="tok-p">;</span>
+                <span class="tok-n">DirInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">FileInfo</span><span class="tok-p">.</span><span class="tok-n">LastAccessTime</span> <span class="tok-o">=</span> <span class="tok-p">((</span><span class="tok-n">PLARGE_INTEGER</span><span class="tok-p">)</span><span class="tok-o">&amp;</span><span class="tok-n">FindData</span><span class="tok-p">.</span><span class="tok-n">ftLastAccessTime</span><span class="tok-p">)</span><span class="tok-o">-&gt;</span><span class="tok-n">QuadPart</span><span class="tok-p">;</span>
+                <span class="tok-n">DirInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">FileInfo</span><span class="tok-p">.</span><span class="tok-n">LastWriteTime</span> <span class="tok-o">=</span> <span class="tok-p">((</span><span class="tok-n">PLARGE_INTEGER</span><span class="tok-p">)</span><span class="tok-o">&amp;</span><span class="tok-n">FindData</span><span class="tok-p">.</span><span class="tok-n">ftLastWriteTime</span><span class="tok-p">)</span><span class="tok-o">-&gt;</span><span class="tok-n">QuadPart</span><span class="tok-p">;</span>
+                <span class="tok-n">DirInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">FileInfo</span><span class="tok-p">.</span><span class="tok-n">ChangeTime</span> <span class="tok-o">=</span> <span class="tok-n">DirInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">FileInfo</span><span class="tok-p">.</span><span class="tok-n">LastWriteTime</span><span class="tok-p">;</span>
+                <span class="tok-n">DirInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">FileInfo</span><span class="tok-p">.</span><span class="tok-n">IndexNumber</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+                <span class="tok-n">DirInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">FileInfo</span><span class="tok-p">.</span><span class="tok-n">HardLinks</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+                <span class="tok-n">memcpy</span><span class="tok-p">(</span><span class="tok-n">DirInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">FileNameBuf</span><span class="tok-p">,</span> <span class="tok-n">FindData</span><span class="tok-p">.</span><span class="tok-n">cFileName</span><span class="tok-p">,</span> <span class="tok-n">Length</span> <span class="tok-o">*</span> <span class="tok-k">sizeof</span><span class="tok-p">(</span><span class="tok-n">WCHAR</span><span class="tok-p">));</span>
 
-                if (!FspFileSystemFillDirectoryBuffer(&amp;FileContext-&gt;DirBuffer, DirInfo,
-                    &amp;DirBufferResult))                                  // <b class="conum">(2)</b>
-                    break;
-            } while (FindNextFileW(FindHandle, &amp;FindData));             // <b class="conum">(2)</b>
+                <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">FspFileSystemFillDirectoryBuffer</span><span class="tok-p">(</span><span class="tok-o">&amp;</span><span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">DirBuffer</span><span class="tok-p">,</span> <span class="tok-n">DirInfo</span><span class="tok-p">,</span>
+                    <span class="tok-o">&amp;</span><span class="tok-n">DirBufferResult</span><span class="tok-p">))</span>                                  // <b class="conum">(2)</b>
+                    <span class="tok-k">break</span><span class="tok-p">;</span>
+            <span class="tok-p">}</span> <span class="tok-k">while</span> <span class="tok-p">(</span><span class="tok-n">FindNextFileW</span><span class="tok-p">(</span><span class="tok-n">FindHandle</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">FindData</span><span class="tok-p">));</span>             // <b class="conum">(2)</b>
 
-            FindClose(FindHandle);
-        }
+            <span class="tok-n">FindClose</span><span class="tok-p">(</span><span class="tok-n">FindHandle</span><span class="tok-p">);</span>
+        <span class="tok-p">}</span>
 
-        FspFileSystemReleaseDirectoryBuffer(&amp;FileContext-&gt;DirBuffer);   // <b class="conum">(3)</b>
-    }
+        <span class="tok-n">FspFileSystemReleaseDirectoryBuffer</span><span class="tok-p">(</span><span class="tok-o">&amp;</span><span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">DirBuffer</span><span class="tok-p">);</span>   // <b class="conum">(3)</b>
+    <span class="tok-p">}</span>
 
-    if (!NT_SUCCESS(DirBufferResult))
-        return DirBufferResult;
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">NT_SUCCESS</span><span class="tok-p">(</span><span class="tok-n">DirBufferResult</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">DirBufferResult</span><span class="tok-p">;</span>
 
-    FspFileSystemReadDirectoryBuffer(&amp;FileContext-&gt;DirBuffer,
-        Marker, Buffer, BufferLength, PBytesTransferred);               // <b class="conum">(4)</b>
+    <span class="tok-n">FspFileSystemReadDirectoryBuffer</span><span class="tok-p">(</span><span class="tok-o">&amp;</span><span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">DirBuffer</span><span class="tok-p">,</span>
+        <span class="tok-n">Marker</span><span class="tok-p">,</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span> <span class="tok-n">BufferLength</span><span class="tok-p">,</span> <span class="tok-n">PBytesTransferred</span><span class="tok-p">);</span>               // <b class="conum">(4)</b>
 
-    return STATUS_SUCCESS;
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">STATUS_SUCCESS</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -989,24 +989,24 @@ typedef struct
 <div class="listingblock">
 <div class="title"><code><strong>GetVolumeInfo</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS GetVolumeInfo(FSP_FILE_SYSTEM *FileSystem,
-    FSP_FSCTL_VOLUME_INFO *VolumeInfo)
-{
-    PTFS *Ptfs = (PTFS *)FileSystem-&gt;UserContext;
-    WCHAR Root[MAX_PATH];
-    ULARGE_INTEGER TotalSize, FreeSize;
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">GetVolumeInfo</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_VOLUME_INFO</span> <span class="tok-o">*</span><span class="tok-n">VolumeInfo</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-n">Ptfs</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-p">)</span><span class="tok-n">FileSystem</span><span class="tok-o">-&gt;</span><span class="tok-n">UserContext</span><span class="tok-p">;</span>
+    <span class="tok-n">WCHAR</span> <span class="tok-n">Root</span><span class="tok-p">[</span><span class="tok-n">MAX_PATH</span><span class="tok-p">];</span>
+    <span class="tok-n">ULARGE_INTEGER</span> <span class="tok-n">TotalSize</span><span class="tok-p">,</span> <span class="tok-n">FreeSize</span><span class="tok-p">;</span>
 
-    if (!GetVolumePathName(Ptfs-&gt;Path, Root, MAX_PATH))
-        return FspNtStatusFromWin32(GetLastError());
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">GetVolumePathName</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-o">-&gt;</span><span class="tok-n">Path</span><span class="tok-p">,</span> <span class="tok-n">Root</span><span class="tok-p">,</span> <span class="tok-n">MAX_PATH</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-    if (!GetDiskFreeSpaceEx(Root, 0, &amp;TotalSize, &amp;FreeSize))
-        return FspNtStatusFromWin32(GetLastError());
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">GetDiskFreeSpaceEx</span><span class="tok-p">(</span><span class="tok-n">Root</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">TotalSize</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">FreeSize</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-    VolumeInfo-&gt;TotalSize = TotalSize.QuadPart;                         // <b class="conum">(1)</b>
-    VolumeInfo-&gt;FreeSize = FreeSize.QuadPart;                           // <b class="conum">(2)</b>
+    <span class="tok-n">VolumeInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">TotalSize</span> <span class="tok-o">=</span> <span class="tok-n">TotalSize</span><span class="tok-p">.</span><span class="tok-n">QuadPart</span><span class="tok-p">;</span>                         // <b class="conum">(1)</b>
+    <span class="tok-n">VolumeInfo</span><span class="tok-o">-&gt;</span><span class="tok-n">FreeSize</span> <span class="tok-o">=</span> <span class="tok-n">FreeSize</span><span class="tok-p">.</span><span class="tok-n">QuadPart</span><span class="tok-p">;</span>                           // <b class="conum">(2)</b>
                                                                         // <b class="conum">(3)</b>
-    return STATUS_SUCCESS;
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">STATUS_SUCCESS</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1034,14 +1034,14 @@ typedef struct
 <div class="listingblock">
 <div class="title"><code><strong>GetFileInfo</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS GetFileInfo(FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    FSP_FSCTL_FILE_INFO *FileInfo)
-{
-    HANDLE Handle = HandleFromContext(FileContext);
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">GetFileInfo</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">HandleFromContext</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
 
-    return GetFileInfoInternal(Handle, FileInfo);
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1050,25 +1050,25 @@ typedef struct
 <div class="listingblock">
 <div class="title"><code><strong>GetSecurity</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS GetSecurity(FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    PSECURITY_DESCRIPTOR SecurityDescriptor, SIZE_T *PSecurityDescriptorSize)
-{
-    HANDLE Handle = HandleFromContext(FileContext);
-    DWORD SecurityDescriptorSizeNeeded;
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">GetSecurity</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">PSECURITY_DESCRIPTOR</span> <span class="tok-n">SecurityDescriptor</span><span class="tok-p">,</span> <span class="tok-n">SIZE_T</span> <span class="tok-o">*</span><span class="tok-n">PSecurityDescriptorSize</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">HandleFromContext</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
+    <span class="tok-n">DWORD</span> <span class="tok-n">SecurityDescriptorSizeNeeded</span><span class="tok-p">;</span>
 
-    if (!GetKernelObjectSecurity(Handle,
-        OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
-        SecurityDescriptor, (DWORD)*PSecurityDescriptorSize, &amp;SecurityDescriptorSizeNeeded))
-    {
-        *PSecurityDescriptorSize = SecurityDescriptorSizeNeeded;
-        return FspNtStatusFromWin32(GetLastError());
-    }
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">GetKernelObjectSecurity</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span>
+        <span class="tok-n">OWNER_SECURITY_INFORMATION</span> <span class="tok-o">|</span> <span class="tok-n">GROUP_SECURITY_INFORMATION</span> <span class="tok-o">|</span> <span class="tok-n">DACL_SECURITY_INFORMATION</span><span class="tok-p">,</span>
+        <span class="tok-n">SecurityDescriptor</span><span class="tok-p">,</span> <span class="tok-p">(</span><span class="tok-n">DWORD</span><span class="tok-p">)</span><span class="tok-o">*</span><span class="tok-n">PSecurityDescriptorSize</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">SecurityDescriptorSizeNeeded</span><span class="tok-p">))</span>
+    <span class="tok-p">{</span>
+        <span class="tok-o">*</span><span class="tok-n">PSecurityDescriptorSize</span> <span class="tok-o">=</span> <span class="tok-n">SecurityDescriptorSizeNeeded</span><span class="tok-p">;</span>
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
+    <span class="tok-p">}</span>
 
-    *PSecurityDescriptorSize = SecurityDescriptorSizeNeeded;
+    <span class="tok-o">*</span><span class="tok-n">PSecurityDescriptorSize</span> <span class="tok-o">=</span> <span class="tok-n">SecurityDescriptorSizeNeeded</span><span class="tok-p">;</span>
 
-    return STATUS_SUCCESS;
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">STATUS_SUCCESS</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -1083,21 +1083,21 @@ typedef struct
 <div class="listingblock">
 <div class="title"><code><strong>Read</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS Read(FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext, PVOID Buffer, UINT64 Offset, ULONG Length,
-    PULONG PBytesTransferred)
-{
-    HANDLE Handle = HandleFromContext(FileContext);
-    OVERLAPPED Overlapped = { 0 };
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">Read</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span> <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span> <span class="tok-n">UINT64</span> <span class="tok-n">Offset</span><span class="tok-p">,</span> <span class="tok-n">ULONG</span> <span class="tok-n">Length</span><span class="tok-p">,</span>
+    <span class="tok-n">PULONG</span> <span class="tok-n">PBytesTransferred</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">HandleFromContext</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
+    <span class="tok-n">OVERLAPPED</span> <span class="tok-n">Overlapped</span> <span class="tok-o">=</span> <span class="tok-p">{</span> <span class="tok-mi">0</span> <span class="tok-p">};</span>
 
-    Overlapped.Offset = (DWORD)Offset;                                  // <b class="conum">(1)</b>
-    Overlapped.OffsetHigh = (DWORD)(Offset &gt;&gt; 32);
+    <span class="tok-n">Overlapped</span><span class="tok-p">.</span><span class="tok-n">Offset</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">DWORD</span><span class="tok-p">)</span><span class="tok-n">Offset</span><span class="tok-p">;</span>                                  // <b class="conum">(1)</b>
+    <span class="tok-n">Overlapped</span><span class="tok-p">.</span><span class="tok-n">OffsetHigh</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">DWORD</span><span class="tok-p">)(</span><span class="tok-n">Offset</span> <span class="tok-o">&gt;&gt;</span> <span class="tok-mi">32</span><span class="tok-p">);</span>
 
-    if (!ReadFile(Handle, Buffer, Length, PBytesTransferred, &amp;Overlapped))
-        return FspNtStatusFromWin32(GetLastError());
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">ReadFile</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span> <span class="tok-n">Length</span><span class="tok-p">,</span> <span class="tok-n">PBytesTransferred</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">Overlapped</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-    return STATUS_SUCCESS;
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">STATUS_SUCCESS</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1113,34 +1113,34 @@ typedef struct
 <div class="listingblock">
 <div class="title"><code><strong>Write</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS Write(FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext, PVOID Buffer, UINT64 Offset, ULONG Length,
-    BOOLEAN WriteToEndOfFile, BOOLEAN ConstrainedIo,
-    PULONG PBytesTransferred, FSP_FSCTL_FILE_INFO *FileInfo)
-{
-    HANDLE Handle = HandleFromContext(FileContext);
-    LARGE_INTEGER FileSize;
-    OVERLAPPED Overlapped = { 0 };
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">Write</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span> <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span> <span class="tok-n">UINT64</span> <span class="tok-n">Offset</span><span class="tok-p">,</span> <span class="tok-n">ULONG</span> <span class="tok-n">Length</span><span class="tok-p">,</span>
+    <span class="tok-n">BOOLEAN</span> <span class="tok-n">WriteToEndOfFile</span><span class="tok-p">,</span> <span class="tok-n">BOOLEAN</span> <span class="tok-n">ConstrainedIo</span><span class="tok-p">,</span>
+    <span class="tok-n">PULONG</span> <span class="tok-n">PBytesTransferred</span><span class="tok-p">,</span> <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">HandleFromContext</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
+    <span class="tok-n">LARGE_INTEGER</span> <span class="tok-n">FileSize</span><span class="tok-p">;</span>
+    <span class="tok-n">OVERLAPPED</span> <span class="tok-n">Overlapped</span> <span class="tok-o">=</span> <span class="tok-p">{</span> <span class="tok-mi">0</span> <span class="tok-p">};</span>
 
-    if (ConstrainedIo)                                                  // <b class="conum">(1)</b>
-    {
-        if (!GetFileSizeEx(Handle, &amp;FileSize))
-            return FspNtStatusFromWin32(GetLastError());
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">ConstrainedIo</span><span class="tok-p">)</span>                                                  // <b class="conum">(1)</b>
+    <span class="tok-p">{</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">GetFileSizeEx</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">FileSize</span><span class="tok-p">))</span>
+            <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-        if (Offset &gt;= (UINT64)FileSize.QuadPart)
-            return STATUS_SUCCESS;
-        if (Offset + Length &gt; (UINT64)FileSize.QuadPart)
-            Length = (ULONG)((UINT64)FileSize.QuadPart - Offset);
-    }
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">Offset</span> <span class="tok-o">&gt;=</span> <span class="tok-p">(</span><span class="tok-n">UINT64</span><span class="tok-p">)</span><span class="tok-n">FileSize</span><span class="tok-p">.</span><span class="tok-n">QuadPart</span><span class="tok-p">)</span>
+            <span class="tok-k">return</span> <span class="tok-n">STATUS_SUCCESS</span><span class="tok-p">;</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">Offset</span> <span class="tok-o">+</span> <span class="tok-n">Length</span> <span class="tok-o">&gt;</span> <span class="tok-p">(</span><span class="tok-n">UINT64</span><span class="tok-p">)</span><span class="tok-n">FileSize</span><span class="tok-p">.</span><span class="tok-n">QuadPart</span><span class="tok-p">)</span>
+            <span class="tok-n">Length</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">ULONG</span><span class="tok-p">)((</span><span class="tok-n">UINT64</span><span class="tok-p">)</span><span class="tok-n">FileSize</span><span class="tok-p">.</span><span class="tok-n">QuadPart</span> <span class="tok-o">-</span> <span class="tok-n">Offset</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
 
-    Overlapped.Offset = (DWORD)Offset;                                  // <b class="conum">(2)</b>
-    Overlapped.OffsetHigh = (DWORD)(Offset &gt;&gt; 32);
+    <span class="tok-n">Overlapped</span><span class="tok-p">.</span><span class="tok-n">Offset</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">DWORD</span><span class="tok-p">)</span><span class="tok-n">Offset</span><span class="tok-p">;</span>                                  // <b class="conum">(2)</b>
+    <span class="tok-n">Overlapped</span><span class="tok-p">.</span><span class="tok-n">OffsetHigh</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">DWORD</span><span class="tok-p">)(</span><span class="tok-n">Offset</span> <span class="tok-o">&gt;&gt;</span> <span class="tok-mi">32</span><span class="tok-p">);</span>
 
-    if (!WriteFile(Handle, Buffer, Length, PBytesTransferred, &amp;Overlapped))
-        return FspNtStatusFromWin32(GetLastError());
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">WriteFile</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span> <span class="tok-n">Length</span><span class="tok-p">,</span> <span class="tok-n">PBytesTransferred</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">Overlapped</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-    return GetFileInfoInternal(Handle, FileInfo);
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1165,31 +1165,31 @@ typedef struct
 <div class="listingblock">
 <div class="title"><code><strong>SetBasicInfo</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS SetBasicInfo(FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext, UINT32 FileAttributes,
-    UINT64 CreationTime, UINT64 LastAccessTime, UINT64 LastWriteTime, UINT64 ChangeTime,
-    FSP_FSCTL_FILE_INFO *FileInfo)
-{
-    HANDLE Handle = HandleFromContext(FileContext);
-    FILE_BASIC_INFO BasicInfo = { 0 };
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">SetBasicInfo</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span> <span class="tok-n">UINT32</span> <span class="tok-n">FileAttributes</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT64</span> <span class="tok-n">CreationTime</span><span class="tok-p">,</span> <span class="tok-n">UINT64</span> <span class="tok-n">LastAccessTime</span><span class="tok-p">,</span> <span class="tok-n">UINT64</span> <span class="tok-n">LastWriteTime</span><span class="tok-p">,</span> <span class="tok-n">UINT64</span> <span class="tok-n">ChangeTime</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">HandleFromContext</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
+    <span class="tok-n">FILE_BASIC_INFO</span> <span class="tok-n">BasicInfo</span> <span class="tok-o">=</span> <span class="tok-p">{</span> <span class="tok-mi">0</span> <span class="tok-p">};</span>
 
-    if (INVALID_FILE_ATTRIBUTES == FileAttributes)
-        FileAttributes = 0;
-    else if (0 == FileAttributes)
-        FileAttributes = FILE_ATTRIBUTE_NORMAL;
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">INVALID_FILE_ATTRIBUTES</span> <span class="tok-o">==</span> <span class="tok-n">FileAttributes</span><span class="tok-p">)</span>
+        <span class="tok-n">FileAttributes</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-k">else</span> <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">==</span> <span class="tok-n">FileAttributes</span><span class="tok-p">)</span>
+        <span class="tok-n">FileAttributes</span> <span class="tok-o">=</span> <span class="tok-n">FILE_ATTRIBUTE_NORMAL</span><span class="tok-p">;</span>
 
-    BasicInfo.FileAttributes = FileAttributes;
-    BasicInfo.CreationTime.QuadPart = CreationTime;
-    BasicInfo.LastAccessTime.QuadPart = LastAccessTime;
-    BasicInfo.LastWriteTime.QuadPart = LastWriteTime;
-    //BasicInfo.ChangeTime = ChangeTime;
+    <span class="tok-n">BasicInfo</span><span class="tok-p">.</span><span class="tok-n">FileAttributes</span> <span class="tok-o">=</span> <span class="tok-n">FileAttributes</span><span class="tok-p">;</span>
+    <span class="tok-n">BasicInfo</span><span class="tok-p">.</span><span class="tok-n">CreationTime</span><span class="tok-p">.</span><span class="tok-n">QuadPart</span> <span class="tok-o">=</span> <span class="tok-n">CreationTime</span><span class="tok-p">;</span>
+    <span class="tok-n">BasicInfo</span><span class="tok-p">.</span><span class="tok-n">LastAccessTime</span><span class="tok-p">.</span><span class="tok-n">QuadPart</span> <span class="tok-o">=</span> <span class="tok-n">LastAccessTime</span><span class="tok-p">;</span>
+    <span class="tok-n">BasicInfo</span><span class="tok-p">.</span><span class="tok-n">LastWriteTime</span><span class="tok-p">.</span><span class="tok-n">QuadPart</span> <span class="tok-o">=</span> <span class="tok-n">LastWriteTime</span><span class="tok-p">;</span>
+    <span class="tok-c1">//BasicInfo.ChangeTime = ChangeTime;</span>
 
-    if (!SetFileInformationByHandle(Handle,
-        FileBasicInfo, &amp;BasicInfo, sizeof BasicInfo))
-        return FspNtStatusFromWin32(GetLastError());
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">SetFileInformationByHandle</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span>
+        <span class="tok-n">FileBasicInfo</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">BasicInfo</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-n">BasicInfo</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-    return GetFileInfoInternal(Handle, FileInfo);
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1204,44 +1204,44 @@ typedef struct
 <div class="listingblock">
 <div class="title"><code><strong>SetFileSize</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS SetFileSize(FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext, UINT64 NewSize, BOOLEAN SetAllocationSize,
-    FSP_FSCTL_FILE_INFO *FileInfo)
-{
-    HANDLE Handle = HandleFromContext(FileContext);
-    FILE_ALLOCATION_INFO AllocationInfo;
-    FILE_END_OF_FILE_INFO EndOfFileInfo;
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">SetFileSize</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span> <span class="tok-n">UINT64</span> <span class="tok-n">NewSize</span><span class="tok-p">,</span> <span class="tok-n">BOOLEAN</span> <span class="tok-n">SetAllocationSize</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">HandleFromContext</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
+    <span class="tok-n">FILE_ALLOCATION_INFO</span> <span class="tok-n">AllocationInfo</span><span class="tok-p">;</span>
+    <span class="tok-n">FILE_END_OF_FILE_INFO</span> <span class="tok-n">EndOfFileInfo</span><span class="tok-p">;</span>
 
-    if (SetAllocationSize)
-    {
-        /*
-         * This file system does not maintain AllocationSize, although NTFS clearly can.
-         * However it must always be FileSize &lt;= AllocationSize and NTFS will make sure
-         * to truncate the FileSize if it sees an AllocationSize &lt; FileSize.
-         *
-         * If OTOH a very large AllocationSize is passed, the call below will increase
-         * the AllocationSize of the underlying file, although our file system does not
-         * expose this fact. This AllocationSize is only temporary as NTFS will reset
-         * the AllocationSize of the underlying file when it is closed.
-         */
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">SetAllocationSize</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-cm">/*</span>
+<span class="tok-cm">         * This file system does not maintain AllocationSize, although NTFS clearly can.</span>
+<span class="tok-cm">         * However it must always be FileSize &lt;= AllocationSize and NTFS will make sure</span>
+<span class="tok-cm">         * to truncate the FileSize if it sees an AllocationSize &lt; FileSize.</span>
+<span class="tok-cm">         *</span>
+<span class="tok-cm">         * If OTOH a very large AllocationSize is passed, the call below will increase</span>
+<span class="tok-cm">         * the AllocationSize of the underlying file, although our file system does not</span>
+<span class="tok-cm">         * expose this fact. This AllocationSize is only temporary as NTFS will reset</span>
+<span class="tok-cm">         * the AllocationSize of the underlying file when it is closed.</span>
+<span class="tok-cm">         */</span>
 
-        AllocationInfo.AllocationSize.QuadPart = NewSize;
+        <span class="tok-n">AllocationInfo</span><span class="tok-p">.</span><span class="tok-n">AllocationSize</span><span class="tok-p">.</span><span class="tok-n">QuadPart</span> <span class="tok-o">=</span> <span class="tok-n">NewSize</span><span class="tok-p">;</span>
 
-        if (!SetFileInformationByHandle(Handle,
-            FileAllocationInfo, &amp;AllocationInfo, sizeof AllocationInfo))
-            return FspNtStatusFromWin32(GetLastError());
-    }
-    else
-    {
-        EndOfFileInfo.EndOfFile.QuadPart = NewSize;
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">SetFileInformationByHandle</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span>
+            <span class="tok-n">FileAllocationInfo</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">AllocationInfo</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-n">AllocationInfo</span><span class="tok-p">))</span>
+            <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
+    <span class="tok-p">}</span>
+    <span class="tok-k">else</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">EndOfFileInfo</span><span class="tok-p">.</span><span class="tok-n">EndOfFile</span><span class="tok-p">.</span><span class="tok-n">QuadPart</span> <span class="tok-o">=</span> <span class="tok-n">NewSize</span><span class="tok-p">;</span>
 
-        if (!SetFileInformationByHandle(Handle,
-            FileEndOfFileInfo, &amp;EndOfFileInfo, sizeof EndOfFileInfo))
-            return FspNtStatusFromWin32(GetLastError());
-    }
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">SetFileInformationByHandle</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span>
+            <span class="tok-n">FileEndOfFileInfo</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">EndOfFileInfo</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-n">EndOfFileInfo</span><span class="tok-p">))</span>
+            <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
+    <span class="tok-p">}</span>
 
-    return GetFileInfoInternal(Handle, FileInfo);
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1250,17 +1250,17 @@ typedef struct
 <div class="listingblock">
 <div class="title"><code><strong>SetSecurity</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS SetSecurity(FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    SECURITY_INFORMATION SecurityInformation, PSECURITY_DESCRIPTOR ModificationDescriptor)
-{
-    HANDLE Handle = HandleFromContext(FileContext);
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">SetSecurity</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">SECURITY_INFORMATION</span> <span class="tok-n">SecurityInformation</span><span class="tok-p">,</span> <span class="tok-n">PSECURITY_DESCRIPTOR</span> <span class="tok-n">ModificationDescriptor</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">HandleFromContext</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
 
-    if (!SetKernelObjectSecurity(Handle, SecurityInformation, ModificationDescriptor))
-        return FspNtStatusFromWin32(GetLastError());
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">SetKernelObjectSecurity</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">SecurityInformation</span><span class="tok-p">,</span> <span class="tok-n">ModificationDescriptor</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-    return STATUS_SUCCESS;
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">STATUS_SUCCESS</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -1278,21 +1278,21 @@ typedef struct
 <div class="listingblock">
 <div class="title"><code><strong>Flush</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">NTSTATUS Flush(FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    FSP_FSCTL_FILE_INFO *FileInfo)
-{
-    HANDLE Handle = HandleFromContext(FileContext);
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-n">NTSTATUS</span> <span class="tok-nf">Flush</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">HandleFromContext</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
 
-    /* we do not flush the whole volume, so just return SUCCESS */
-    if (0 == Handle)
-        return STATUS_SUCCESS;
+    <span class="tok-cm">/* we do not flush the whole volume, so just return SUCCESS */</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">==</span> <span class="tok-n">Handle</span><span class="tok-p">)</span>
+        <span class="tok-k">return</span> <span class="tok-n">STATUS_SUCCESS</span><span class="tok-p">;</span>
 
-    if (!FlushFileBuffers(Handle))
-        return FspNtStatusFromWin32(GetLastError());
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">FlushFileBuffers</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-    return GetFileInfoInternal(Handle, FileInfo);
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -1310,63 +1310,63 @@ typedef struct
 <div class="listingblock">
 <div class="title"><code><strong>Create</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS Create(FSP_FILE_SYSTEM *FileSystem,
-    PWSTR FileName, UINT32 CreateOptions, UINT32 GrantedAccess,
-    UINT32 FileAttributes, PSECURITY_DESCRIPTOR SecurityDescriptor, UINT64 AllocationSize,
-    PVOID *PFileContext, FSP_FSCTL_FILE_INFO *FileInfo)
-{
-    PTFS *Ptfs = (PTFS *)FileSystem-&gt;UserContext;
-    WCHAR FullPath[FULLPATH_SIZE];
-    SECURITY_ATTRIBUTES SecurityAttributes;
-    ULONG CreateFlags;
-    PTFS_FILE_CONTEXT *FileContext;
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">Create</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span> <span class="tok-n">UINT32</span> <span class="tok-n">CreateOptions</span><span class="tok-p">,</span> <span class="tok-n">UINT32</span> <span class="tok-n">GrantedAccess</span><span class="tok-p">,</span>
+    <span class="tok-n">UINT32</span> <span class="tok-n">FileAttributes</span><span class="tok-p">,</span> <span class="tok-n">PSECURITY_DESCRIPTOR</span> <span class="tok-n">SecurityDescriptor</span><span class="tok-p">,</span> <span class="tok-n">UINT64</span> <span class="tok-n">AllocationSize</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-o">*</span><span class="tok-n">PFileContext</span><span class="tok-p">,</span> <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-n">Ptfs</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-p">)</span><span class="tok-n">FileSystem</span><span class="tok-o">-&gt;</span><span class="tok-n">UserContext</span><span class="tok-p">;</span>
+    <span class="tok-n">WCHAR</span> <span class="tok-n">FullPath</span><span class="tok-p">[</span><span class="tok-n">FULLPATH_SIZE</span><span class="tok-p">];</span>
+    <span class="tok-n">SECURITY_ATTRIBUTES</span> <span class="tok-n">SecurityAttributes</span><span class="tok-p">;</span>
+    <span class="tok-n">ULONG</span> <span class="tok-n">CreateFlags</span><span class="tok-p">;</span>
+    <span class="tok-n">PTFS_FILE_CONTEXT</span> <span class="tok-o">*</span><span class="tok-n">FileContext</span><span class="tok-p">;</span>
 
-    if (!ConcatPath(Ptfs, FileName, FullPath))
-        return STATUS_OBJECT_NAME_INVALID;
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">ConcatPath</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-p">,</span> <span class="tok-n">FileName</span><span class="tok-p">,</span> <span class="tok-n">FullPath</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">STATUS_OBJECT_NAME_INVALID</span><span class="tok-p">;</span>
 
-    FileContext = malloc(sizeof *FileContext);                          // <b class="conum">(1)</b>
-    if (0 == FileContext)
-        return STATUS_INSUFFICIENT_RESOURCES;
-    memset(FileContext, 0, sizeof *FileContext);
+    <span class="tok-n">FileContext</span> <span class="tok-o">=</span> <span class="tok-n">malloc</span><span class="tok-p">(</span><span class="tok-k">sizeof</span> <span class="tok-o">*</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>                          // <b class="conum">(1)</b>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">==</span> <span class="tok-n">FileContext</span><span class="tok-p">)</span>
+        <span class="tok-k">return</span> <span class="tok-n">STATUS_INSUFFICIENT_RESOURCES</span><span class="tok-p">;</span>
+    <span class="tok-n">memset</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-o">*</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
 
-    SecurityAttributes.nLength = sizeof SecurityAttributes;
-    SecurityAttributes.lpSecurityDescriptor = SecurityDescriptor;
-    SecurityAttributes.bInheritHandle = FALSE;
+    <span class="tok-n">SecurityAttributes</span><span class="tok-p">.</span><span class="tok-n">nLength</span> <span class="tok-o">=</span> <span class="tok-k">sizeof</span> <span class="tok-n">SecurityAttributes</span><span class="tok-p">;</span>
+    <span class="tok-n">SecurityAttributes</span><span class="tok-p">.</span><span class="tok-n">lpSecurityDescriptor</span> <span class="tok-o">=</span> <span class="tok-n">SecurityDescriptor</span><span class="tok-p">;</span>
+    <span class="tok-n">SecurityAttributes</span><span class="tok-p">.</span><span class="tok-n">bInheritHandle</span> <span class="tok-o">=</span> <span class="tok-n">FALSE</span><span class="tok-p">;</span>
 
-    CreateFlags = FILE_FLAG_BACKUP_SEMANTICS;                           // <b class="conum">(2)</b>
-    if (CreateOptions &amp; FILE_DELETE_ON_CLOSE)
-        CreateFlags |= FILE_FLAG_DELETE_ON_CLOSE;                       // <b class="conum">(3)</b>
+    <span class="tok-n">CreateFlags</span> <span class="tok-o">=</span> <span class="tok-n">FILE_FLAG_BACKUP_SEMANTICS</span><span class="tok-p">;</span>                           // <b class="conum">(2)</b>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">CreateOptions</span> <span class="tok-o">&amp;</span> <span class="tok-n">FILE_DELETE_ON_CLOSE</span><span class="tok-p">)</span>
+        <span class="tok-n">CreateFlags</span> <span class="tok-o">|=</span> <span class="tok-n">FILE_FLAG_DELETE_ON_CLOSE</span><span class="tok-p">;</span>                       // <b class="conum">(3)</b>
 
-    if (CreateOptions &amp; FILE_DIRECTORY_FILE)
-    {
-        /*
-         * It is not widely known but CreateFileW can be used to create directories!
-         * It requires the specification of both FILE_FLAG_BACKUP_SEMANTICS and
-         * FILE_FLAG_POSIX_SEMANTICS. It also requires that FileAttributes has
-         * FILE_ATTRIBUTE_DIRECTORY set.
-         */
-        CreateFlags |= FILE_FLAG_POSIX_SEMANTICS;                       // <b class="conum">(2)</b>
-        FileAttributes |= FILE_ATTRIBUTE_DIRECTORY;
-    }
-    else
-        FileAttributes &amp;= ~FILE_ATTRIBUTE_DIRECTORY;
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">CreateOptions</span> <span class="tok-o">&amp;</span> <span class="tok-n">FILE_DIRECTORY_FILE</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-cm">/*</span>
+<span class="tok-cm">         * It is not widely known but CreateFileW can be used to create directories!</span>
+<span class="tok-cm">         * It requires the specification of both FILE_FLAG_BACKUP_SEMANTICS and</span>
+<span class="tok-cm">         * FILE_FLAG_POSIX_SEMANTICS. It also requires that FileAttributes has</span>
+<span class="tok-cm">         * FILE_ATTRIBUTE_DIRECTORY set.</span>
+<span class="tok-cm">         */</span>
+        <span class="tok-n">CreateFlags</span> <span class="tok-o">|=</span> <span class="tok-n">FILE_FLAG_POSIX_SEMANTICS</span><span class="tok-p">;</span>                       // <b class="conum">(2)</b>
+        <span class="tok-n">FileAttributes</span> <span class="tok-o">|=</span> <span class="tok-n">FILE_ATTRIBUTE_DIRECTORY</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
+    <span class="tok-k">else</span>
+        <span class="tok-n">FileAttributes</span> <span class="tok-o">&amp;=</span> <span class="tok-o">~</span><span class="tok-n">FILE_ATTRIBUTE_DIRECTORY</span><span class="tok-p">;</span>
 
-    if (0 == FileAttributes)
-        FileAttributes = FILE_ATTRIBUTE_NORMAL;
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">==</span> <span class="tok-n">FileAttributes</span><span class="tok-p">)</span>
+        <span class="tok-n">FileAttributes</span> <span class="tok-o">=</span> <span class="tok-n">FILE_ATTRIBUTE_NORMAL</span><span class="tok-p">;</span>
 
-    FileContext-&gt;Handle = CreateFileW(FullPath,
-        GrantedAccess, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, &amp;SecurityAttributes,
-        CREATE_NEW, CreateFlags | FileAttributes, 0);                   // <b class="conum">(4)</b>
-    if (INVALID_HANDLE_VALUE == FileContext-&gt;Handle)
-    {
-        free(FileContext);
-        return FspNtStatusFromWin32(GetLastError());
-    }
+    <span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">CreateFileW</span><span class="tok-p">(</span><span class="tok-n">FullPath</span><span class="tok-p">,</span>
+        <span class="tok-n">GrantedAccess</span><span class="tok-p">,</span> <span class="tok-n">FILE_SHARE_READ</span> <span class="tok-o">|</span> <span class="tok-n">FILE_SHARE_WRITE</span> <span class="tok-o">|</span> <span class="tok-n">FILE_SHARE_DELETE</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">SecurityAttributes</span><span class="tok-p">,</span>
+        <span class="tok-n">CREATE_NEW</span><span class="tok-p">,</span> <span class="tok-n">CreateFlags</span> <span class="tok-o">|</span> <span class="tok-n">FileAttributes</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>                   // <b class="conum">(4)</b>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">INVALID_HANDLE_VALUE</span> <span class="tok-o">==</span> <span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">Handle</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">free</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
+    <span class="tok-p">}</span>
 
-    *PFileContext = FileContext;
+    <span class="tok-o">*</span><span class="tok-n">PFileContext</span> <span class="tok-o">=</span> <span class="tok-n">FileContext</span><span class="tok-p">;</span>
 
-    return GetFileInfoInternal(FileContext-&gt;Handle, FileInfo);          // <b class="conum">(5)</b>
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>          // <b class="conum">(5)</b>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1400,47 +1400,47 @@ typedef struct
 <div class="listingblock">
 <div class="title"><code><strong>Overwrite</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS Overwrite(FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext, UINT32 FileAttributes, BOOLEAN ReplaceFileAttributes, UINT64 AllocationSize,
-    FSP_FSCTL_FILE_INFO *FileInfo)
-{
-    HANDLE Handle = HandleFromContext(FileContext);
-    FILE_BASIC_INFO BasicInfo = { 0 };
-    FILE_ALLOCATION_INFO AllocationInfo = { 0 };
-    FILE_ATTRIBUTE_TAG_INFO AttributeTagInfo;
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">Overwrite</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span> <span class="tok-n">UINT32</span> <span class="tok-n">FileAttributes</span><span class="tok-p">,</span> <span class="tok-n">BOOLEAN</span> <span class="tok-n">ReplaceFileAttributes</span><span class="tok-p">,</span> <span class="tok-n">UINT64</span> <span class="tok-n">AllocationSize</span><span class="tok-p">,</span>
+    <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">HandleFromContext</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
+    <span class="tok-n">FILE_BASIC_INFO</span> <span class="tok-n">BasicInfo</span> <span class="tok-o">=</span> <span class="tok-p">{</span> <span class="tok-mi">0</span> <span class="tok-p">};</span>
+    <span class="tok-n">FILE_ALLOCATION_INFO</span> <span class="tok-n">AllocationInfo</span> <span class="tok-o">=</span> <span class="tok-p">{</span> <span class="tok-mi">0</span> <span class="tok-p">};</span>
+    <span class="tok-n">FILE_ATTRIBUTE_TAG_INFO</span> <span class="tok-n">AttributeTagInfo</span><span class="tok-p">;</span>
 
-    if (ReplaceFileAttributes)
-    {
-        if (0 == FileAttributes)
-            FileAttributes = FILE_ATTRIBUTE_NORMAL;
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">ReplaceFileAttributes</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">==</span> <span class="tok-n">FileAttributes</span><span class="tok-p">)</span>
+            <span class="tok-n">FileAttributes</span> <span class="tok-o">=</span> <span class="tok-n">FILE_ATTRIBUTE_NORMAL</span><span class="tok-p">;</span>
 
-        BasicInfo.FileAttributes = FileAttributes;                      // <b class="conum">(1)</b>
-        if (!SetFileInformationByHandle(Handle,
-            FileBasicInfo, &amp;BasicInfo, sizeof BasicInfo))
-            return FspNtStatusFromWin32(GetLastError());
-    }
-    else if (0 != FileAttributes)
-    {
-        if (!GetFileInformationByHandleEx(Handle,
-            FileAttributeTagInfo, &amp;AttributeTagInfo, sizeof AttributeTagInfo))
-            return FspNtStatusFromWin32(GetLastError());
+        <span class="tok-n">BasicInfo</span><span class="tok-p">.</span><span class="tok-n">FileAttributes</span> <span class="tok-o">=</span> <span class="tok-n">FileAttributes</span><span class="tok-p">;</span>                      // <b class="conum">(1)</b>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">SetFileInformationByHandle</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span>
+            <span class="tok-n">FileBasicInfo</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">BasicInfo</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-n">BasicInfo</span><span class="tok-p">))</span>
+            <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
+    <span class="tok-p">}</span>
+    <span class="tok-k">else</span> <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">!=</span> <span class="tok-n">FileAttributes</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">GetFileInformationByHandleEx</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span>
+            <span class="tok-n">FileAttributeTagInfo</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">AttributeTagInfo</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-n">AttributeTagInfo</span><span class="tok-p">))</span>
+            <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-        BasicInfo.FileAttributes =
-            FileAttributes | AttributeTagInfo.FileAttributes;           // <b class="conum">(2)</b>
-        if (BasicInfo.FileAttributes ^ FileAttributes)
-        {
-            if (!SetFileInformationByHandle(Handle,
-                FileBasicInfo, &amp;BasicInfo, sizeof BasicInfo))
-                return FspNtStatusFromWin32(GetLastError());
-        }
-    }
+        <span class="tok-n">BasicInfo</span><span class="tok-p">.</span><span class="tok-n">FileAttributes</span> <span class="tok-o">=</span>
+            <span class="tok-n">FileAttributes</span> <span class="tok-o">|</span> <span class="tok-n">AttributeTagInfo</span><span class="tok-p">.</span><span class="tok-n">FileAttributes</span><span class="tok-p">;</span>           // <b class="conum">(2)</b>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">BasicInfo</span><span class="tok-p">.</span><span class="tok-n">FileAttributes</span> <span class="tok-o">^</span> <span class="tok-n">FileAttributes</span><span class="tok-p">)</span>
+        <span class="tok-p">{</span>
+            <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">SetFileInformationByHandle</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span>
+                <span class="tok-n">FileBasicInfo</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">BasicInfo</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-n">BasicInfo</span><span class="tok-p">))</span>
+                <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
+        <span class="tok-p">}</span>
+    <span class="tok-p">}</span>
 
-    if (!SetFileInformationByHandle(Handle,
-        FileAllocationInfo, &amp;AllocationInfo, sizeof AllocationInfo))    // <b class="conum">(3)</b>
-        return FspNtStatusFromWin32(GetLastError());
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">SetFileInformationByHandle</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span>
+        <span class="tok-n">FileAllocationInfo</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">AllocationInfo</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-n">AllocationInfo</span><span class="tok-p">))</span>    // <b class="conum">(3)</b>
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-    return GetFileInfoInternal(Handle, FileInfo);
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1468,19 +1468,19 @@ typedef struct
 <div class="listingblock">
 <div class="title"><code><strong>Cleanup</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static VOID Cleanup(FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext, PWSTR FileName, ULONG Flags)
-{
-    HANDLE Handle = HandleFromContext(FileContext);
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">VOID</span> <span class="tok-nf">Cleanup</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span> <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span> <span class="tok-n">ULONG</span> <span class="tok-n">Flags</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">HandleFromContext</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
 
-    if (Flags &amp; FspCleanupDelete)                                       // <b class="conum">(1)</b>
-    {
-        CloseHandle(Handle);
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">Flags</span> <span class="tok-o">&amp;</span> <span class="tok-n">FspCleanupDelete</span><span class="tok-p">)</span>                                       // <b class="conum">(1)</b>
+    <span class="tok-p">{</span>
+        <span class="tok-n">CloseHandle</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">);</span>
 
-        /* this will make all future uses of Handle to fail with STATUS_INVALID_HANDLE */
-        HandleFromContext(FileContext) = INVALID_HANDLE_VALUE;          // <b class="conum">(2)</b>
-    }
-}</code></pre>
+        <span class="tok-cm">/* this will make all future uses of Handle to fail with STATUS_INVALID_HANDLE */</span>
+        <span class="tok-n">HandleFromContext</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">)</span> <span class="tok-o">=</span> <span class="tok-n">INVALID_HANDLE_VALUE</span><span class="tok-p">;</span>          // <b class="conum">(2)</b>
+    <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1526,20 +1526,20 @@ The WinFsp kernel driver maintains a <code>DeletePending</code> flag for every o
 <div class="listingblock">
 <div class="title"><code><strong>CanDelete</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS CanDelete(FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext, PWSTR FileName)
-{
-    HANDLE Handle = HandleFromContext(FileContext);
-    FILE_DISPOSITION_INFO DispositionInfo;
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">CanDelete</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span> <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">HandleFromContext</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
+    <span class="tok-n">FILE_DISPOSITION_INFO</span> <span class="tok-n">DispositionInfo</span><span class="tok-p">;</span>
 
-    DispositionInfo.DeleteFile = TRUE;                                  // <b class="conum">(1)</b>
+    <span class="tok-n">DispositionInfo</span><span class="tok-p">.</span><span class="tok-n">DeleteFile</span> <span class="tok-o">=</span> <span class="tok-n">TRUE</span><span class="tok-p">;</span>                                  // <b class="conum">(1)</b>
 
-    if (!SetFileInformationByHandle(Handle,
-        FileDispositionInfo, &amp;DispositionInfo, sizeof DispositionInfo))
-        return FspNtStatusFromWin32(GetLastError());
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">SetFileInformationByHandle</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span>
+        <span class="tok-n">FileDispositionInfo</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">DispositionInfo</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-n">DispositionInfo</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-    return STATUS_SUCCESS;
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">STATUS_SUCCESS</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1561,24 +1561,24 @@ The WinFsp kernel driver maintains a <code>DeletePending</code> flag for every o
 <div class="listingblock">
 <div class="title"><code><strong>Rename</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS Rename(FSP_FILE_SYSTEM *FileSystem,
-    PVOID FileContext,
-    PWSTR FileName, PWSTR NewFileName, BOOLEAN ReplaceIfExists)
-{
-    PTFS *Ptfs = (PTFS *)FileSystem-&gt;UserContext;
-    WCHAR FullPath[FULLPATH_SIZE], NewFullPath[FULLPATH_SIZE];
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">Rename</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+    <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
+    <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span> <span class="tok-n">PWSTR</span> <span class="tok-n">NewFileName</span><span class="tok-p">,</span> <span class="tok-n">BOOLEAN</span> <span class="tok-n">ReplaceIfExists</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-n">Ptfs</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-p">)</span><span class="tok-n">FileSystem</span><span class="tok-o">-&gt;</span><span class="tok-n">UserContext</span><span class="tok-p">;</span>
+    <span class="tok-n">WCHAR</span> <span class="tok-n">FullPath</span><span class="tok-p">[</span><span class="tok-n">FULLPATH_SIZE</span><span class="tok-p">],</span> <span class="tok-n">NewFullPath</span><span class="tok-p">[</span><span class="tok-n">FULLPATH_SIZE</span><span class="tok-p">];</span>
 
-    if (!ConcatPath(Ptfs, FileName, FullPath))
-        return STATUS_OBJECT_NAME_INVALID;
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">ConcatPath</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-p">,</span> <span class="tok-n">FileName</span><span class="tok-p">,</span> <span class="tok-n">FullPath</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">STATUS_OBJECT_NAME_INVALID</span><span class="tok-p">;</span>
 
-    if (!ConcatPath(Ptfs, NewFileName, NewFullPath))
-        return STATUS_OBJECT_NAME_INVALID;
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">ConcatPath</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-p">,</span> <span class="tok-n">NewFileName</span><span class="tok-p">,</span> <span class="tok-n">NewFullPath</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">STATUS_OBJECT_NAME_INVALID</span><span class="tok-p">;</span>
 
-    if (!MoveFileExW(FullPath, NewFullPath, ReplaceIfExists ? MOVEFILE_REPLACE_EXISTING : 0))
-        return FspNtStatusFromWin32(GetLastError());
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">MoveFileExW</span><span class="tok-p">(</span><span class="tok-n">FullPath</span><span class="tok-p">,</span> <span class="tok-n">NewFullPath</span><span class="tok-p">,</span> <span class="tok-n">ReplaceIfExists</span> <span class="tok-o">?</span> <span class="tok-nl">MOVEFILE_REPLACE_EXISTING</span> <span class="tok-p">:</span> <span class="tok-mi">0</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-    return STATUS_SUCCESS;
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">STATUS_SUCCESS</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -1745,37 +1745,37 @@ dirnotify_test......................... OK 1.01s
 <div class="listingblock">
 <div class="title"><code><strong>EnableBackupRestorePrivileges</strong></code></div>
 <div class="content">
-<pre class="highlight"><code class="language-c" data-lang="c">static NTSTATUS EnableBackupRestorePrivileges(VOID)
-{
-    union
-    {
-        TOKEN_PRIVILEGES P;
-        UINT8 B[sizeof(TOKEN_PRIVILEGES) + sizeof(LUID_AND_ATTRIBUTES)];
-    } Privileges;
-    HANDLE Token;
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">EnableBackupRestorePrivileges</span><span class="tok-p">(</span><span class="tok-n">VOID</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-k">union</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">TOKEN_PRIVILEGES</span> <span class="tok-n">P</span><span class="tok-p">;</span>
+        <span class="tok-n">UINT8</span> <span class="tok-n">B</span><span class="tok-p">[</span><span class="tok-k">sizeof</span><span class="tok-p">(</span><span class="tok-n">TOKEN_PRIVILEGES</span><span class="tok-p">)</span> <span class="tok-o">+</span> <span class="tok-k">sizeof</span><span class="tok-p">(</span><span class="tok-n">LUID_AND_ATTRIBUTES</span><span class="tok-p">)];</span>
+    <span class="tok-p">}</span> <span class="tok-n">Privileges</span><span class="tok-p">;</span>
+    <span class="tok-n">HANDLE</span> <span class="tok-n">Token</span><span class="tok-p">;</span>
 
-    Privileges.P.PrivilegeCount = 2;
-    Privileges.P.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-    Privileges.P.Privileges[1].Attributes = SE_PRIVILEGE_ENABLED;
+    <span class="tok-n">Privileges</span><span class="tok-p">.</span><span class="tok-n">P</span><span class="tok-p">.</span><span class="tok-n">PrivilegeCount</span> <span class="tok-o">=</span> <span class="tok-mi">2</span><span class="tok-p">;</span>
+    <span class="tok-n">Privileges</span><span class="tok-p">.</span><span class="tok-n">P</span><span class="tok-p">.</span><span class="tok-n">Privileges</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">].</span><span class="tok-n">Attributes</span> <span class="tok-o">=</span> <span class="tok-n">SE_PRIVILEGE_ENABLED</span><span class="tok-p">;</span>
+    <span class="tok-n">Privileges</span><span class="tok-p">.</span><span class="tok-n">P</span><span class="tok-p">.</span><span class="tok-n">Privileges</span><span class="tok-p">[</span><span class="tok-mi">1</span><span class="tok-p">].</span><span class="tok-n">Attributes</span> <span class="tok-o">=</span> <span class="tok-n">SE_PRIVILEGE_ENABLED</span><span class="tok-p">;</span>
 
-    if (!LookupPrivilegeValueW(0, SE_BACKUP_NAME, &amp;Privileges.P.Privileges[0].Luid) ||
-        !LookupPrivilegeValueW(0, SE_RESTORE_NAME, &amp;Privileges.P.Privileges[1].Luid))
-        return FspNtStatusFromWin32(GetLastError());
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">LookupPrivilegeValueW</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-n">SE_BACKUP_NAME</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">Privileges</span><span class="tok-p">.</span><span class="tok-n">P</span><span class="tok-p">.</span><span class="tok-n">Privileges</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">].</span><span class="tok-n">Luid</span><span class="tok-p">)</span> <span class="tok-o">||</span>
+        <span class="tok-o">!</span><span class="tok-n">LookupPrivilegeValueW</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-n">SE_RESTORE_NAME</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">Privileges</span><span class="tok-p">.</span><span class="tok-n">P</span><span class="tok-p">.</span><span class="tok-n">Privileges</span><span class="tok-p">[</span><span class="tok-mi">1</span><span class="tok-p">].</span><span class="tok-n">Luid</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &amp;Token))
-        return FspNtStatusFromWin32(GetLastError());
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">OpenProcessToken</span><span class="tok-p">(</span><span class="tok-n">GetCurrentProcess</span><span class="tok-p">(),</span> <span class="tok-n">TOKEN_ADJUST_PRIVILEGES</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">Token</span><span class="tok-p">))</span>
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-    if (!AdjustTokenPrivileges(Token, FALSE, &amp;Privileges.P, 0, 0, 0))
-    {
-        CloseHandle(Token);
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">AdjustTokenPrivileges</span><span class="tok-p">(</span><span class="tok-n">Token</span><span class="tok-p">,</span> <span class="tok-n">FALSE</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">Privileges</span><span class="tok-p">.</span><span class="tok-n">P</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">))</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">CloseHandle</span><span class="tok-p">(</span><span class="tok-n">Token</span><span class="tok-p">);</span>
 
-        return FspNtStatusFromWin32(GetLastError());
-    }
+        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
+    <span class="tok-p">}</span>
 
-    CloseHandle(Token);
+    <span class="tok-n">CloseHandle</span><span class="tok-p">(</span><span class="tok-n">Token</span><span class="tok-p">);</span>
 
-    return STATUS_SUCCESS;
-}</code></pre>
+    <span class="tok-k">return</span> <span class="tok-n">STATUS_SUCCESS</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
