@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark">
+    <meta name="supported-color-schemes" content="light dark">
+
+    <title>WinFsp Debugging Setup &middot; WinFsp</title>
+
+    <link rel="stylesheet" href="/css/primer.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+  </head>
+  <body class="bg-white text-gray-dark">
+    <div id="container" class="container-lg clearfix">
+
+      <div id="top" class="d-block d-md-none">
+        <div class="clearfix bg-gray-light border-bottom p-3">
+          <img src="/logo.png" class="float-left mr-3 auto-invert" style="height:32px;" />
+          <h1 class="f2-light text-uppercase float-left">WinFsp</h1>
+          <details class="dropdown details-reset details-overlay float-right">
+            <summary class="btn-octicon" aria-haspopup="true">
+              <img src="/svg/three-bars.svg" class="auto-invert" />
+            </summary>
+            <ul class="dropdown-menu dropdown-menu-w">
+              <li><a class="dropdown-item" href="/">Main</a></li><li><a class="dropdown-item" href="/rel">Download</a></li><li><a class="dropdown-item" href="/doc">Documentation</a></li><li><a class="dropdown-item" href="/src">Source</a></li><li><a class="dropdown-item" href="/blog">Blog</a></li>
+            </ul>
+          </details>
+        </div>
+      </div>
+
+      <div id="side" class="col-md-3 float-left d-none d-md-block">
+        <div class="p-3" style="min-height:100vh">
+          <img src="/logo.png" class="mb-3 width-fit auto-invert" />
+          <h1 class="f1-light text-uppercase text-center mb-3">WinFsp</h1>
+          <nav class="SideNav border"><a class="SideNav-item" href="/" >Main</a>
+              <a class="SideNav-item" href="/rel" >Download</a>
+              <a class="SideNav-item" href="/doc" aria-current="page">Documentation</a>
+              <nav class="SideNav py-2 pl-3">
+                  <a class="SideNav-subItem" href="/doc/Frequently-Asked-Questions/" >Frequently Asked Questions</a><a class="SideNav-subItem" href="/doc/Known-File-Systems/" >Known File Systems</a><a class="SideNav-subItem" href="/doc/Native-API-vs-FUSE/" >Native API vs FUSE</a><a class="SideNav-subItem" href="/doc/NTFS-Compatibility/" >NTFS Compatibility</a><a class="SideNav-subItem" href="/doc/Queued-Events/" >Queued Events</a><a class="SideNav-subItem" href="/doc/SSHFS-Port-Case-Study/" >SSHFS Port Case Study</a><a class="SideNav-subItem" href="/doc/WinFsp-API-launch.h/" >WinFsp API launch.h</a><a class="SideNav-subItem" href="/doc/WinFsp-API-winfsp.h/" >WinFsp API winfsp.h</a><a class="SideNav-subItem" href="/doc/WinFsp-as-an-IPC-Mechanism/" >WinFsp as an IPC Mechanism</a><a class="SideNav-subItem" href="/doc/WinFsp-Debugging-Setup/" aria-current="page">WinFsp Debugging Setup</a><a class="SideNav-subItem" href="/doc/WinFsp-Design/" >WinFsp Design</a><a class="SideNav-subItem" href="/doc/WinFsp-Kernel-Mode-File-Systems/" >WinFsp Kernel Mode File Systems</a><a class="SideNav-subItem" href="/doc/WinFsp-Performance-Testing/" >WinFsp Performance Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Service-Architecture/" >WinFsp Service Architecture</a><a class="SideNav-subItem" href="/doc/WinFsp-Testing/" >WinFsp Testing</a><a class="SideNav-subItem" href="/doc/WinFsp-Tutorial/" >WinFsp Tutorial</a>
+                </nav><a class="SideNav-item" href="/src" >Source</a>
+              <a class="SideNav-item" href="/blog" >Blog</a>
+              
+          </nav>
+        </div>
+      </div>
+
+      <div id="main" class="col-12 col-md-9 float-left">
+        <div class="p-3 markdown-body" style="min-height:100vh">
+<h1>WinFsp Debugging Setup</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this article I will describe the debugging setup used for WinFsp. Note that my debugging setup is somewhat peculiar, because all development and debugging is done on a Mac computer using two Windows virtual machines: one for development and one for debugging! However my description below should work for a one or two virtual machine setup.</p>
+</div>
+<div class="paragraph">
+<p>WinFsp is being developed on Windows 10 and debugged and tested on Windows 8 (although it should run correctly on Windows Vista and higher). You will need some virtualization software (I use VirtualBox 5), you will also need a fresh installation of Windows and to configure it properly for kernel debugging and running test signed drivers:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Create a Windows VM with a descriptive name (e.g. Win8DBG). Mine has a single CPU and just 2GB of memory.</p>
+</li>
+<li>
+<p>Configure your VM for Host Only Networking. This will be used for WinDbg debugging and for deploying WinFsp.</p>
+</li>
+<li>
+<p>Install Windows 8 on Win8DBG. Windows 8 is the minimum version of Windows that supports kernel network debugging.</p>
+</li>
+<li>
+<p>I would recommend not to install your virtualization software guest additions to minimize issues with your debugging VM.</p>
+</li>
+<li>
+<p>Configure Win8DBG for running test signed drivers:</p>
+<div class="listingblock">
+<div class="content">
+<pre>bcdedit.exe -set testsigning on</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Configure Win8DBG for debugging over the network:</p>
+<div class="listingblock">
+<div class="content">
+<pre>bcdedit /debug on
+bcdedit /dbgsettings net hostip:W.X.Y.Z port:NNNN key:KKKK</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Note that if you configure your VM with multiple network adapters you must also specify the correct <code>busparams</code> argument. You can find the correct <code>busparams</code> from the Windows Device Manager. For example, here are the settings on one of my VM&#8217;s:</p>
+<div class="listingblock">
+<div class="content">
+<pre>&gt;bcdedit /dbgsettings
+busparams               0.8.0
+key                     1.1.1.1
+debugtype               NET
+hostip                  192.168.56.11
+port                    50000
+dhcp                    Yes
+The operation completed successfully.</pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Enable DbgPrint on Win8DBG. Create the following key/value in the registry:</p>
+<div class="listingblock">
+<div class="content">
+<pre>Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Debug Print Filter]
+"DEFAULT"=dword:0000000f</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a directory on Win8DBG where you will be deploying WinFsp. I use a subdirectory of the Downloads directory:</p>
+<div class="listingblock">
+<div class="content">
+<pre>C:\Users\USERNAME\Downloads\winfsp</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Make the directory available outside the VM using Windows networking. You can use this new Windows share as an easy means to deploy WinFsp.</p>
+<div class="listingblock">
+<div class="content">
+<pre>copy build\VStudio\build\Debug\winfsp-x64.sys \\Win8DBG\Users\USERNAME\Downloads\winfsp</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Enable Driver Verifier for WinFsp on Win8DBG. The easiest way to do so is to run <code>verifier</code> from the command line.</p>
+</li>
+<li>
+<p>For faster edit-compile-test cycles I strongly recommend to use your virtualization software snapshot feature. For example, in my Win8DBG VM after I set it up exactly how I wanted it, I took a snapshot while the VM was running. Now whenever I want to test WinFsp, I restart that same snapshot and within 3-4 seconds I have a new VM ready for use. Even more importantly whenever there is a hard crash on the VM (happens a lot when developing Windows drivers) I can simply close the crashed VM and restart a new one.</p>
+</li>
+<li>
+<p>On your development machine configure WinDbg to use the Microsoft public symbol servers. From the main menu select File &gt; Symbol File Path and enter:</p>
+<div class="listingblock">
+<div class="content">
+<pre>SRV*C:\Users\USERNAME\AppData\Local\Temp\SymbolCache*http://msdl.microsoft.com/download/symbols</pre>
+</div>
+</div>
+</li>
+<li>
+<p>You can now run WinDbg and from the main menu select File &gt; Kernel Debug, then enter the appropriate port number and key. Alternatively you can use the following windbg command line:</p>
+<div class="listingblock">
+<div class="content">
+<pre>windbg -k net:port=NNNN,key=KKKK</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Checkout the <code>tools/deploy.bat</code> and <code>tools/debug.bat</code> batch files in the source distribution to see how I deploy and debug WinFsp.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_debugging_a_user_mode_process_from_kernel_mode_windbg">Debugging a user mode process from kernel mode WinDbg</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In order to debug a user mode process from a kernel mode WinDbg session, break into the debugger and issue the following commands:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>kd&gt; !gflag +ksl
+kd&gt; sxe ld MODULE-NAME.exe</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Restart the debugger and it will break within process creation. You can now set a breakpoint at your process wmain (or main, etc.):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>kd&gt; bp MODULE_NAME!wmain</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Restart the debugger and it will stop at your program&#8217;s entry point.</p>
+</div>
+</div>
+</div>
+
+</div>
+      </div>
+
+    </div>
+  </body>
+</html>
