@@ -23,7 +23,7 @@
               <img src="/svg/three-bars.svg" class="auto-invert" />
             </summary>
             <ul class="dropdown-menu dropdown-menu-w">
-              <li><a class="dropdown-item" href="/">Main</a></li><li><a class="dropdown-item" href="/rel">Download</a></li><li><a class="dropdown-item" href="/doc">Documentation</a></li><li><a class="dropdown-item" href="/src">Source</a></li><li><a class="dropdown-item" href="/blog">Blog</a></li>
+              <li><a class="dropdown-item" href="/">Main</a></li><li><a class="dropdown-item" href="/rel">Download</a></li><li><a class="dropdown-item" href="/apiref">API Reference</a></li><li><a class="dropdown-item" href="/doc">Documentation</a></li><li><a class="dropdown-item" href="/src">Source</a></li>
             </ul>
           </details>
         </div>
@@ -35,9 +35,9 @@
           <h1 class="f1-light text-uppercase text-center mb-3">WinFsp</h1>
           <nav class="SideNav border"><a class="SideNav-item" href="/" >Main</a>
               <a class="SideNav-item" href="/rel" aria-current="page">Download</a>
+              <a class="SideNav-item" href="/apiref" >API Reference</a>
               <a class="SideNav-item" href="/doc" >Documentation</a>
               <a class="SideNav-item" href="/src" >Source</a>
-              <a class="SideNav-item" href="/blog" >Blog</a>
               
           </nav>
         </div>
@@ -46,7 +46,7 @@
       <div id="main" class="col-12 col-md-9 float-left">
         <div class="p-3 markdown-body" style="min-height:100vh">
 <h1>Download</h1>
-<p>WinFsp is released in the form of an MSI installer that includes a signed driver and all files necessary to run and develop user mode file system on Windows. The installer supports Windows native, FUSE, .NET and Cygwin file systems out of the box. Download the latest version here.</p>
+<p>WinFsp is released in the form of an MSI installer that includes a signed driver and all files necessary to run and develop user mode file systems on Windows. The installer supports Windows native, FUSE, .NET and Cygwin file systems out of the box. Download the latest version here.</p>
 <center class="my-5">
 <a class="btn btn-primary" style="width:240px;" href="https://github.com/billziss-gh/winfsp/releases/download/v1.6/winfsp-1.6.20027.msi" role="button">Download WinFsp Installer</a><br/>
 <a class="text-small" href="https://github.com/billziss-gh/winfsp">Repository</a> &middot; <a class="text-small" href="https://github.com/billziss-gh/winfsp/blob/v1.6/Changelog.asciidoc">Changelog</a><br/>
@@ -55,56 +55,108 @@
 <b>Additional Downloads</b><br/>
 <span class="text-small">WinFsp installation required</span><br/>
 <br/>
-<a class="btn btn-outline mb-1" style="width:240px;" href="https://github.com/billziss-gh/sshfs-win/releases/download/v3.5.20024/sshfs-win-3.5.20024-x64.msi" role="button">SSHFS-Win (x64)</a><br/>
-<a class="btn btn-outline" style="width:240px;" href="https://github.com/billziss-gh/sshfs-win/releases/download/v3.5.20024/sshfs-win-3.5.20024-x86.msi" role="button">SSHFS-Win (x86)</a><br/>
+<a class="btn mb-1" style="width:240px;" href="https://github.com/billziss-gh/sshfs-win/releases/download/v3.5.20024/sshfs-win-3.5.20024-x64.msi" role="button">SSHFS-Win (x64)</a><br/>
+<a class="btn" style="width:240px;" href="https://github.com/billziss-gh/sshfs-win/releases/download/v3.5.20024/sshfs-win-3.5.20024-x86.msi" role="button">SSHFS-Win (x86)</a><br/>
 <a class="text-small" href="https://github.com/billziss-gh/sshfs-win">Repository</a><br/>
 <br/>
-<a class="btn btn-outline" style="width:240px;" href="https://github.com/billziss-gh/nfs-win/releases/download/v1.0.17083/nfs-win-1.0.17083.msi" role="button">NFS-Win (x86)</a><br/>
+<a class="btn" style="width:240px;" href="https://github.com/billziss-gh/nfs-win/releases/download/v1.0.17083/nfs-win-1.0.17083.msi" role="button">NFS-Win (x86)</a><br/>
 <a class="text-small" href="https://github.com/billziss-gh/nfs-win">Repository</a>
 </center>
 <h2 id="quick-start-guide">Quick Start Guide</h2>
+<div class="clearfix">
+  <div class="float-right col-6 pl-2">
+    <img src="install.png" />
+  </div>
+  <div class="float-right col-6 pr-2">
 <ul>
-<li>Download and run the WinFsp installer.</li>
-<li>In the installer select the option to install the developer files. These include the MEMFS sample file system, but also header and library files that let you develop your own user-mode file system.</li>
-<li>You should not need to reboot, unless WinFsp was already running on your system.</li>
+<li>
+<p>Download and run the WinFsp installer.</p>
+</li>
+<li>
+<p>In the installer select the option to install the developer files. These include the MEMFS sample file system, but also header and library files that let you develop your own user-mode file system.</p>
+</li>
+<li>
+<p>You should not need to reboot, unless WinFsp was already running on your system.</p>
+</div>
+</li>
 </ul>
-<p><img src="install.png" alt="Install WinFsp"></p>
+</div>
 <h2 id="launch-winfsp-from-the-windows-explorer">Launch WinFsp from the Windows Explorer</h2>
+<div class="clearfix">
+  <div class="float-left col-6 pr-2">
+    <img src="explorer.png" />
+  </div>
+  <div class="float-left col-6 pl-2">
 <ul>
-<li>Open Windows Explorer</li>
-<li>Select &ldquo;This PC&rdquo;. Right-click and select &ldquo;Map network drive&hellip;&rdquo;</li>
-<li>Map a drive to <code>\\memfs64\share</code>. (Assuming a 64-bit machine. Try <code>\\memfs32\share</code> if you have a 32-bit machine.)</li>
-<li>After a few seconds a new Explorer window will open up for your new drive.</li>
-<li>The file system behind this drive is a case-insensitive in-memory file system (MEMFS).</li>
-<li>When you are done, you can simply right click on the drive from Windows Explorer and select “Disconnect”.</li>
+<li>
+<p>Open Windows Explorer</p>
+</li>
+<li>
+<p>Select &ldquo;This PC&rdquo;. Right-click and select &ldquo;Map network drive&hellip;&rdquo;</p>
+</li>
+<li>
+<p>Map a drive to <code>\\memfs64\share</code>. (Assuming a 64-bit machine. Try <code>\\memfs32\share</code> if you have a 32-bit machine.)</p>
+</li>
+<li>
+<p>After a few seconds a new Explorer window will open up for your new drive.</p>
+</li>
+<li>
+<p>The file system behind this drive is a case-insensitive in-memory file system (MEMFS).</p>
+</li>
+<li>
+<p>When you are done, you can simply right click on the drive from Windows Explorer and select “Disconnect”.</p>
+</div>
+</li>
 </ul>
-<p><img src="explorer.png" alt="Windows Explorer"></p>
+</div>
 <h2 id="launch-winfsp-from-the-command-prompt">Launch WinFsp from the Command Prompt</h2>
+<div class="clearfix">
+  <div class="float-right col-6 pl-2">
+    <img src="command.png" />
+  </div>
+  <div class="float-right col-6 pr-2">
 <ul>
-<li>Start a non-admin Command Prompt.</li>
-<li>Navigate to the folder where you installed WinFsp: <code>cd C:\Program Files (x86)\WinFsp\bin</code></li>
-<li>Execute the command: <code>memfs-x64 -u \memfs64\share2 -m *</code>. (Assuming a 64-bit machine. Try <code>memfs-x86 -u \memfs32\share2 -m *</code> if you have a 32-bit machine.)</li>
-<li>Open a second non-admin Command Prompt and navigate to the new drive.</li>
-<li>When you are done, you can just press Ctrl-C to kill the MEMFS process from the first command prompt.</li>
+<li>
+<p>Start a non-admin Command Prompt.</p>
+</li>
+<li>
+<p>Navigate to the folder where you installed WinFsp: <code>cd C:\Program Files (x86)\WinFsp\bin</code></p>
+</li>
+<li>
+<p>Execute the command: <code>memfs-x64 -u \memfs64\share2 -m *</code>. (Assuming a 64-bit machine. Try <code>memfs-x86 -u \memfs32\share2 -m *</code> if you have a 32-bit machine.)</p>
+</li>
+<li>
+<p>Open a second non-admin Command Prompt and navigate to the new drive.</p>
+</li>
+<li>
+<p>When you are done, you can just press Ctrl-C to kill the MEMFS process from the first command prompt.</p>
+</div>
+</li>
 </ul>
-<p><img src="command.png" alt="Command Prompt"></p>
+</div>
 <h2 id="for-cygwin-users">For Cygwin users</h2>
+<div class="clearfix">
+  <div class="float-left col-6 pr-2">
+    <img src="cygwin.png" />
+  </div>
+  <div class="float-left col-6 pl-2">
 <p>The installer includes a FUSE package that can be installed on 32-bit or 64-bit Cygwin. This allows software such as SSHFS and FUSEPY to be built and run on Cygwin with minimal changes.</p>
 <p>To install the FUSE package to Cygwin perform the following steps:</p>
-<pre><code>$ cd opt/cygfuse/                       &lt;1&gt;
-$ sh ./install.sh                       &lt;2&gt;
+<pre><code>$ cd opt/cygfuse/       &lt;1&gt;
+$ sh ./install.sh       &lt;2&gt;
 </code></pre><ol>
 <li>From a Cygwin command prompt change to the subdirectory <code>opt/cygfuse</code> under the WinFsp installation directory.</li>
 <li>Execute the command <code>sh ./install.sh</code> which will install the necessary FUSE files. This includes FUSE runtime and development files.</li>
 </ol>
 <p>To uninstall the FUSE package to Cygwin perform the following steps:</p>
-<pre><code>$ cd opt/cygfuse/                       &lt;1&gt;
-$ sh ./uninstall.sh                     &lt;2&gt;
+<pre><code>$ cd opt/cygfuse/       &lt;1&gt;
+$ sh ./uninstall.sh     &lt;2&gt;
 </code></pre><ol>
 <li>From a Cygwin command prompt change to the subdirectory <code>opt/cygfuse</code> under the WinFsp installation directory.</li>
 <li>Execute the command <code>sh ./uninstall.sh</code> which will uninstall all previously installed FUSE files.</li>
 </ol>
-<p><img src="cygwin.png" alt="Cygwin"></p>
+  </div>
+</div>
 
 </div>
       </div>

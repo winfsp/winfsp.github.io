@@ -6,7 +6,7 @@
     <meta name="color-scheme" content="light dark">
     <meta name="supported-color-schemes" content="light dark">
 
-    <title>Source Code &middot; WinFsp</title>
+    <title>WinFsp Source Code &middot; WinFsp</title>
 
     <link rel="stylesheet" href="/css/primer.css" />
     <link rel="stylesheet" href="/css/site.css" />
@@ -23,7 +23,7 @@
               <img src="/svg/three-bars.svg" class="auto-invert" />
             </summary>
             <ul class="dropdown-menu dropdown-menu-w">
-              <li><a class="dropdown-item" href="/">Main</a></li><li><a class="dropdown-item" href="/rel">Download</a></li><li><a class="dropdown-item" href="/doc">Documentation</a></li><li><a class="dropdown-item" href="/src">Source</a></li><li><a class="dropdown-item" href="/blog">Blog</a></li>
+              <li><a class="dropdown-item" href="/">Main</a></li><li><a class="dropdown-item" href="/rel">Download</a></li><li><a class="dropdown-item" href="/apiref">API Reference</a></li><li><a class="dropdown-item" href="/doc">Documentation</a></li><li><a class="dropdown-item" href="/src">Source</a></li>
             </ul>
           </details>
         </div>
@@ -35,9 +35,9 @@
           <h1 class="f1-light text-uppercase text-center mb-3">WinFsp</h1>
           <nav class="SideNav border"><a class="SideNav-item" href="/" >Main</a>
               <a class="SideNav-item" href="/rel" >Download</a>
+              <a class="SideNav-item" href="/apiref" >API Reference</a>
               <a class="SideNav-item" href="/doc" >Documentation</a>
               <a class="SideNav-item" href="/src" aria-current="page">Source</a>
-              <a class="SideNav-item" href="/blog" >Blog</a>
               
           </nav>
         </div>
@@ -45,8 +45,66 @@
 
       <div id="main" class="col-12 col-md-9 float-left">
         <div class="p-3 markdown-body" style="min-height:100vh">
-<h1>Source Code</h1>
-<p>This is the source code page.</p>
+<h1>WinFsp Source Code</h1>
+<p>WinFsp is an open-source project hosted at GitHub. You can access and download its source code from the location below.</p>
+<center class="my-5">
+<a class="btn mb-3" style="width:240px;" href="https://github.com/billziss-gh/winfsp" role="button">
+  <svg class="v-align-middle mr-1 auto-invert" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+  <span class="v-align-middle">GitHub Repository</span>
+</a><br/>
+<a href="https://ci.appveyor.com/project/billziss-gh/winfsp/branch/master" role="button"><img src="https://ci.appveyor.com/api/projects/status/el00t4v9t8lr3b1f/branch/master?svg=true"></a>
+</center>
+<p>WinFsp is available under the <a href="https://github.com/billziss-gh/winfsp/blob/master/License.txt">GPLv3</a> license with a special exception for Free/Libre and Open Source Software. A commercial license is also available; please contact Bill Zissimopoulos &lt;billziss at navimatics.com&gt; for more details.</p>
+<h3 id="language-support">Language Support</h3>
+<p>The following open source projects use WinFsp to provide support for user mode file systems on Windows. Please note that these are external projects and not related to WinFsp.</p>
+<div class="d-table">
+<div class="d-table-cell col-6 v-align-top p-3">
+  <div class="clearfix">
+  <div class="float-left col-3 pr-2">
+    <img src="go.png" />
+  </div>
+  <div class="float-left col-9 pl-2">
+    <p><a href="https://github.com/billziss-gh/cgofuse">billziss-gh/cgofuse</a></p>
+<p>Cross-platform FUSE library for Go - Works on Windows, macOS, Linux, FreeBSD, NetBSD, OpenBSD</p>
+  </div>
+</div>
+</div>
+<div class="d-table-cell col-6 v-align-top p-3">
+  <div class="clearfix">
+  <div class="float-left col-3 pr-2">
+    <img src="java.png" />
+  </div>
+  <div class="float-left col-9 pl-2">
+    <p><a href="https://github.com/SerCeMan/jnr-fuse">SerCeMan/jnr-fuse</a></p>
+<p>FUSE implementation in Java using Java Native Runtime (JNR)</p>
+  </div>
+</div>
+</div>
+</div>
+<div class="d-table">
+<div class="d-table-cell col-6 v-align-top p-3">
+  <div class="clearfix">
+  <div class="float-left col-3 pr-2">
+    <img src="python.png" />
+  </div>
+  <div class="float-left col-9 pl-2">
+    <p><a href="https://github.com/Scille/winfspy">Scille/winfspy</a></p>
+<p>WinFSP binding for Python</p>
+  </div>
+</div>
+</div>
+<div class="d-table-cell col-6 v-align-top p-3">
+  <div class="clearfix">
+  <div class="float-left col-3 pr-2">
+    <img src="python.png" />
+  </div>
+  <div class="float-left col-9 pl-2">
+    <p><a href="https://github.com/billziss-gh/fusepy">billziss-gh/fusepy</a></p>
+<p>Simple ctypes bindings for FUSE - Also support Windows</p>
+  </div>
+</div>
+</div>
+</div>
 
 </div>
       </div>

@@ -3,7 +3,8 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://winfsp.github.io/blog/</loc>
+    <loc>https://winfsp.github.io/apiref/</loc>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -32,10 +33,6 @@
   
   <url>
     <loc>https://winfsp.github.io/doc/Queued-Events/</loc>
-  </url>
-  
-  <url>
-    <loc>https://winfsp.github.io/src/</loc>
   </url>
   
   <url>
@@ -76,6 +73,10 @@
   
   <url>
     <loc>https://winfsp.github.io/doc/WinFsp-Service-Architecture/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/src/</loc>
   </url>
   
   <url>
