@@ -44,6 +44,10 @@
   </url>
   
   <url>
+    <loc>https://winfsp.github.io/</loc>
+  </url>
+  
+  <url>
     <loc>https://winfsp.github.io/doc/WinFsp-API-launch.h/</loc>
   </url>
   
@@ -81,10 +85,6 @@
   
   <url>
     <loc>https://winfsp.github.io/doc/WinFsp-Tutorial/</loc>
-  </url>
-  
-  <url>
-    <loc>https://winfsp.github.io/</loc>
   </url>
   
 </urlset>
