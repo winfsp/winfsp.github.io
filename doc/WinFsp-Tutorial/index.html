@@ -41,7 +41,7 @@
                 <a class="SideNav-item" href="../../apiref" >API Reference</a>
                 <a class="SideNav-item" href="../../doc" aria-current="page">Documentation</a>
                 <nav class="SideNav py-2 pl-3">
-                    <a class="SideNav-subItem" href="../../doc/Frequently-Asked-Questions/" >Frequently Asked Questions</a><a class="SideNav-subItem" href="../../doc/Known-File-Systems/" >Known File Systems</a><a class="SideNav-subItem" href="../../doc/Native-API-vs-FUSE/" >Native API vs FUSE</a><a class="SideNav-subItem" href="../../doc/NTFS-Compatibility/" >NTFS Compatibility</a><a class="SideNav-subItem" href="../../doc/Queued-Events/" >Queued Events</a><a class="SideNav-subItem" href="../../doc/SSHFS-Port-Case-Study/" >SSHFS Port Case Study</a><a class="SideNav-subItem" href="../../doc/WinFsp-API-launch.h/" >WinFsp API: launch.h</a><a class="SideNav-subItem" href="../../doc/WinFsp-API-winfsp.h/" >WinFsp API: winfsp.h</a><a class="SideNav-subItem" href="../../doc/WinFsp-as-an-IPC-Mechanism/" >WinFsp as an IPC Mechanism</a><a class="SideNav-subItem" href="../../doc/WinFsp-Debugging-Setup/" >WinFsp Debugging Setup</a><a class="SideNav-subItem" href="../../doc/WinFsp-Design/" >WinFsp Design</a><a class="SideNav-subItem" href="../../doc/WinFsp-Kernel-Mode-File-Systems/" >WinFsp Kernel Mode File Systems</a><a class="SideNav-subItem" href="../../doc/WinFsp-Performance-Testing/" >WinFsp Performance Testing</a><a class="SideNav-subItem" href="../../doc/WinFsp-Service-Architecture/" >WinFsp Service Architecture</a><a class="SideNav-subItem" href="../../doc/WinFsp-Testing/" >WinFsp Testing</a><a class="SideNav-subItem" href="../../doc/WinFsp-Tutorial/" aria-current="page">WinFsp Tutorial</a>
+                    <a class="SideNav-subItem" href="../../doc/Frequently-Asked-Questions/" >Frequently Asked Questions</a><a class="SideNav-subItem" href="../../doc/Known-File-Systems/" >Known File Systems</a><a class="SideNav-subItem" href="../../doc/Native-API-vs-FUSE/" >Native API vs FUSE</a><a class="SideNav-subItem" href="../../doc/NTFS-Compatibility/" >NTFS Compatibility</a><a class="SideNav-subItem" href="../../doc/Queued-Events/" >Queued Events</a><a class="SideNav-subItem" href="../../doc/SSHFS-Port-Case-Study/" >SSHFS Port Case Study</a><a class="SideNav-subItem" href="../../doc/WinFsp-API-launch.h/" >WinFsp API: launch.h</a><a class="SideNav-subItem" href="../../doc/WinFsp-API-winfsp.h/" >WinFsp API: winfsp.h</a><a class="SideNav-subItem" href="../../doc/WinFsp-as-an-IPC-Mechanism/" >WinFsp as an IPC Mechanism</a><a class="SideNav-subItem" href="../../doc/WinFsp-Container-Support/" >WinFsp Container Support</a><a class="SideNav-subItem" href="../../doc/WinFsp-Debugging-Setup/" >WinFsp Debugging Setup</a><a class="SideNav-subItem" href="../../doc/WinFsp-Design/" >WinFsp Design</a><a class="SideNav-subItem" href="../../doc/WinFsp-Kernel-Mode-File-Systems/" >WinFsp Kernel Mode File Systems</a><a class="SideNav-subItem" href="../../doc/WinFsp-Performance-Testing/" >WinFsp Performance Testing</a><a class="SideNav-subItem" href="../../doc/WinFsp-Rebranding/" >WinFsp Rebranding</a><a class="SideNav-subItem" href="../../doc/WinFsp-Service-Architecture/" >WinFsp Service Architecture</a><a class="SideNav-subItem" href="../../doc/WinFsp-Testing/" >WinFsp Testing</a><a class="SideNav-subItem" href="../../doc/WinFsp-Tutorial/" aria-current="page">WinFsp Tutorial</a>
                   </nav><a class="SideNav-item" href="../../src" >Source</a>
                 
             </nav>
@@ -151,25 +151,25 @@ A user mode file system services requests from the operating system. Therefore i
 <div class="listingblock">
 <div class="title"><code><strong>passthrough.c</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-cp">#include</span> <span class="tok-cpf">&lt;winfsp/winfsp.h&gt;                                              </span><span class="tok-cp"></span>// <b class="conum">(1)</b>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-cp">#include</span> <span class="tok-cpf">&lt;winfsp/winfsp.h&gt;</span><span class="tok-c1">                                              </span><span class="tok-cp"></span>// <b class="conum">(1)</b>
 
 <span class="tok-cp">#define PROGNAME                        &quot;passthrough&quot;</span>
 
 <span class="tok-k">static</span>
-<span class="tok-n">NTSTATUS</span> <span class="tok-nf">SvcStart</span><span class="tok-p">(</span><span class="tok-n">FSP_SERVICE</span> <span class="tok-o">*</span><span class="tok-n">Service</span><span class="tok-p">,</span> <span class="tok-n">ULONG</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">PWSTR</span> <span class="tok-o">*</span><span class="tok-n">argv</span><span class="tok-p">)</span>        // <b class="conum">(2)</b>
+<span class="tok-n">NTSTATUS</span> <span class="tok-n">SvcStart</span><span class="tok-p">(</span><span class="tok-n">FSP_SERVICE</span> <span class="tok-o">*</span><span class="tok-n">Service</span><span class="tok-p">,</span> <span class="tok-n">ULONG</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-n">PWSTR</span> <span class="tok-o">*</span><span class="tok-n">argv</span><span class="tok-p">)</span>        // <b class="conum">(2)</b>
 <span class="tok-p">{</span>
     <span class="tok-k">return</span> <span class="tok-n">STATUS_NOT_IMPLEMENTED</span><span class="tok-p">;</span>
 <span class="tok-p">}</span>
 
 <span class="tok-k">static</span>
-<span class="tok-n">NTSTATUS</span> <span class="tok-nf">SvcStop</span><span class="tok-p">(</span><span class="tok-n">FSP_SERVICE</span> <span class="tok-o">*</span><span class="tok-n">Service</span><span class="tok-p">)</span>                                  // <b class="conum">(3)</b>
+<span class="tok-n">NTSTATUS</span> <span class="tok-n">SvcStop</span><span class="tok-p">(</span><span class="tok-n">FSP_SERVICE</span> <span class="tok-o">*</span><span class="tok-n">Service</span><span class="tok-p">)</span>                                  // <b class="conum">(3)</b>
 <span class="tok-p">{</span>
     <span class="tok-k">return</span> <span class="tok-n">STATUS_NOT_IMPLEMENTED</span><span class="tok-p">;</span>
 <span class="tok-p">}</span>
 
-<span class="tok-kt">int</span> <span class="tok-nf">wmain</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-kt">wchar_t</span> <span class="tok-o">**</span><span class="tok-n">argv</span><span class="tok-p">)</span>
+<span class="tok-kt">int</span> <span class="tok-n">wmain</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-kt">wchar_t</span> <span class="tok-o">**</span><span class="tok-n">argv</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
-    <span class="tok-k">return</span> <span class="tok-n">FspServiceRun</span><span class="tok-p">(</span><span class="tok-sa">L</span><span class="tok-s">&quot;&quot;</span> <span class="tok-n">PROGNAME</span><span class="tok-p">,</span> <span class="tok-n">SvcStart</span><span class="tok-p">,</span> <span class="tok-n">SvcStop</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>           // <b class="conum">(4)</b>
+    <span class="tok-k">return</span> <span class="tok-nf">FspServiceRun</span><span class="tok-p">(</span><span class="tok-sa">L</span><span class="tok-s">&quot;&quot;</span> <span class="tok-n">PROGNAME</span><span class="tok-p">,</span> <span class="tok-n">SvcStart</span><span class="tok-p">,</span> <span class="tok-n">SvcStop</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>           // <b class="conum">(4)</b>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -554,7 +554,7 @@ options:
 <div class="listingblock">
 <div class="title"><code><strong>PtfsDelete</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">VOID</span> <span class="tok-nf">PtfsDelete</span><span class="tok-p">(</span><span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-n">Ptfs</span><span class="tok-p">)</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">VOID</span> <span class="tok-n">PtfsDelete</span><span class="tok-p">(</span><span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-n">Ptfs</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
     <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">!=</span> <span class="tok-n">Ptfs</span><span class="tok-o">-&gt;</span><span class="tok-n">FileSystem</span><span class="tok-p">)</span>
         <span class="tok-n">FspFileSystemDelete</span><span class="tok-p">(</span><span class="tok-n">Ptfs</span><span class="tok-o">-&gt;</span><span class="tok-n">FileSystem</span><span class="tok-p">);</span>                          // <b class="conum">(1)</b>
@@ -611,13 +611,13 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>File system operations stubs</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">GetVolumeInfo</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">GetVolumeInfo</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">FSP_FSCTL_VOLUME_INFO</span> <span class="tok-o">*</span><span class="tok-n">VolumeInfo</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
     <span class="tok-k">return</span> <span class="tok-n">STATUS_INVALID_DEVICE_REQUEST</span><span class="tok-p">;</span>
 <span class="tok-p">}</span>
 
-<span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">SetVolumeLabel_</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">SetVolumeLabel_</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">PWSTR</span> <span class="tok-n">VolumeLabel</span><span class="tok-p">,</span>
     <span class="tok-n">FSP_FSCTL_VOLUME_INFO</span> <span class="tok-o">*</span><span class="tok-n">VolumeInfo</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
@@ -661,7 +661,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>GetSecurityByName</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">GetSecurityByName</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">GetSecurityByName</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span> <span class="tok-n">PUINT32</span> <span class="tok-n">PFileAttributes</span><span class="tok-p">,</span>
     <span class="tok-n">PSECURITY_DESCRIPTOR</span> <span class="tok-n">SecurityDescriptor</span><span class="tok-p">,</span> <span class="tok-n">SIZE_T</span> <span class="tok-o">*</span><span class="tok-n">PSecurityDescriptorSize</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
@@ -736,7 +736,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>Open</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">Open</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">Open</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span> <span class="tok-n">UINT32</span> <span class="tok-n">CreateOptions</span><span class="tok-p">,</span> <span class="tok-n">UINT32</span> <span class="tok-n">GrantedAccess</span><span class="tok-p">,</span>
     <span class="tok-n">PVOID</span> <span class="tok-o">*</span><span class="tok-n">PFileContext</span><span class="tok-p">,</span> <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
@@ -763,12 +763,12 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
     <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">INVALID_HANDLE_VALUE</span> <span class="tok-o">==</span> <span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">Handle</span><span class="tok-p">)</span>
     <span class="tok-p">{</span>
         <span class="tok-n">free</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
-        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
+        <span class="tok-k">return</span> <span class="tok-nf">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
     <span class="tok-p">}</span>
 
     <span class="tok-o">*</span><span class="tok-n">PFileContext</span> <span class="tok-o">=</span> <span class="tok-n">FileContext</span><span class="tok-p">;</span>
 
-    <span class="tok-k">return</span> <span class="tok-n">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>          // <b class="conum">(5)</b>
+    <span class="tok-k">return</span> <span class="tok-nf">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>          // <b class="conum">(5)</b>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -797,7 +797,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>GetFileInfoInternal</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
     <span class="tok-n">BY_HANDLE_FILE_INFORMATION</span> <span class="tok-n">ByHandleFileInfo</span><span class="tok-p">;</span>
 
@@ -827,7 +827,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>Close</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">VOID</span> <span class="tok-nf">Close</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">VOID</span> <span class="tok-n">Close</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">PVOID</span> <span class="tok-n">FileContext0</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
     <span class="tok-n">PTFS_FILE_CONTEXT</span> <span class="tok-o">*</span><span class="tok-n">FileContext</span> <span class="tok-o">=</span> <span class="tok-n">FileContext0</span><span class="tok-p">;</span>
@@ -889,7 +889,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>ReadDirectory</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">ReadDirectory</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">ReadDirectory</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">PVOID</span> <span class="tok-n">FileContext0</span><span class="tok-p">,</span> <span class="tok-n">PWSTR</span> <span class="tok-n">Pattern</span><span class="tok-p">,</span> <span class="tok-n">PWSTR</span> <span class="tok-n">Marker</span><span class="tok-p">,</span>
     <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span> <span class="tok-n">ULONG</span> <span class="tok-n">BufferLength</span><span class="tok-p">,</span> <span class="tok-n">PULONG</span> <span class="tok-n">PBytesTransferred</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
@@ -919,7 +919,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
         <span class="tok-n">Length</span> <span class="tok-o">=</span> <span class="tok-n">GetFinalPathNameByHandleW</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FullPath</span><span class="tok-p">,</span> <span class="tok-n">FULLPATH_SIZE</span> <span class="tok-o">-</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
         <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">==</span> <span class="tok-n">Length</span><span class="tok-p">)</span>
             <span class="tok-n">DirBufferResult</span> <span class="tok-o">=</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
-        <span class="tok-k">else</span> <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">Length</span> <span class="tok-o">+</span> <span class="tok-mi">1</span> <span class="tok-o">+</span> <span class="tok-n">PatternLength</span> <span class="tok-o">&gt;=</span> <span class="tok-n">FULLPATH_SIZE</span><span class="tok-p">)</span>
+        <span class="tok-k">else</span> <span class="tok-nf">if</span> <span class="tok-p">(</span><span class="tok-n">Length</span> <span class="tok-o">+</span> <span class="tok-mi">1</span> <span class="tok-o">+</span> <span class="tok-n">PatternLength</span> <span class="tok-o">&gt;=</span> <span class="tok-n">FULLPATH_SIZE</span><span class="tok-p">)</span>
             <span class="tok-n">DirBufferResult</span> <span class="tok-o">=</span> <span class="tok-n">STATUS_OBJECT_NAME_INVALID</span><span class="tok-p">;</span>
         <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">NT_SUCCESS</span><span class="tok-p">(</span><span class="tok-n">DirBufferResult</span><span class="tok-p">))</span>
         <span class="tok-p">{</span>
@@ -1000,7 +1000,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>GetVolumeInfo</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">GetVolumeInfo</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">GetVolumeInfo</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">FSP_FSCTL_VOLUME_INFO</span> <span class="tok-o">*</span><span class="tok-n">VolumeInfo</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
     <span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-n">Ptfs</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">PTFS</span> <span class="tok-o">*</span><span class="tok-p">)</span><span class="tok-n">FileSystem</span><span class="tok-o">-&gt;</span><span class="tok-n">UserContext</span><span class="tok-p">;</span>
@@ -1045,13 +1045,13 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>GetFileInfo</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">GetFileInfo</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">GetFileInfo</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
     <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
     <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">HandleFromContext</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
 
-    <span class="tok-k">return</span> <span class="tok-n">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>
+    <span class="tok-k">return</span> <span class="tok-nf">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -1061,7 +1061,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>GetSecurity</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">GetSecurity</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">GetSecurity</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
     <span class="tok-n">PSECURITY_DESCRIPTOR</span> <span class="tok-n">SecurityDescriptor</span><span class="tok-p">,</span> <span class="tok-n">SIZE_T</span> <span class="tok-o">*</span><span class="tok-n">PSecurityDescriptorSize</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
@@ -1073,7 +1073,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
         <span class="tok-n">SecurityDescriptor</span><span class="tok-p">,</span> <span class="tok-p">(</span><span class="tok-n">DWORD</span><span class="tok-p">)</span><span class="tok-o">*</span><span class="tok-n">PSecurityDescriptorSize</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">SecurityDescriptorSizeNeeded</span><span class="tok-p">))</span>
     <span class="tok-p">{</span>
         <span class="tok-o">*</span><span class="tok-n">PSecurityDescriptorSize</span> <span class="tok-o">=</span> <span class="tok-n">SecurityDescriptorSizeNeeded</span><span class="tok-p">;</span>
-        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
+        <span class="tok-k">return</span> <span class="tok-nf">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
     <span class="tok-p">}</span>
 
     <span class="tok-o">*</span><span class="tok-n">PSecurityDescriptorSize</span> <span class="tok-o">=</span> <span class="tok-n">SecurityDescriptorSizeNeeded</span><span class="tok-p">;</span>
@@ -1094,7 +1094,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>Read</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">Read</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">Read</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span> <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span> <span class="tok-n">UINT64</span> <span class="tok-n">Offset</span><span class="tok-p">,</span> <span class="tok-n">ULONG</span> <span class="tok-n">Length</span><span class="tok-p">,</span>
     <span class="tok-n">PULONG</span> <span class="tok-n">PBytesTransferred</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
@@ -1124,7 +1124,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>Write</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">Write</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">Write</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span> <span class="tok-n">PVOID</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span> <span class="tok-n">UINT64</span> <span class="tok-n">Offset</span><span class="tok-p">,</span> <span class="tok-n">ULONG</span> <span class="tok-n">Length</span><span class="tok-p">,</span>
     <span class="tok-n">BOOLEAN</span> <span class="tok-n">WriteToEndOfFile</span><span class="tok-p">,</span> <span class="tok-n">BOOLEAN</span> <span class="tok-n">ConstrainedIo</span><span class="tok-p">,</span>
     <span class="tok-n">PULONG</span> <span class="tok-n">PBytesTransferred</span><span class="tok-p">,</span> <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
@@ -1150,7 +1150,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
     <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">WriteFile</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">Buffer</span><span class="tok-p">,</span> <span class="tok-n">Length</span><span class="tok-p">,</span> <span class="tok-n">PBytesTransferred</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">Overlapped</span><span class="tok-p">))</span>
         <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-    <span class="tok-k">return</span> <span class="tok-n">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>
+    <span class="tok-k">return</span> <span class="tok-nf">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -1176,7 +1176,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>SetBasicInfo</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">SetBasicInfo</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">SetBasicInfo</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span> <span class="tok-n">UINT32</span> <span class="tok-n">FileAttributes</span><span class="tok-p">,</span>
     <span class="tok-n">UINT64</span> <span class="tok-n">CreationTime</span><span class="tok-p">,</span> <span class="tok-n">UINT64</span> <span class="tok-n">LastAccessTime</span><span class="tok-p">,</span> <span class="tok-n">UINT64</span> <span class="tok-n">LastWriteTime</span><span class="tok-p">,</span> <span class="tok-n">UINT64</span> <span class="tok-n">ChangeTime</span><span class="tok-p">,</span>
     <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
@@ -1186,7 +1186,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 
     <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">INVALID_FILE_ATTRIBUTES</span> <span class="tok-o">==</span> <span class="tok-n">FileAttributes</span><span class="tok-p">)</span>
         <span class="tok-n">FileAttributes</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
-    <span class="tok-k">else</span> <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">==</span> <span class="tok-n">FileAttributes</span><span class="tok-p">)</span>
+    <span class="tok-k">else</span> <span class="tok-nf">if</span> <span class="tok-p">(</span><span class="tok-mi">0</span> <span class="tok-o">==</span> <span class="tok-n">FileAttributes</span><span class="tok-p">)</span>
         <span class="tok-n">FileAttributes</span> <span class="tok-o">=</span> <span class="tok-n">FILE_ATTRIBUTE_NORMAL</span><span class="tok-p">;</span>
 
     <span class="tok-n">BasicInfo</span><span class="tok-p">.</span><span class="tok-n">FileAttributes</span> <span class="tok-o">=</span> <span class="tok-n">FileAttributes</span><span class="tok-p">;</span>
@@ -1199,7 +1199,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
         <span class="tok-n">FileBasicInfo</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">BasicInfo</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-n">BasicInfo</span><span class="tok-p">))</span>
         <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-    <span class="tok-k">return</span> <span class="tok-n">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>
+    <span class="tok-k">return</span> <span class="tok-nf">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -1215,7 +1215,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>SetFileSize</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">SetFileSize</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">SetFileSize</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span> <span class="tok-n">UINT64</span> <span class="tok-n">NewSize</span><span class="tok-p">,</span> <span class="tok-n">BOOLEAN</span> <span class="tok-n">SetAllocationSize</span><span class="tok-p">,</span>
     <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
@@ -1261,7 +1261,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>SetSecurity</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">SetSecurity</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">SetSecurity</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
     <span class="tok-n">SECURITY_INFORMATION</span> <span class="tok-n">SecurityInformation</span><span class="tok-p">,</span> <span class="tok-n">PSECURITY_DESCRIPTOR</span> <span class="tok-n">ModificationDescriptor</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
@@ -1321,7 +1321,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>Create</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">Create</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">Create</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span> <span class="tok-n">UINT32</span> <span class="tok-n">CreateOptions</span><span class="tok-p">,</span> <span class="tok-n">UINT32</span> <span class="tok-n">GrantedAccess</span><span class="tok-p">,</span>
     <span class="tok-n">UINT32</span> <span class="tok-n">FileAttributes</span><span class="tok-p">,</span> <span class="tok-n">PSECURITY_DESCRIPTOR</span> <span class="tok-n">SecurityDescriptor</span><span class="tok-p">,</span> <span class="tok-n">UINT64</span> <span class="tok-n">AllocationSize</span><span class="tok-p">,</span>
     <span class="tok-n">PVOID</span> <span class="tok-o">*</span><span class="tok-n">PFileContext</span><span class="tok-p">,</span> <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
@@ -1371,12 +1371,12 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
     <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">INVALID_HANDLE_VALUE</span> <span class="tok-o">==</span> <span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">Handle</span><span class="tok-p">)</span>
     <span class="tok-p">{</span>
         <span class="tok-n">free</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
-        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
+        <span class="tok-k">return</span> <span class="tok-nf">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
     <span class="tok-p">}</span>
 
     <span class="tok-o">*</span><span class="tok-n">PFileContext</span> <span class="tok-o">=</span> <span class="tok-n">FileContext</span><span class="tok-p">;</span>
 
-    <span class="tok-k">return</span> <span class="tok-n">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>          // <b class="conum">(5)</b>
+    <span class="tok-k">return</span> <span class="tok-nf">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-o">-&gt;</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>          // <b class="conum">(5)</b>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -1411,7 +1411,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>Overwrite</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">Overwrite</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">Overwrite</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span> <span class="tok-n">UINT32</span> <span class="tok-n">FileAttributes</span><span class="tok-p">,</span> <span class="tok-n">BOOLEAN</span> <span class="tok-n">ReplaceFileAttributes</span><span class="tok-p">,</span> <span class="tok-n">UINT64</span> <span class="tok-n">AllocationSize</span><span class="tok-p">,</span>
     <span class="tok-n">FSP_FSCTL_FILE_INFO</span> <span class="tok-o">*</span><span class="tok-n">FileInfo</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
@@ -1450,7 +1450,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
         <span class="tok-n">FileAllocationInfo</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">AllocationInfo</span><span class="tok-p">,</span> <span class="tok-k">sizeof</span> <span class="tok-n">AllocationInfo</span><span class="tok-p">))</span>    // <b class="conum">(3)</b>
         <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
 
-    <span class="tok-k">return</span> <span class="tok-n">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>
+    <span class="tok-k">return</span> <span class="tok-nf">GetFileInfoInternal</span><span class="tok-p">(</span><span class="tok-n">Handle</span><span class="tok-p">,</span> <span class="tok-n">FileInfo</span><span class="tok-p">);</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -1479,7 +1479,7 @@ Pressing Ctrl-C orderly stops the file system (by calling <code>SvcStop</code>).
 <div class="listingblock">
 <div class="title"><code><strong>Cleanup</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">VOID</span> <span class="tok-nf">Cleanup</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">VOID</span> <span class="tok-n">Cleanup</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span> <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span> <span class="tok-n">ULONG</span> <span class="tok-n">Flags</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
     <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">HandleFromContext</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
@@ -1537,7 +1537,7 @@ The WinFsp kernel driver maintains a <code>DeletePending</code> flag for every o
 <div class="listingblock">
 <div class="title"><code><strong>CanDelete</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">CanDelete</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">CanDelete</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span> <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
     <span class="tok-n">HANDLE</span> <span class="tok-n">Handle</span> <span class="tok-o">=</span> <span class="tok-n">HandleFromContext</span><span class="tok-p">(</span><span class="tok-n">FileContext</span><span class="tok-p">);</span>
@@ -1572,7 +1572,7 @@ The WinFsp kernel driver maintains a <code>DeletePending</code> flag for every o
 <div class="listingblock">
 <div class="title"><code><strong>Rename</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">Rename</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">Rename</span><span class="tok-p">(</span><span class="tok-n">FSP_FILE_SYSTEM</span> <span class="tok-o">*</span><span class="tok-n">FileSystem</span><span class="tok-p">,</span>
     <span class="tok-n">PVOID</span> <span class="tok-n">FileContext</span><span class="tok-p">,</span>
     <span class="tok-n">PWSTR</span> <span class="tok-n">FileName</span><span class="tok-p">,</span> <span class="tok-n">PWSTR</span> <span class="tok-n">NewFileName</span><span class="tok-p">,</span> <span class="tok-n">BOOLEAN</span> <span class="tok-n">ReplaceIfExists</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
@@ -1756,7 +1756,7 @@ dirnotify_test......................... OK 1.01s
 <div class="listingblock">
 <div class="title"><code><strong>EnableBackupRestorePrivileges</strong></code></div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-nf">EnableBackupRestorePrivileges</span><span class="tok-p">(</span><span class="tok-n">VOID</span><span class="tok-p">)</span>
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-k">static</span> <span class="tok-n">NTSTATUS</span> <span class="tok-n">EnableBackupRestorePrivileges</span><span class="tok-p">(</span><span class="tok-n">VOID</span><span class="tok-p">)</span>
 <span class="tok-p">{</span>
     <span class="tok-k">union</span>
     <span class="tok-p">{</span>
@@ -1780,7 +1780,7 @@ dirnotify_test......................... OK 1.01s
     <span class="tok-p">{</span>
         <span class="tok-n">CloseHandle</span><span class="tok-p">(</span><span class="tok-n">Token</span><span class="tok-p">);</span>
 
-        <span class="tok-k">return</span> <span class="tok-n">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
+        <span class="tok-k">return</span> <span class="tok-nf">FspNtStatusFromWin32</span><span class="tok-p">(</span><span class="tok-n">GetLastError</span><span class="tok-p">());</span>
     <span class="tok-p">}</span>
 
     <span class="tok-n">CloseHandle</span><span class="tok-p">(</span><span class="tok-n">Token</span><span class="tok-p">);</span>

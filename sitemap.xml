@@ -3,11 +3,6 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://winfsp.github.io/apiref/</loc>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://winfsp.github.io/doc/</loc>
   </url>
   
@@ -60,6 +55,10 @@
   </url>
   
   <url>
+    <loc>https://winfsp.github.io/doc/WinFsp-Container-Support/</loc>
+  </url>
+  
+  <url>
     <loc>https://winfsp.github.io/doc/WinFsp-Debugging-Setup/</loc>
   </url>
   
@@ -73,6 +72,10 @@
   
   <url>
     <loc>https://winfsp.github.io/doc/WinFsp-Performance-Testing/</loc>
+  </url>
+  
+  <url>
+    <loc>https://winfsp.github.io/doc/WinFsp-Rebranding/</loc>
   </url>
   
   <url>

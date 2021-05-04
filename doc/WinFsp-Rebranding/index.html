@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark">
+    <meta name="supported-color-schemes" content="light dark">
+
+    <title>WinFsp Rebranding &middot; WinFsp</title>
+
+    <link rel="stylesheet" href="../../css/primer.css" />
+    <link rel="stylesheet" href="../../css/site.css" />
+  </head>
+  <body class="bg-white text-gray-dark">
+
+    
+
+    <div id="container" class="container-lg clearfix"><div id="top" class="d-block d-md-none">
+          <div class="clearfix bg-gray-light border-bottom p-3">
+            <img src="../../logo.png" class="float-left mr-3 auto-invert" style="height:32px;" />
+            <h1 class="f2-light text-uppercase float-left">WinFsp</h1>
+            <details class="dropdown details-reset details-overlay float-right">
+              <summary class="btn-octicon" aria-haspopup="true">
+                <img src="../../svg/three-bars.svg" class="auto-invert" />
+              </summary>
+              <ul class="dropdown-menu dropdown-menu-w">
+                <li><a class="dropdown-item" href="../../">Home</a></li><li><a class="dropdown-item" href="../../rel">Download</a></li><li><a class="dropdown-item" href="../../apiref">API Reference</a></li><li><a class="dropdown-item" href="../../doc">Documentation</a></li><li><a class="dropdown-item" href="../../src">Source</a></li>
+              </ul>
+            </details>
+          </div>
+        </div>
+
+        <div id="side" class="col-md-3 float-left d-none d-md-block">
+          <div class="p-3" style="min-height:100vh">
+            <div class="mb-3 text-center">
+                <img src="../../logo.png" class="auto-invert" style="width:75%;" />
+              </div>
+            <h1 class="f1-light text-uppercase text-center mb-3">WinFsp</h1>
+            <nav class="SideNav border"><a class="SideNav-item" href="../../" >Home</a>
+                <a class="SideNav-item" href="../../rel" >Download</a>
+                <a class="SideNav-item" href="../../apiref" >API Reference</a>
+                <a class="SideNav-item" href="../../doc" aria-current="page">Documentation</a>
+                <nav class="SideNav py-2 pl-3">
+                    <a class="SideNav-subItem" href="../../doc/Frequently-Asked-Questions/" >Frequently Asked Questions</a><a class="SideNav-subItem" href="../../doc/Known-File-Systems/" >Known File Systems</a><a class="SideNav-subItem" href="../../doc/Native-API-vs-FUSE/" >Native API vs FUSE</a><a class="SideNav-subItem" href="../../doc/NTFS-Compatibility/" >NTFS Compatibility</a><a class="SideNav-subItem" href="../../doc/Queued-Events/" >Queued Events</a><a class="SideNav-subItem" href="../../doc/SSHFS-Port-Case-Study/" >SSHFS Port Case Study</a><a class="SideNav-subItem" href="../../doc/WinFsp-API-launch.h/" >WinFsp API: launch.h</a><a class="SideNav-subItem" href="../../doc/WinFsp-API-winfsp.h/" >WinFsp API: winfsp.h</a><a class="SideNav-subItem" href="../../doc/WinFsp-as-an-IPC-Mechanism/" >WinFsp as an IPC Mechanism</a><a class="SideNav-subItem" href="../../doc/WinFsp-Container-Support/" >WinFsp Container Support</a><a class="SideNav-subItem" href="../../doc/WinFsp-Debugging-Setup/" >WinFsp Debugging Setup</a><a class="SideNav-subItem" href="../../doc/WinFsp-Design/" >WinFsp Design</a><a class="SideNav-subItem" href="../../doc/WinFsp-Kernel-Mode-File-Systems/" >WinFsp Kernel Mode File Systems</a><a class="SideNav-subItem" href="../../doc/WinFsp-Performance-Testing/" >WinFsp Performance Testing</a><a class="SideNav-subItem" href="../../doc/WinFsp-Rebranding/" aria-current="page">WinFsp Rebranding</a><a class="SideNav-subItem" href="../../doc/WinFsp-Service-Architecture/" >WinFsp Service Architecture</a><a class="SideNav-subItem" href="../../doc/WinFsp-Testing/" >WinFsp Testing</a><a class="SideNav-subItem" href="../../doc/WinFsp-Tutorial/" >WinFsp Tutorial</a>
+                  </nav><a class="SideNav-item" href="../../src" >Source</a>
+                
+            </nav>
+          </div>
+        </div>
+
+      <div id="main" class="col-12 col-md-9 float-left">
+        <div class="p-3 markdown-body" style="min-height:100vh">
+          <h1>WinFsp Rebranding</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you have a commercial WinFsp license and wish to produce a rebranded version of WinFsp, you can follow the instructions in this document.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_overview">Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The WinFsp build is controlled by the file <code>build\VStudio\version.properties</code>. The file contains properties that control the final build output in a number of ways. Some of the properties in this file control how the final build product is branded, others how it is versioned, etc.</p>
+</div>
+<div class="sect2">
+<h3 id="_branding">Branding</h3>
+<div class="paragraph">
+<p>The properties that control branding are the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>MyProductName</code>: This is the overall product name. It should be a short name without spaces. For example: <code>MyCompanyFSP</code>. The default value is <code>WinFsp</code>.</p>
+</li>
+<li>
+<p><code>MyProductFileName</code>: This is the file name that will be used for the primary WinFsp components. For example: if you use <code>mycompanyfsp</code> the FSD will be named <code>mycompanyfsp-x64.sys</code> and <code>mycompanyfsp-x86.sys</code>, the DLL will be named <code>mycompanyfsp-x64.dll</code> and <code>mycompanyfsp-x86.dll</code>, etc. The default value is <code>winfsp</code>. (Note that due to a limitation the WinFsp .NET implementation assumes that <code>MyProductFileName</code> is the lowercase version of <code>MyProductName</code>.)</p>
+</li>
+<li>
+<p><code>MyDescription</code>: This is a longer product description. For example: <code>MyCompany File System Proxy</code>. The default value is <code>Windows File System Proxy</code>.</p>
+</li>
+<li>
+<p><code>MyCompanyName</code>: This is the company name.</p>
+</li>
+<li>
+<p><code>MyCopyright</code>: This is the product&#8217;s copyright.</p>
+</li>
+<li>
+<p><code>MyFspFsctlDeviceClassGuid</code>, <code>MyFspFsvrtDeviceClassGuid</code>: When creating devices the FSD needs to assign GUID classes to them; it uses the GUIDs specified by these properties. You MUST change these GUIDs when rebranding; otherwise your product and "official" WinFsp releases may interfere with each other. From the Visual Studio main menu use Tools &gt; Create GUID and select option "3. static const struct GUID" to produce GUIDs in the correct format.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_versioning">Versioning</h3>
+<div class="paragraph">
+<p>The properties that control versioning are the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>MyCanonicalVersion</code>: This is the "canonical" (i.e. non-marketing) version of the product. WinFsp uses a <code>major.minor.build</code> versioning scheme. The <code>major.minor</code> portion of the version comes from this property; build numbers are computed automatically from the current date.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Some WinFsp components check that canonical versions of different components match. For example, the WinFsp .NET implementation checks that its major version matches the one from the WinFsp DLL.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>MyProductVersion</code>: This is the product (i.e. marketing) version of the product. WinFsp uses the release year as the product version; it also adds a point release for subsequent releases (thus 2021 is the first release in 2021, and 2021.1 is the second release, etc). This property may be an arbitrary string.</p>
+</li>
+<li>
+<p><code>MyProductStage</code>: This specifies the kind of the build. Allowed values are <code>Beta</code>, <code>RC</code> (Release Candidate) and <code>Gold</code> (Final).</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_limitations">Limitations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Currently WinFsp supports rebranding of the core WinFsp components:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The WinFsp FSD (File System Driver).</p>
+</li>
+<li>
+<p>The WinFsp DLL (user mode DLL). This includes the DLL import libraries.</p>
+</li>
+<li>
+<p>The WinFsp Launcher (Windows service that allows for easy launching of file systems).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Currently WinFsp does not support rebranding of the following components:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Development files such as header files, samples, etc. These are not end-user visible and therefore are not necessary to be rebranded.</p>
+</li>
+<li>
+<p>WinFsp test suites.</p>
+</li>
+<li>
+<p>FUSE for Cygwin.</p>
+</li>
+<li>
+<p>Chocolatey builds.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Additional limitations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The default installer (in file <code>build\VStudio\installer\Product.wxs</code>) contains a number of GUIDs. These MUST be changed if the default installer is used by a rebranded product; otherwise installation of your product and "official" WinFsp releases may interfere with each other. There is a Python script at <code>tools\gensrc\wixguid.py</code> that can help with this.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+      </div>
+  
+    </div>
+
+  </body>
+</html>
